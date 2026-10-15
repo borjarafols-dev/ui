@@ -3,7 +3,7 @@ import type { DataTableProps } from './data-table'
 
 export default {
   component: 'DataTable',
-  sourceHash: 'sha256:49c455eab370a9ea1e218d0307764b5047629587b9eb432820a5f91e5bd67086',
+  sourceHash: 'sha256:946e02c02a243505e97831196a26eacdd4d68f288fcccbdc9ddc3819ae110929',
   category: 'data',
   summary: 'A read-only, keyboard-navigable table rendered from columns and rows of data.',
   whenToUse: [
@@ -21,12 +21,13 @@ export default {
   ],
   keyProps: ['columns', 'data', 'keyField', 'aria-label', 'emptyMessage'],
   antiPatterns: [
-    'Leaving aria-label at its default "Data table"; name what the table lists ("Members").',
+    'Leaving aria-label at its generic localised default; name what the table lists ("Members").',
     'Putting the identifying column (name, title) anywhere but first; the first column is the row header.',
     'Formatting values inline in data; use a column render function, for example a Badge for status.',
   ],
   accessibility: [
     'Built on React Aria Table: grid semantics, arrow-key navigation and row headers.',
+    'The default name and empty message are localised (en, es, ca) from React Aria’s locale.',
     'The caller provides the accessible name (aria-label) and readable cell content.',
   ],
   example: `<DataTable

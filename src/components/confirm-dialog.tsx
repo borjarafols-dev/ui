@@ -1,5 +1,6 @@
 import type * as React from 'react'
 
+import { useStrings } from '../i18n/strings'
 import { Button } from './button'
 import { Modal } from './modal'
 
@@ -7,9 +8,11 @@ export interface ConfirmDialogProps {
   open: boolean
   title: string
   message: React.ReactNode
+  /** Defaults to a localised generic label; prefer a label that names the action. */
   confirmLabel?: string
+  /** Defaults to a localised label. */
   cancelLabel?: string
-  /** Shown on the confirm button while `isPending`. */
+  /** Shown on the confirm button while `isPending`. Defaults to a localised label. */
   pendingLabel?: string
   confirmVariant?: 'primary' | 'destructive'
   /** Disables both buttons and shows `pendingLabel` while the action runs. */
@@ -28,24 +31,25 @@ export function ConfirmDialog({
   open,
   title,
   message,
-  confirmLabel = 'Confirm',
-  cancelLabel = 'Cancel',
-  pendingLabel = 'Working…',
+  confirmLabel,
+  cancelLabel,
+  pendingLabel,
   confirmVariant = 'destructive',
   isPending = false,
   onConfirm,
   onCancel,
 }: ConfirmDialogProps) {
+  const t = useStrings()
   return (
     <Modal open={open} onClose={onCancel} title={title} isDismissable={!isPending}>
       <div data-slot="confirm-dialog" className="max-w-sm">
         <div className="text-sm text-muted-foreground">{message}</div>
         <div className="mt-6 flex justify-end gap-3">
           <Button variant="secondary" onPress={onCancel} isDisabled={isPending}>
-            {cancelLabel}
+            {cancelLabel ?? t.cancel}
           </Button>
           <Button variant={confirmVariant} onPress={onConfirm} isDisabled={isPending}>
-            {isPending ? pendingLabel : confirmLabel}
+            {isPending ? (pendingLabel ?? t.working) : (confirmLabel ?? t.confirm)}
           </Button>
         </div>
       </div>

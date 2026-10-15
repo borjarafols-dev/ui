@@ -30,3 +30,26 @@ export const SignIn: Story = {
     </Card>
   ),
 }
+
+export const ContentOnly: Story = {
+  render: () => (
+    <Card className="w-96">
+      <CardContent>
+        <p className="text-sm">Your next invoice is due on 1 November.</p>
+      </CardContent>
+    </Card>
+  ),
+}
+
+export const ContentAndFooter: Story = {
+  render: () => (
+    <Card className="w-96">
+      <CardContent>
+        <p className="text-sm">You have 3 unread messages.</p>
+      </CardContent>
+      <CardFooter className="justify-end">
+        <Button>Open inbox</Button>
+      </CardFooter>
+    </Card>
+  ),
+}

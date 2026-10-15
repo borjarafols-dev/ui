@@ -21,6 +21,27 @@ import '@brafols/ui/styles.css' // in the app entry, before the app's own CSS
 
 Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and modals portal to `<body>`, so a theme on an inner element doesn't reach them.
 
+### Language of built-in labels
+
+The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name and empty message, ConfirmDialog's cancel, confirm and pending labels) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
+
+- To set the language, wrap the app's root in React Aria's `I18nProvider`. Don't add a wrapper of your own.
+- Without a provider, labels follow the browser's language.
+- The locale is matched by language (`ca-ES` and `ca-AD` both get Catalan). Unsupported languages, such as `fr-FR`, get English.
+- An explicit prop (`cancelLabel`, `clearLabel`, `label`, `aria-label`, `emptyMessage`, …) always wins over the localised default.
+
+```tsx
+import { I18nProvider } from 'react-aria-components'
+
+createRoot(root).render(
+  <I18nProvider locale="ca-ES">
+    <App />
+  </I18nProvider>,
+)
+```
+
+Set the provider's `locale` from the app's own language setting, so library labels match the app's copy. Modals and popovers keep the locale, because React context reaches through portals.
+
 ## Rules
 
 - **Tokens only.**
@@ -37,6 +58,32 @@ Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and
 - **Links that look like buttons:** put the `button()` recipe on the router link or a React Aria `Link`. Don't wrap a `Button` in an `<a>`.
 - **Astro and other non-React markup:** use recipes from `@brafols/ui/recipes` (`class={button({ variant: 'primary' })}`). Use the React components only inside islands that need interaction.
 - **State styling:** target data attributes (`data-variant`, `data-selected`, `data-invalid`, …), never internal class names.
+
+## Enforcing tokens in your app
+
+The package ships the library's own token check as a bin, so every app runs the same implementation, versioned with the tokens it protects. It fails on palette classes (`bg-blue-600`, `text-white`) and hex colors.
+
+```sh
+npx brafols-ui-check-tokens src
+```
+
+- Pass one or more files or directories. It checks `.ts`, `.tsx` and `.astro` files and skips `*.test.*`, `*.stories.*` and `*.metadata.ts` files, plus `node_modules`, `dist` and dot-directories (`.astro`, `.git`) inside the given directories. Keep checked source out of those.
+- It exits 1 and lists each hit as `file:line  class`, or exits 0 and prints `Token check passed.`
+
+Add it to the app's scripts and run it in CI next to the typecheck and tests:
+
+```json
+{
+  "scripts": {
+    "lint:tokens": "brafols-ui-check-tokens src"
+  }
+}
+```
+
+```yaml
+- run: npm ci
+- run: npm run lint:tokens
+```
 
 ## Copy into your app's AGENTS.md
 

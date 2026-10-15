@@ -5,7 +5,7 @@ import type { Card } from './card'
 
 export default {
   component: 'Card',
-  sourceHash: 'sha256:d0f6f0bb6ad1c3980153a8eb9d0d0aede652cea85b0a3acd13bc1b7521aefa6b',
+  sourceHash: 'sha256:9c4f609427efdfb25abd153f5b1ad26a851adf3fb9d48a236857ad427fd65a82',
   category: 'layout',
   summary: 'A bordered surface that groups related content, built from CardHeader, CardTitle, CardDescription, CardContent and CardFooter.',
   whenToUse: [
@@ -27,6 +27,7 @@ export default {
     'Putting content directly in Card and expecting padding; Card has none, so wrap content in CardContent or CardHeader.',
     'Restyling the surface with bg-*/border-* classes; override --card or --border tokens instead.',
     'Nesting cards inside cards for spacing; use layout (grid/gap) inside one CardContent.',
+    'Adding pt-6 to a CardContent or CardFooter with no CardHeader above it; they already pad their top when they are the first child.',
   ],
   accessibility: [
     'Purely presentational; CardTitle renders an <h3>, so make sure that heading level fits the page outline.',

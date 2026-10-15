@@ -37,6 +37,20 @@ export function SignIn() {
 
 Components follow React Aria's APIs: `onPress` / `isDisabled` on buttons, value-based `onChange` on fields, and `selectedKey` / `onSelectionChange` on `Select`.
 
+### Language
+
+Built-in default labels ("Clear search", "Loading", "Cancel", …) come in English, Spanish and Catalan and follow React Aria's locale. Set the locale by wrapping the app's root in React Aria's `I18nProvider`:
+
+```tsx
+import { I18nProvider } from 'react-aria-components'
+
+<I18nProvider locale="ca-ES">
+  <App />
+</I18nProvider>
+```
+
+Without a provider, labels follow the browser's language. Unsupported languages get English, and an explicit prop such as `cancelLabel` always wins. See [`docs/USAGE.md`](docs/USAGE.md#language-of-built-in-labels).
+
 | Component | Notes |
 |---|---|
 | `Button` | Variants `primary` `secondary` `outline` `ghost` `destructive` `link`; sizes `sm` `md` `lg` |
@@ -123,6 +137,16 @@ To use the same tokens in an app's own Tailwind utilities:
   --color-border: var(--border);
 }
 ```
+
+## Enforcing tokens in apps
+
+The token check (contract C2) ships as a bin, so apps run the same check in their CI:
+
+```sh
+npx brafols-ui-check-tokens src   # exits 1 listing file:line  class for each palette class or hex color
+```
+
+It checks `.ts`, `.tsx` and `.astro` files and skips tests, stories and metadata, plus `node_modules`, `dist` and dot-directories. See [`docs/USAGE.md`](docs/USAGE.md#enforcing-tokens-in-your-app) for wiring it into CI.
 
 ## For agents
 

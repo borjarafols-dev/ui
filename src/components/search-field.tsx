@@ -6,12 +6,13 @@ import {
   type SearchFieldProps as RACSearchFieldProps,
 } from 'react-aria-components'
 
+import { useStrings } from '../i18n/strings'
 import { field } from '../recipes/field'
 
 export interface SearchFieldProps extends Omit<RACSearchFieldProps, 'className' | 'children'> {
   label?: string
   placeholder?: string
-  /** Accessible name of the clear button. */
+  /** Accessible name of the clear button. Defaults to a localised label. */
   clearLabel?: string
   className?: string
 }
@@ -25,10 +26,11 @@ const slots = field()
 export function SearchField({
   label,
   placeholder,
-  clearLabel = 'Clear search',
+  clearLabel,
   className,
   ...props
 }: SearchFieldProps) {
+  const t = useStrings()
   return (
     <RACSearchField data-slot="search-field" {...props} className={slots.root({ className })}>
       {({ isEmpty }) => (
@@ -41,7 +43,7 @@ export function SearchField({
             />
             {!isEmpty && (
               <Button
-                aria-label={clearLabel}
+                aria-label={clearLabel ?? t.clearSearch}
                 className="absolute inset-y-0 right-0 flex items-center pr-2 text-muted-foreground outline-none hover:text-foreground focus-visible:text-foreground"
               >
                 <span aria-hidden="true">✕</span>

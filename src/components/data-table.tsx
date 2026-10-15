@@ -1,6 +1,7 @@
 import type * as React from 'react'
 import { Cell, Column, Row, Table, TableBody, TableHeader } from 'react-aria-components'
 
+import { useStrings } from '../i18n/strings'
 import { table } from '../recipes/table'
 
 export interface DataTableColumn<T> {
@@ -13,8 +14,9 @@ export interface DataTableProps<T> {
   columns: DataTableColumn<T>[]
   data: T[]
   keyField: keyof T & string
-  /** Accessible name of the table. */
+  /** Accessible name of the table. Defaults to a localised name. */
   'aria-label'?: string
+  /** Shown when `data` is empty. Defaults to a localised message. */
   emptyMessage?: React.ReactNode
   className?: string
 }
@@ -31,12 +33,13 @@ export function DataTable<T extends object>({
   columns,
   data,
   keyField,
-  'aria-label': ariaLabel = 'Data table',
-  emptyMessage = 'No data available.',
+  'aria-label': ariaLabel,
+  emptyMessage,
   className,
 }: DataTableProps<T>) {
+  const t = useStrings()
   return (
-    <Table data-slot="data-table" aria-label={ariaLabel} className={slots.root({ className })}>
+    <Table data-slot="data-table" aria-label={ariaLabel ?? t.dataTable} className={slots.root({ className })}>
       <TableHeader className={slots.header()} columns={columns}>
         {(column) => (
           <Column id={column.key} isRowHeader={column === columns[0]} className={slots.column()}>
@@ -44,7 +47,7 @@ export function DataTable<T extends object>({
           </Column>
         )}
       </TableHeader>
-      <TableBody items={data} renderEmptyState={() => <div className={slots.empty()}>{emptyMessage}</div>}>
+      <TableBody items={data} renderEmptyState={() => <div className={slots.empty()}>{emptyMessage ?? t.noData}</div>}>
         {(row) => (
           <Row id={String(row[keyField])} columns={columns} className={slots.row()}>
             {(column) => (
