@@ -9,6 +9,7 @@
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
 
+import { lastRelease } from './last-release.mjs'
 import { nextVersion, releaseType } from './next-version.mjs'
 
 const dryRun = process.argv.includes('--dry-run')
@@ -16,18 +17,9 @@ const dryRun = process.argv.includes('--dry-run')
 const run = (cmd, args, opts = {}) =>
   (execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], ...opts }) ?? '').trim()
 
-function lastTag() {
-  try {
-    return run('git', ['describe', '--tags', '--abbrev=0', '--match', 'v[0-9]*.[0-9]*.[0-9]*', 'HEAD'], {
-      stdio: ['ignore', 'pipe', 'ignore'],
-    })
-  } catch {
-    return null
-  }
-}
-
-const tag = lastTag()
-const range = tag ? `${tag}..HEAD` : 'HEAD'
+const previous = lastRelease()
+const tag = previous?.tag ?? null
+const range = previous ? `${previous.base}..HEAD` : 'HEAD'
 const messages = run('git', ['log', '--no-merges', '--format=%B%x00', range])
   .split('\0')
   .map((m) => m.trim())
@@ -43,6 +35,11 @@ if (!version) {
 
 const next = `v${version}`
 console.log(`${tag ?? '(none)'} -> ${next} (${type}, ${messages.length} commits)`)
+// A collision means the previous release was missed: fail loudly, never skip.
+if (run('git', ['tag', '--list', next])) {
+  console.error(`${next} already exists, but the last release found was ${tag ?? '(none)'}.`)
+  process.exit(1)
+}
 if (dryRun) process.exit(0)
 
 const mainSha = run('git', ['rev-parse', 'HEAD'])
