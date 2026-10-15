@@ -37,6 +37,20 @@ export function SignIn() {
 
 Components follow React Aria's APIs: `onPress` / `isDisabled` on buttons, value-based `onChange` on fields, and `selectedKey` / `onSelectionChange` on `Select`.
 
+### Language
+
+Built-in default labels ("Clear search", "Loading", "Cancel", …) come in English, Spanish and Catalan and follow React Aria's locale. Set the locale by wrapping the app's root in React Aria's `I18nProvider`:
+
+```tsx
+import { I18nProvider } from 'react-aria-components'
+
+<I18nProvider locale="ca-ES">
+  <App />
+</I18nProvider>
+```
+
+Without a provider, labels follow the browser's language. Unsupported languages get English, and an explicit prop such as `cancelLabel` always wins. See [`docs/USAGE.md`](docs/USAGE.md#language-of-built-in-labels).
+
 | Component | Notes |
 |---|---|
 | `Button` | Variants `primary` `secondary` `outline` `ghost` `destructive` `link`; sizes `sm` `md` `lg` |

@@ -3,7 +3,7 @@ import type { SearchFieldProps } from './search-field'
 
 export default {
   component: 'SearchField',
-  sourceHash: 'sha256:41ffc0a5fd45c56680e008302d84eb9e911dcde1dcf9e90220f547f2b13aeed0',
+  sourceHash: 'sha256:d0ae8db3586021daf5bb1bf114490b73949369b64d3e433496c16c6495e264e6',
   category: 'form',
   summary: 'A search input with a clear button that appears while it has a value.',
   whenToUse: ['Filtering a list or table as the user types.', 'A search box above results.'],
@@ -15,7 +15,7 @@ export default {
     'Running a network request on every keystroke; debounce the value from onChange.',
   ],
   accessibility: [
-    'Escape clears the field, and the clear button is labelled ("Clear search", or clearLabel).',
+    'Escape clears the field, and the clear button is labelled (a localised default from React Aria’s locale, or clearLabel).',
     'The caller provides label or aria-label.',
   ],
   example: `<SearchField aria-label="Search members" placeholder="Name or email" value={query} onChange={setQuery} />`,

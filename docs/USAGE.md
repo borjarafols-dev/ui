@@ -21,6 +21,27 @@ import '@brafols/ui/styles.css' // in the app entry, before the app's own CSS
 
 Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and modals portal to `<body>`, so a theme on an inner element doesn't reach them.
 
+### Language of built-in labels
+
+The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name and empty message, ConfirmDialog's cancel, confirm and pending labels) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
+
+- To set the language, wrap the app's root in React Aria's `I18nProvider`. Don't add a wrapper of your own.
+- Without a provider, labels follow the browser's language.
+- The locale is matched by language (`ca-ES` and `ca-AD` both get Catalan). Unsupported languages, such as `fr-FR`, get English.
+- An explicit prop (`cancelLabel`, `clearLabel`, `label`, `aria-label`, `emptyMessage`, …) always wins over the localised default.
+
+```tsx
+import { I18nProvider } from 'react-aria-components'
+
+createRoot(root).render(
+  <I18nProvider locale="ca-ES">
+    <App />
+  </I18nProvider>,
+)
+```
+
+Set the provider's `locale` from the app's own language setting, so library labels match the app's copy. Modals and popovers keep the locale, because React context reaches through portals.
+
 ## Rules
 
 - **Tokens only.**

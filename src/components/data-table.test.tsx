@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import { I18nProvider } from 'react-aria-components'
 import { describe, expect, it } from 'vitest'
 
 import { DataTable, type DataTableColumn } from './data-table'
@@ -32,5 +33,16 @@ describe('DataTable', () => {
     render(<DataTable columns={columns} data={[]} keyField="id" />)
 
     expect(screen.getByText('No data available.')).toBeInTheDocument()
+  })
+
+  it('localises its default name and empty message', () => {
+    render(
+      <I18nProvider locale="ca-ES">
+        <DataTable columns={columns} data={[]} keyField="id" />
+      </I18nProvider>,
+    )
+
+    expect(screen.getByRole('grid', { name: 'Taula de dades' })).toBeInTheDocument()
+    expect(screen.getByText('No hi ha dades disponibles.')).toBeInTheDocument()
   })
 })
