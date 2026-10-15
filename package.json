@@ -26,7 +26,7 @@
     "build-storybook": "storybook build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "prepare": "npm run build"
+    "release:dry-run": "node scripts/release.mjs --dry-run"
   },
   "peerDependencies": {
     "react": "^19.0.0",
@@ -62,5 +62,9 @@
   },
   "sideEffects": [
     "*.css"
-  ]
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/borjarafols-dev/ui.git"
+  }
 }
