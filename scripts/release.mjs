@@ -12,7 +12,9 @@ import { readFileSync, writeFileSync } from 'node:fs'
 import { nextVersion, releaseType } from './next-version.mjs'
 
 const dryRun = process.argv.includes('--dry-run')
-const run = (cmd, args, opts = {}) => execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], ...opts }).trim()
+// With stdio 'inherit' execFileSync returns null; normalise to ''.
+const run = (cmd, args, opts = {}) =>
+  (execFileSync(cmd, args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'inherit'], ...opts }) ?? '').trim()
 
 function lastTag() {
   try {
