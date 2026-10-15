@@ -9,6 +9,9 @@ import '../src/styles.css'
 
 const withTheme: Decorator = (Story, context) => {
   const theme = (context.globals.theme as string | undefined) ?? 'light'
+  // Popovers and modals portal to <body>, outside the story wrapper, so the
+  // theme must also sit on <html> — as it does in a real app.
+  document.documentElement.dataset.theme = theme
   return (
     <div data-theme={theme} className="min-h-[100dvh] bg-background p-8 font-sans text-foreground">
       <Story />

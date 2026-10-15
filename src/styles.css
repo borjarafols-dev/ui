@@ -19,6 +19,11 @@
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
+/* React Aria state variants (hover:, pressed:, selected:, focus-visible:,
+ * invalid:, disabled:, ...) target RAC's data-* attributes on RAC elements and
+ * the native pseudo-classes elsewhere. Compiled in: consumers need nothing. */
+@plugin 'tailwindcss-react-aria-components';
+
 /* Dark mode is attribute-driven, not media/class driven. */
 @custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));
 
@@ -80,6 +85,7 @@
   --border: var(--gray-6);
   --input: var(--gray-7);
   --ring: var(--gray-8);
+  --overlay: oklch(0 0 0 / 50%);
 
   --radius: 0.625rem;
   --radius-sm: calc(var(--radius) - 0.25rem);
@@ -114,13 +120,14 @@
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.5 0.015 286);
+  --overlay: oklch(0 0 0 / 70%);
 }
 
 /* -----------------------------------------------------------------------
  * Layer 3 — component tokens
  * Component-specific decisions built on semantic tokens. Only Button
- * consumes these today, but the layer is the extension point for new
- * components (Switch, Tabs, Toast, ...).
+ * consumes these today; add a component token when an app needs to restyle
+ * one component without touching the semantic layer.
  * ----------------------------------------------------------------------- */
 
 :root {
@@ -178,6 +185,7 @@
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
 
   --color-button-primary: var(--button-primary-bg);
   --color-button-primary-hover: var(--button-primary-bg-hover);

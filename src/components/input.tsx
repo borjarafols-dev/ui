@@ -1,25 +1,17 @@
-import * as React from 'react'
+import { Input as RACInput, type InputProps as RACInputProps } from 'react-aria-components'
 
-import { cn } from '../lib/utils'
+import { field } from '../recipes/field'
 
-export type InputProps = React.ComponentPropsWithoutRef<'input'>
+export interface InputProps extends Omit<RACInputProps, 'className'> {
+  className?: string
+}
 
-export const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, disabled, ...props }, ref) => (
-    <input
-      data-slot="input"
-      data-disabled={disabled ? '' : undefined}
-      type={type}
-      className={cn(
-        'flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-xs transition-colors placeholder:text-muted-foreground',
-        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-        'disabled:cursor-not-allowed disabled:opacity-50 aria-disabled:cursor-not-allowed aria-disabled:opacity-50',
-        className,
-      )}
-      ref={ref}
-      disabled={disabled}
-      {...props}
-    />
-  ),
-)
-Input.displayName = 'Input'
+const { input } = field()
+
+/**
+ * Bare styled input for building custom fields. Prefer `TextField`, which
+ * wires label, description and error for you.
+ */
+export function Input({ className, ...props }: InputProps) {
+  return <RACInput data-slot="input" {...props} className={input({ className })} />
+}

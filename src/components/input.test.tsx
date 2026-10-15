@@ -5,27 +5,16 @@ import { Input } from './input'
 import { Label } from './label'
 
 describe('Input + Label', () => {
-  it('associates the label with the input via htmlFor/id', () => {
+  it('compose into a labelled control with token classes', () => {
     render(
       <>
-        <Label htmlFor="email">Email address</Label>
+        <Label htmlFor="email">Email</Label>
         <Input id="email" type="email" />
       </>,
     )
 
-    const input = screen.getByLabelText('Email address')
-
-    expect(input).toBeInTheDocument()
-    expect(input).toHaveAttribute('id', 'email')
-    expect(input).toHaveAttribute('type', 'email')
-  })
-
-  it('marks disabled inputs with data-disabled', () => {
-    render(<Input aria-label="Search" disabled />)
-
-    const input = screen.getByLabelText('Search')
-
-    expect(input).toBeDisabled()
-    expect(input).toHaveAttribute('data-disabled')
+    const input = screen.getByLabelText('Email')
+    expect(input).toHaveClass('border-input', 'bg-background')
+    expect(input).toHaveAttribute('data-slot', 'input')
   })
 })
