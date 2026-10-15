@@ -47,7 +47,7 @@ scripts/                             metadata, manifest, token check, release
 3. **Export** it from `src/index.ts`.
 4. **Stories** covering every variant and state, plus a realistic composition.
 5. **Test** behaviour through roles and accessible names. Test variants through `data-*` attributes and token classes.
-6. **Metadata.** Write `src/components/<id>.metadata.ts` per `.ai/metadata.prompt.md` (inputs: `npm run metadata:inputs -- <id>`), then `npm run metadata:stamp -- <id>`. On PRs, agentic adds this commit for you.
+6. **Metadata.** For every component your change makes stale (`npm run metadata:stale`), write `src/components/<id>.metadata.ts` following `.ai/metadata.prompt.md` (inputs: `npm run metadata:inputs -- <id>`), then run `npm run metadata:stamp -- <id>`. Do this in the same change; the `metadata` check is required on `main`. (agentic will take this step over automatically; until then it's yours.)
 7. Run `npm run typecheck && npm test && npm run lint:tokens && npm run metadata:check && npm run build`.
 
 ## Metadata
