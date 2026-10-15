@@ -56,8 +56,10 @@ run('npm', ['run', 'build'], { stdio: 'inherit', env: { ...process.env, RELEASE_
 
 run('git', ['checkout', '--detach'])
 run('git', ['add', '-f', 'dist', 'package.json'])
-run('git', ['-c', 'user.name=github-actions[bot]', '-c', 'user.email=41898282+github-actions[bot]@users.noreply.github.com', 'commit', '-m', `chore(release): ${next}`, '-m', `Built from ${mainSha}.`])
-run('git', ['tag', '-a', next, '-m', next])
+// CI runners have no git identity; both the commit and the annotated tag need one.
+const bot = ['-c', 'user.name=github-actions[bot]', '-c', 'user.email=41898282+github-actions[bot]@users.noreply.github.com']
+run('git', [...bot, 'commit', '-m', `chore(release): ${next}`, '-m', `Built from ${mainSha}.`])
+run('git', [...bot, 'tag', '-a', next, '-m', next])
 run('git', ['push', 'origin', next], { stdio: 'inherit' })
 const notesFrom = tag ? ['--notes-start-tag', tag] : []
 run('gh', ['release', 'create', next, '--verify-tag', '--generate-notes', ...notesFrom], { stdio: 'inherit' })
