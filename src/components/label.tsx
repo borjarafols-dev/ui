@@ -1,23 +1,14 @@
-import * as React from 'react'
+import { Label as RACLabel, type LabelProps as RACLabelProps } from 'react-aria-components'
 
-import * as LabelPrimitive from '@radix-ui/react-label'
+import { field } from '../recipes/field'
 
-import { cn } from '../lib/utils'
+export interface LabelProps extends Omit<RACLabelProps, 'className'> {
+  className?: string
+}
 
-export type LabelProps = React.ComponentPropsWithoutRef<typeof LabelPrimitive.Root>
+const { label } = field()
 
-export const Label = React.forwardRef<React.ElementRef<typeof LabelPrimitive.Root>, LabelProps>(
-  ({ className, ...props }, ref) => (
-    <LabelPrimitive.Root
-      data-slot="label"
-      className={cn(
-        'select-none text-sm font-medium leading-none text-foreground',
-        'peer-disabled:cursor-not-allowed peer-disabled:opacity-70',
-        className,
-      )}
-      ref={ref}
-      {...props}
-    />
-  ),
-)
-Label.displayName = 'Label'
+/** Styled label. Inside a React Aria field it links up automatically. */
+export function Label({ className, ...props }: LabelProps) {
+  return <RACLabel data-slot="label" {...props} className={label({ className })} />
+}

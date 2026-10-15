@@ -1,7 +1,7 @@
 {
-  "name": "ui-library-base",
-  "version": "1.0.0",
-  "description": "React + TypeScript design-system library: Tailwind CSS v4 (CSS-variable tokens), Radix UI primitives, shadcn-style components.",
+  "name": "@brafols/ui",
+  "version": "0.0.0-development",
+  "description": "brafols design-system base: React Aria Components + tailwind-variants on Tailwind CSS v4, themed through CSS-variable tokens. Apps override tokens for their own look.",
   "license": "ISC",
   "type": "module",
   "main": "./dist/index.js",
@@ -10,6 +10,10 @@
     ".": {
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
+    },
+    "./recipes": {
+      "types": "./dist/recipes.d.ts",
+      "import": "./dist/recipes.js"
     },
     "./styles.css": "./dist/styles.css"
   },
@@ -29,16 +33,16 @@
     "react-dom": "^19.0.0"
   },
   "dependencies": {
-    "@radix-ui/react-label": "2.1.17",
-    "@radix-ui/react-slot": "1.5.0",
-    "class-variance-authority": "0.7.1",
     "clsx": "2.1.1",
-    "tailwind-merge": "3.7.0"
+    "react-aria-components": "1.21.1",
+    "tailwind-merge": "3.7.0",
+    "tailwind-variants": "3.3.1"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "10.6.2",
     "@storybook/addon-docs": "10.6.2",
     "@storybook/react-vite": "10.6.2",
+    "@tailwindcss/cli": "4.3.3",
     "@tailwindcss/vite": "4.3.3",
     "@testing-library/jest-dom": "7.0.1",
     "@testing-library/react": "16.3.3",
@@ -51,9 +55,12 @@
     "react-dom": "19.3.1",
     "storybook": "10.6.2",
     "tailwindcss": "4.3.3",
-    "@tailwindcss/cli": "4.3.3",
+    "tailwindcss-react-aria-components": "2.2.0",
     "tsup": "9.0.0",
     "typescript": "5.9.3",
     "vitest": "5.0.4"
-  }
+  },
+  "sideEffects": [
+    "*.css"
+  ]
 }
