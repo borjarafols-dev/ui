@@ -47,6 +47,7 @@ Set the provider's `locale` from the app's own language setting, so library labe
 - **Tokens only.**
   - Never write palette classes (`bg-blue-600`, `text-gray-500`) or hex colors.
   - In app code, use token utilities (`bg-primary`, `text-muted-foreground`, `border-border`).
+  - Status colors: `destructive` for errors, `success` for confirmations (`text-success`, `border-success`, or `bg-success` with `text-success-foreground`). Both are defined for light and dark.
   - The app's look lives in its `theme.css`, which overrides library tokens for both `:root` and `[data-theme='dark']`.
 - **App tokens use the app prefix** (`--alo-hero-bg`) and are defined from library tokens. Never add unprefixed tokens.
 - **`className` on library components is for layout only**: margin, width, flex/grid placement. Don't use it to change colors, borders, radius or typography.
