@@ -7,7 +7,7 @@ export const card = tv({
     header: 'flex flex-col gap-1.5 p-6',
     title: 'text-lg leading-none font-semibold',
     description: 'text-sm text-muted-foreground',
-    content: 'p-6 pt-0',
-    footer: 'flex items-center p-6 pt-0',
+    content: 'p-6 pt-0 first:pt-6',
+    footer: 'flex items-center p-6 pt-0 first:pt-6',
   },
 })
