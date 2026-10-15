@@ -38,6 +38,32 @@ Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and
 - **Astro and other non-React markup:** use recipes from `@brafols/ui/recipes` (`class={button({ variant: 'primary' })}`). Use the React components only inside islands that need interaction.
 - **State styling:** target data attributes (`data-variant`, `data-selected`, `data-invalid`, …), never internal class names.
 
+## Enforcing tokens in your app
+
+The package ships the library's own token check as a bin, so every app runs the same implementation, versioned with the tokens it protects. It fails on palette classes (`bg-blue-600`, `text-white`) and hex colors.
+
+```sh
+npx brafols-ui-check-tokens src
+```
+
+- Pass one or more files or directories. It checks `.ts`, `.tsx` and `.astro` files and skips `*.test.*`, `*.stories.*` and `*.metadata.ts` files, plus `node_modules`, `dist` and dot-directories (`.astro`, `.git`) inside the given directories. Keep checked source out of those.
+- It exits 1 and lists each hit as `file:line  class`, or exits 0 and prints `Token check passed.`
+
+Add it to the app's scripts and run it in CI next to the typecheck and tests:
+
+```json
+{
+  "scripts": {
+    "lint:tokens": "brafols-ui-check-tokens src"
+  }
+}
+```
+
+```yaml
+- run: npm ci
+- run: npm run lint:tokens
+```
+
 ## Copy into your app's AGENTS.md
 
 ```md

@@ -124,6 +124,16 @@ To use the same tokens in an app's own Tailwind utilities:
 }
 ```
 
+## Enforcing tokens in apps
+
+The token check (contract C2) ships as a bin, so apps run the same check in their CI:
+
+```sh
+npx brafols-ui-check-tokens src   # exits 1 listing file:line  class for each palette class or hex color
+```
+
+It checks `.ts`, `.tsx` and `.astro` files and skips tests, stories and metadata, plus `node_modules`, `dist` and dot-directories. See [`docs/USAGE.md`](docs/USAGE.md#enforcing-tokens-in-your-app) for wiring it into CI.
+
 ## For agents
 
 The package ships an agent-facing manifest at `node_modules/@brafols/ui/dist/ai/`:

@@ -17,8 +17,12 @@
     },
     "./styles.css": "./dist/styles.css"
   },
+  "bin": {
+    "brafols-ui-check-tokens": "scripts/check-tokens.mjs"
+  },
   "files": [
-    "dist"
+    "dist",
+    "scripts/check-tokens.mjs"
   ],
   "scripts": {
     "dev": "storybook dev -p 6006",

@@ -3,9 +3,10 @@
 
 import { createHash } from 'node:crypto'
 import { existsSync, readdirSync, readFileSync } from 'node:fs'
-import { join, relative } from 'node:path'
+import { dirname, join, relative } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-export const ROOT = new URL('../..', import.meta.url).pathname
+export const ROOT = join(dirname(fileURLToPath(import.meta.url)), '../..')
 export const COMPONENTS_DIR = join(ROOT, 'src/components')
 export const PROMPT_FILE = join(ROOT, '.ai/metadata.prompt.md')
 export const SCHEMA_FILE = join(ROOT, 'src/metadata/schema.ts')
