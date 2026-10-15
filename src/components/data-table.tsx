@@ -24,6 +24,8 @@ const slots = table()
 /**
  * Read-only data table on React Aria's `Table` (keyboard navigation, row
  * headers). No sorting or pagination yet. The first column is the row header.
+ *
+ * @usage Put the column that identifies the row (name, title) first.
  */
 export function DataTable<T extends object>({
   columns,

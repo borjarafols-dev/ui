@@ -124,6 +124,17 @@ To use the same tokens in an app's own Tailwind utilities:
 }
 ```
 
+## For agents
+
+The package ships an agent-facing manifest at `node_modules/@brafols/ui/dist/ai/`:
+
+- **`components.json`** has two halves:
+  - facts extracted from source on every build: exports, the props each component declares, recipe variants, the tokens it uses, and the version it first shipped in;
+  - model-written metadata: when to use, when not to, alternatives, anti-patterns, accessibility, and an example.
+- **`USAGE.md`** has the rules for building app UI with the library, plus a snippet to paste into an app's `AGENTS.md`.
+
+Contributors and agents working on this repo should read [`AGENTS.md`](AGENTS.md).
+
 ## Styling contract
 
 State is exposed through attributes, never internal classes:
@@ -150,6 +161,9 @@ npm install
 npm run dev        # Storybook on http://localhost:6006
 npm run test       # vitest
 npm run typecheck  # tsc --noEmit
-npm run build      # tsup (JS + d.ts) then Tailwind CLI -> dist/styles.css
+npm run build      # tsup, Tailwind CLI -> dist/styles.css, then dist/ai manifest
+npm run lint:tokens        # no palette/hex colors in components and recipes
+npm run metadata:check     # metadata fresh + every component has stories/test/metadata
+npm run metadata:stale     # what needs regenerating (--json for tools)
 npm run build-storybook
 ```

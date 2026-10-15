@@ -22,11 +22,16 @@
   ],
   "scripts": {
     "dev": "storybook dev -p 6006",
-    "build": "tsup && tailwindcss -i src/styles.css -o dist/styles.css --minify",
+    "build": "tsup && tailwindcss -i src/styles.css -o dist/styles.css --minify && node scripts/build-manifest.mjs",
     "build-storybook": "storybook build",
     "test": "vitest run",
     "typecheck": "tsc --noEmit",
-    "release:dry-run": "node scripts/release.mjs --dry-run"
+    "release:dry-run": "node scripts/release.mjs --dry-run",
+    "metadata:check": "node scripts/metadata.mjs check",
+    "metadata:stale": "node scripts/metadata.mjs stale",
+    "metadata:inputs": "node scripts/metadata.mjs inputs",
+    "metadata:stamp": "node scripts/metadata.mjs stamp",
+    "lint:tokens": "node scripts/check-tokens.mjs"
   },
   "peerDependencies": {
     "react": "^19.0.0",

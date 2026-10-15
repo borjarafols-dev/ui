@@ -10,6 +10,9 @@ export interface ButtonProps extends Omit<RACButtonProps, 'className'>, ButtonVa
  * Button on React Aria Components. Use `onPress` / `isDisabled`, not
  * `onClick` / `disabled`. For links styled as buttons, put the `button()`
  * recipe on a React Aria `Link` or your router's link.
+ *
+ * @usage One primary button per view or section; the rest secondary, outline or ghost.
+ * @usage Not for navigation: links that look like buttons use the `button()` recipe on a link.
  */
 export function Button({ variant, size, className, ...props }: ButtonProps) {
   return (

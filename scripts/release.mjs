@@ -47,11 +47,12 @@ if (dryRun) process.exit(0)
 
 const mainSha = run('git', ['rev-parse', 'HEAD'])
 
-run('npm', ['run', 'build'], { stdio: 'inherit' })
-
+// Version first: the build stamps it into dist/ai/components.json.
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
 pkg.version = version
 writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
+
+run('npm', ['run', 'build'], { stdio: 'inherit', env: { ...process.env, RELEASE_VERSION: version } })
 
 run('git', ['checkout', '--detach'])
 run('git', ['add', '-f', 'dist', 'package.json'])

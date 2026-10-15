@@ -18,7 +18,12 @@ export interface ConfirmDialogProps {
   onCancel: () => void
 }
 
-/** "Are you sure?" prompt built on `Modal`. The confirm button is destructive by default. */
+/**
+ * "Are you sure?" prompt built on `Modal`. The confirm button is destructive by default.
+ *
+ * @usage Only for destructive or irreversible actions; don't confirm routine saves.
+ * @usage The confirm label names the action ("Delete member"), never "OK" or "Yes".
+ */
 export function ConfirmDialog({
   open,
   title,
