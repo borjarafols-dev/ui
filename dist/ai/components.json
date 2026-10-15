@@ -1,0 +1,1735 @@
+{
+  "package": "@brafols/ui",
+  "version": "1.2.0",
+  "generatedBy": "scripts/build-manifest.mjs",
+  "read": "Pick components by metadata (whenToUse / whenNotToUse). Props, variants and tokens are extracted from source and authoritative. See USAGE.md for the rules.",
+  "tokens": [
+    "--gray-1",
+    "--gray-2",
+    "--gray-3",
+    "--gray-4",
+    "--gray-5",
+    "--gray-6",
+    "--gray-7",
+    "--gray-8",
+    "--gray-9",
+    "--gray-10",
+    "--gray-11",
+    "--gray-12",
+    "--brand-1",
+    "--brand-2",
+    "--brand-3",
+    "--brand-4",
+    "--brand-5",
+    "--brand-6",
+    "--brand-7",
+    "--brand-8",
+    "--brand-9",
+    "--brand-10",
+    "--brand-11",
+    "--brand-12",
+    "--background",
+    "--foreground",
+    "--card",
+    "--card-foreground",
+    "--popover",
+    "--popover-foreground",
+    "--primary",
+    "--primary-foreground",
+    "--secondary",
+    "--secondary-foreground",
+    "--muted",
+    "--muted-foreground",
+    "--accent",
+    "--accent-foreground",
+    "--destructive",
+    "--destructive-foreground",
+    "--success",
+    "--success-foreground",
+    "--border",
+    "--input",
+    "--ring",
+    "--overlay",
+    "--radius",
+    "--radius-sm",
+    "--radius-md",
+    "--radius-lg",
+    "--radius-xl",
+    "--spacing",
+    "--font-sans",
+    "--font-mono",
+    "--button-primary-bg",
+    "--button-primary-bg-hover",
+    "--button-primary-fg"
+  ],
+  "components": [
+    {
+      "id": "badge",
+      "exports": [
+        "Badge"
+      ],
+      "import": "import { Badge } from '@brafols/ui'",
+      "description": "Static status label. Not interactive: use `Button` for actions.",
+      "usage": [
+        "Short status or category text (one or two words), never a sentence."
+      ],
+      "props": [
+        {
+          "type": "BadgeProps",
+          "extends": [
+            "React.ComponentPropsWithRef<'span'>",
+            "BadgeVariants"
+          ],
+          "own": []
+        }
+      ],
+      "recipes": [
+        {
+          "name": "badge",
+          "import": "import { badge } from '@brafols/ui/recipes'",
+          "variants": {
+            "variant": [
+              "primary",
+              "secondary",
+              "outline",
+              "destructive"
+            ]
+          },
+          "defaultVariants": {
+            "variant": "primary"
+          }
+        }
+      ],
+      "tokens": [
+        "--border",
+        "--destructive",
+        "--destructive-foreground",
+        "--foreground",
+        "--primary",
+        "--primary-foreground",
+        "--radius",
+        "--secondary",
+        "--secondary-foreground"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Badge",
+        "category": "display",
+        "summary": "A small static label for a status or category, such as \"Active\" or \"Draft\".",
+        "whenToUse": [
+          "Showing a row status in a DataTable cell.",
+          "Tagging an item with a short category or plan name.",
+          "Flagging something as new, deprecated or failed, with variant=\"destructive\" for errors."
+        ],
+        "whenNotToUse": [
+          "Anything clickable: use Button with variant=\"outline\" or \"ghost\".",
+          "Sentences or explanations: use plain text or CardDescription."
+        ],
+        "alternatives": [
+          {
+            "component": "Button",
+            "when": "Pressing the element should do something."
+          }
+        ],
+        "keyProps": [
+          "variant",
+          "children"
+        ],
+        "antiPatterns": [
+          "Attaching onClick to a Badge; it is not focusable or keyboard accessible, so use Button.",
+          "Long text in a badge; keep it to one or two words."
+        ],
+        "accessibility": [
+          "Renders a plain <span>, read as inline text.",
+          "If color alone carries meaning (red vs grey), the text must also say it (\"Failed\", not just a red dot)."
+        ],
+        "example": "<Badge variant={member.active ? 'primary' : 'secondary'}>\n  {member.active ? 'Active' : 'Paused'}\n</Badge>"
+      },
+      "source": "src/components/badge.tsx"
+    },
+    {
+      "id": "button",
+      "exports": [
+        "Button"
+      ],
+      "import": "import { Button } from '@brafols/ui'",
+      "description": "Button on React Aria Components. Use `onPress` / `isDisabled`, not\n`onClick` / `disabled`. For links styled as buttons, put the `button()`\nrecipe on a React Aria `Link` or your router's link.",
+      "usage": [
+        "One primary button per view or section; the rest secondary, outline or ghost.",
+        "Not for navigation: links that look like buttons use the `button()` recipe on a link."
+      ],
+      "props": [
+        {
+          "type": "ButtonProps",
+          "extends": [
+            "Omit<react-aria-components ButtonProps, 'className'>",
+            "ButtonVariants"
+          ],
+          "own": [
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "button",
+          "import": "import { button } from '@brafols/ui/recipes'",
+          "variants": {
+            "variant": [
+              "primary",
+              "secondary",
+              "outline",
+              "ghost",
+              "destructive",
+              "link"
+            ],
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "defaultVariants": {
+            "variant": "primary",
+            "size": "md"
+          }
+        }
+      ],
+      "tokens": [
+        "--accent",
+        "--accent-foreground",
+        "--background",
+        "--border",
+        "--button-primary-bg",
+        "--button-primary-bg-hover",
+        "--button-primary-fg",
+        "--destructive",
+        "--destructive-foreground",
+        "--primary",
+        "--radius",
+        "--ring",
+        "--secondary",
+        "--secondary-foreground"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Button",
+        "category": "action",
+        "summary": "A pressable control that runs an action, such as saving a form or opening a dialog.",
+        "whenToUse": [
+          "Submitting or saving a form.",
+          "Starting an action on the current page, such as opening a modal or deleting an item.",
+          "A destructive action, with variant=\"destructive\" (often followed by a ConfirmDialog).",
+          "Low-emphasis actions in toolbars or table rows, with variant=\"ghost\" or \"outline\"."
+        ],
+        "whenNotToUse": [
+          "Navigating to another page: put the button() recipe on a router link or React Aria Link.",
+          "Showing a status or category: use Badge.",
+          "Toggling an on/off setting: use Checkbox."
+        ],
+        "alternatives": [
+          {
+            "component": "ConfirmDialog",
+            "when": "The action is destructive and needs an explicit \"are you sure\" step."
+          },
+          {
+            "component": "Badge",
+            "when": "The element only shows a label and does nothing when clicked."
+          }
+        ],
+        "keyProps": [
+          "variant",
+          "size",
+          "onPress",
+          "isDisabled",
+          "type"
+        ],
+        "antiPatterns": [
+          "Using onClick or disabled; use onPress and isDisabled, which React Aria handles for touch, keyboard and mouse.",
+          "Wrapping a Button in an <a> for navigation; style the link itself with the button() recipe.",
+          "Several primary buttons in one section; keep one primary and make the rest secondary, outline or ghost.",
+          "Changing colors through className; override the --button-primary-* or semantic tokens instead."
+        ],
+        "accessibility": [
+          "Handles keyboard activation, focus-visible ring and the disabled state for you.",
+          "An icon-only button needs an aria-label."
+        ],
+        "example": "<Button variant=\"primary\" onPress={save} isDisabled={!isDirty}>\n  Save changes\n</Button>"
+      },
+      "source": "src/components/button.tsx"
+    },
+    {
+      "id": "card",
+      "exports": [
+        "Card",
+        "CardHeader",
+        "CardTitle",
+        "CardDescription",
+        "CardContent",
+        "CardFooter"
+      ],
+      "import": "import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from '@brafols/ui'",
+      "description": "Presentational container. Compose with CardHeader / CardContent / CardFooter.",
+      "props": [],
+      "recipes": [
+        {
+          "name": "card",
+          "import": "import { card } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "header",
+            "title",
+            "description",
+            "content",
+            "footer"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--border",
+        "--card",
+        "--card-foreground",
+        "--muted-foreground",
+        "--radius"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Card",
+        "category": "layout",
+        "summary": "A bordered surface that groups related content, built from CardHeader, CardTitle, CardDescription, CardContent and CardFooter.",
+        "whenToUse": [
+          "Grouping a form or a settings section on a page.",
+          "A tile in a grid of items, such as plans, projects or stats.",
+          "Framing a small self-contained flow, such as sign-in."
+        ],
+        "whenNotToUse": [
+          "Content that must block the page until the user acts: use Modal.",
+          "A list with no items: use EmptyState (inside a Card if the section needs the frame).",
+          "Tabular data: use DataTable, optionally inside a Card."
+        ],
+        "alternatives": [
+          {
+            "component": "Modal",
+            "when": "The content needs the user’s full attention and blocks the page."
+          },
+          {
+            "component": "EmptyState",
+            "when": "The section exists but has nothing to show yet."
+          }
+        ],
+        "keyProps": [
+          "className",
+          "children"
+        ],
+        "antiPatterns": [
+          "Putting content directly in Card and expecting padding; Card has none, so wrap content in CardContent or CardHeader.",
+          "Restyling the surface with bg-*/border-* classes; override --card or --border tokens instead.",
+          "Nesting cards inside cards for spacing; use layout (grid/gap) inside one CardContent.",
+          "Adding pt-6 to a CardContent or CardFooter with no CardHeader above it; they already pad their top when they are the first child."
+        ],
+        "accessibility": [
+          "Purely presentational; CardTitle renders an <h3>, so make sure that heading level fits the page outline."
+        ],
+        "example": "<Card>\n  <CardHeader>\n    <CardTitle>Billing</CardTitle>\n    <CardDescription>Your plan renews on 1 November.</CardDescription>\n  </CardHeader>\n  <CardContent className=\"grid gap-4\">…</CardContent>\n  <CardFooter className=\"justify-end\">\n    <Button>Update plan</Button>\n  </CardFooter>\n</Card>"
+      },
+      "source": "src/components/card.tsx"
+    },
+    {
+      "id": "checkbox",
+      "exports": [
+        "Checkbox"
+      ],
+      "import": "import { Checkbox } from '@brafols/ui'",
+      "description": "Labelled checkbox. `isSelected` / boolean `onChange`; supports `isIndeterminate`.",
+      "props": [
+        {
+          "type": "CheckboxProps",
+          "extends": [
+            "Omit<react-aria-components CheckboxProps, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "checkbox",
+          "import": "import { checkbox } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "box",
+            "icon"
+          ],
+          "variants": {
+            "checked": [
+              "true"
+            ],
+            "focusVisible": [
+              "true"
+            ],
+            "invalid": [
+              "true"
+            ]
+          },
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--primary",
+        "--primary-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Checkbox",
+        "category": "form",
+        "summary": "A labelled checkbox for a yes/no choice or for picking items from a set.",
+        "whenToUse": [
+          "Accepting terms or opting into emails in a form.",
+          "Choosing several items from a short list.",
+          "A \"select all\" control, with isIndeterminate when only some items are selected."
+        ],
+        "whenNotToUse": [
+          "Picking exactly one of many options: use Select.",
+          "Running an action immediately on press: use Button."
+        ],
+        "alternatives": [
+          {
+            "component": "Select",
+            "when": "Only one option can be chosen."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "isSelected",
+          "defaultSelected",
+          "onChange",
+          "isIndeterminate",
+          "isDisabled"
+        ],
+        "antiPatterns": [
+          "Reading event.target.checked in onChange; onChange receives the boolean directly.",
+          "Using a Checkbox without its label prop and adding a separate text node; pass label so the whole row is clickable and named."
+        ],
+        "accessibility": [
+          "Renders a real checkbox input with its label, so it is keyboard and screen-reader accessible.",
+          "Announces the indeterminate state; the caller must still describe what \"select all\" covers."
+        ],
+        "example": "<Checkbox label=\"Email me about new classes\" isSelected={optIn} onChange={setOptIn} />"
+      },
+      "source": "src/components/checkbox.tsx"
+    },
+    {
+      "id": "confirm-dialog",
+      "exports": [
+        "ConfirmDialog"
+      ],
+      "import": "import { ConfirmDialog } from '@brafols/ui'",
+      "description": "\"Are you sure?\" prompt built on `Modal`. The confirm button is destructive by default.",
+      "usage": [
+        "Only for destructive or irreversible actions; don't confirm routine saves.",
+        "The confirm label names the action (\"Delete member\"), never \"OK\" or \"Yes\"."
+      ],
+      "props": [
+        {
+          "type": "ConfirmDialogProps",
+          "extends": [],
+          "own": [
+            {
+              "name": "open",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "message",
+              "type": "ReactNode",
+              "optional": false
+            },
+            {
+              "name": "confirmLabel",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Defaults to a localised generic label; prefer a label that names the action."
+            },
+            {
+              "name": "cancelLabel",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Defaults to a localised label."
+            },
+            {
+              "name": "pendingLabel",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Shown on the confirm button while `isPending`. Defaults to a localised label."
+            },
+            {
+              "name": "confirmVariant",
+              "type": "\"primary\" | \"destructive\" | undefined",
+              "optional": true
+            },
+            {
+              "name": "isPending",
+              "type": "boolean | undefined",
+              "optional": true,
+              "doc": "Disables both buttons and shows `pendingLabel` while the action runs."
+            },
+            {
+              "name": "onConfirm",
+              "type": "() => void",
+              "optional": false
+            },
+            {
+              "name": "onCancel",
+              "type": "() => void",
+              "optional": false
+            }
+          ]
+        }
+      ],
+      "recipes": [],
+      "tokens": [
+        "--muted-foreground"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "ConfirmDialog",
+        "category": "overlay",
+        "summary": "A modal \"are you sure?\" step with a cancel and a confirm button, destructive by default.",
+        "whenToUse": [
+          "Before deleting, removing or revoking something that can’t be undone.",
+          "Before an irreversible action with side effects for other people, such as cancelling a booking."
+        ],
+        "whenNotToUse": [
+          "Routine saves or reversible changes: just do them, and offer undo if needed.",
+          "Collecting input before acting: use Modal with a form."
+        ],
+        "alternatives": [
+          {
+            "component": "Modal",
+            "when": "The step needs more than a yes/no, such as a reason or a form."
+          }
+        ],
+        "keyProps": [
+          "open",
+          "title",
+          "message",
+          "confirmLabel",
+          "onConfirm",
+          "onCancel",
+          "isPending"
+        ],
+        "antiPatterns": [
+          "Confirm labels like \"OK\" or \"Yes\"; name the action (\"Delete member\").",
+          "Closing the dialog before the action finishes; keep it open with isPending until the request settles.",
+          "Using confirmVariant=\"primary\" for a destructive action; leave the destructive default.",
+          "Passing translated \"Cancel\" or \"Working…\" labels by hand; the defaults follow React Aria’s locale, so pass only labels that differ."
+        ],
+        "accessibility": [
+          "Built on Modal: focus trap, Escape to cancel, and focus returns to the trigger.",
+          "While isPending, both buttons are disabled and clicking the backdrop does nothing.",
+          "Default cancel, confirm and pending labels are localised (en, es, ca) from React Aria’s locale; the caller still provides a confirmLabel naming the action."
+        ],
+        "example": "<ConfirmDialog\n  open={isOpen}\n  title=\"Delete this member?\"\n  message=\"Their history stays, but they lose access right away.\"\n  confirmLabel=\"Delete member\"\n  isPending={remove.isPending}\n  onConfirm={() => remove.mutate(member.id)}\n  onCancel={close}\n/>"
+      },
+      "source": "src/components/confirm-dialog.tsx"
+    },
+    {
+      "id": "data-table",
+      "exports": [
+        "DataTable"
+      ],
+      "import": "import { DataTable } from '@brafols/ui'",
+      "description": "Read-only data table on React Aria's `Table` (keyboard navigation, row\nheaders). No sorting or pagination yet. The first column is the row header.",
+      "usage": [
+        "Put the column that identifies the row (name, title) first."
+      ],
+      "props": [
+        {
+          "type": "DataTableProps",
+          "extends": [],
+          "own": [
+            {
+              "name": "columns",
+              "type": "DataTableColumn<T>[]",
+              "optional": false
+            },
+            {
+              "name": "data",
+              "type": "T[]",
+              "optional": false
+            },
+            {
+              "name": "keyField",
+              "type": "keyof T & string",
+              "optional": false
+            },
+            {
+              "name": "aria-label",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Accessible name of the table. Defaults to a localised name."
+            },
+            {
+              "name": "emptyMessage",
+              "type": "ReactNode",
+              "optional": true,
+              "doc": "Shown when `data` is empty. Defaults to a localised message."
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "table",
+          "import": "import { table } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "header",
+            "column",
+            "row",
+            "cell",
+            "empty"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--border",
+        "--foreground",
+        "--muted",
+        "--muted-foreground",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "DataTable",
+        "category": "data",
+        "summary": "A read-only, keyboard-navigable table rendered from columns and rows of data.",
+        "whenToUse": [
+          "Lists of records with several comparable fields, such as members, invoices or bookings.",
+          "Admin views where people scan rows and compare columns."
+        ],
+        "whenNotToUse": [
+          "A handful of items with one or two fields: use a simple list or Cards.",
+          "No rows yet: DataTable shows emptyMessage, but for a whole empty section use EmptyState.",
+          "Sorting or pagination: not supported yet, so request it in the library instead of wrapping another table."
+        ],
+        "alternatives": [
+          {
+            "component": "Card",
+            "when": "Items are few and each needs its own actions or rich content."
+          },
+          {
+            "component": "EmptyState",
+            "when": "The section has no data and needs a call to action."
+          }
+        ],
+        "keyProps": [
+          "columns",
+          "data",
+          "keyField",
+          "aria-label",
+          "emptyMessage"
+        ],
+        "antiPatterns": [
+          "Leaving aria-label at its generic localised default; name what the table lists (\"Members\").",
+          "Putting the identifying column (name, title) anywhere but first; the first column is the row header.",
+          "Formatting values inline in data; use a column render function, for example a Badge for status."
+        ],
+        "accessibility": [
+          "Built on React Aria Table: grid semantics, arrow-key navigation and row headers.",
+          "The default name and empty message are localised (en, es, ca) from React Aria’s locale.",
+          "The caller provides the accessible name (aria-label) and readable cell content."
+        ],
+        "example": "<DataTable\n  aria-label=\"Members\"\n  keyField=\"id\"\n  data={members}\n  columns={[\n    { key: 'name', header: 'Name' },\n    { key: 'email', header: 'Email' },\n    { key: 'status', header: 'Status', render: (v) => <Badge>{String(v)}</Badge> },\n  ]}\n/>"
+      },
+      "source": "src/components/data-table.tsx"
+    },
+    {
+      "id": "empty-state",
+      "exports": [
+        "EmptyState"
+      ],
+      "import": "import { EmptyState } from '@brafols/ui'",
+      "description": "Placeholder for a collection with no items.",
+      "props": [
+        {
+          "type": "EmptyStateProps",
+          "extends": [],
+          "own": [
+            {
+              "name": "title",
+              "type": "string",
+              "optional": false
+            },
+            {
+              "name": "description",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "action",
+              "type": "ReactNode",
+              "optional": true
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "emptyState",
+          "import": "import { emptyState } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "title",
+            "description",
+            "action"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--foreground",
+        "--muted-foreground"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "EmptyState",
+        "category": "feedback",
+        "summary": "A centered message for a list or section that has no items yet, with an optional action.",
+        "whenToUse": [
+          "A list, table or dashboard section with no data yet.",
+          "Search or filter results that came back empty."
+        ],
+        "whenNotToUse": [
+          "While data is loading: use Spinner.",
+          "Errors from a failed request: show an error message with a retry action instead of \"nothing here\"."
+        ],
+        "alternatives": [
+          {
+            "component": "Spinner",
+            "when": "The data is still loading."
+          }
+        ],
+        "keyProps": [
+          "title",
+          "description",
+          "action"
+        ],
+        "antiPatterns": [
+          "Showing EmptyState before the first load finishes; show Spinner until the request settles.",
+          "A vague title like \"No data\"; say what is missing (\"No members yet\")."
+        ],
+        "accessibility": [
+          "The title renders as an <h3>; make sure that fits the page heading outline."
+        ],
+        "example": "<EmptyState\n  title=\"No members yet\"\n  description=\"Invite your first member to get started.\"\n  action={<Button onPress={openInvite}>Invite member</Button>}\n/>"
+      },
+      "source": "src/components/empty-state.tsx"
+    },
+    {
+      "id": "input",
+      "exports": [
+        "Input"
+      ],
+      "import": "import { Input } from '@brafols/ui'",
+      "description": "Bare styled input for building custom fields. Prefer `TextField`, which\nwires label, description and error for you.",
+      "usage": [
+        "Only when composing a custom field; always pair it with a Label."
+      ],
+      "props": [
+        {
+          "type": "InputProps",
+          "extends": [
+            "Omit<react-aria-components InputProps, 'className'>"
+          ],
+          "own": [
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Input",
+        "category": "form",
+        "summary": "A bare styled text input for composing a custom field.",
+        "whenToUse": [
+          "Building a custom field layout that TextField can’t express, paired with Label."
+        ],
+        "whenNotToUse": [
+          "Any ordinary text, email or password field: use TextField, which wires label, description and error.",
+          "Numbers: use NumberField. Search boxes: use SearchField."
+        ],
+        "alternatives": [
+          {
+            "component": "TextField",
+            "when": "Almost always: a labelled single-line field with error handling."
+          },
+          {
+            "component": "NumberField",
+            "when": "The value is numeric."
+          },
+          {
+            "component": "SearchField",
+            "when": "The field filters or searches."
+          }
+        ],
+        "keyProps": [
+          "id",
+          "type",
+          "placeholder",
+          "value",
+          "onChange"
+        ],
+        "antiPatterns": [
+          "Using Input without a Label; every input needs an accessible name.",
+          "Rebuilding error and description handling around Input; use TextField."
+        ],
+        "accessibility": [
+          "Provides no label, description or error wiring; the caller must link a Label via htmlFor/id."
+        ],
+        "example": "<Label htmlFor=\"coupon\">Coupon code</Label>\n<Input id=\"coupon\" name=\"coupon\" />"
+      },
+      "source": "src/components/input.tsx"
+    },
+    {
+      "id": "label",
+      "exports": [
+        "Label"
+      ],
+      "import": "import { Label } from '@brafols/ui'",
+      "description": "Styled label. Inside a React Aria field it links up automatically.",
+      "props": [
+        {
+          "type": "LabelProps",
+          "extends": [
+            "Omit<react-aria-components LabelProps, 'className'>"
+          ],
+          "own": [
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Label",
+        "category": "form",
+        "summary": "A styled form label that links to its control automatically inside React Aria fields.",
+        "whenToUse": [
+          "Labelling a control in a custom field built from Input or other React Aria parts."
+        ],
+        "whenNotToUse": [
+          "Library fields (TextField, Select, NumberField, …): pass their label prop instead."
+        ],
+        "alternatives": [
+          {
+            "component": "TextField",
+            "when": "A standard labelled text field is enough."
+          }
+        ],
+        "keyProps": [
+          "htmlFor",
+          "children"
+        ],
+        "antiPatterns": [
+          "Adding a Label next to a library field that already has a label prop, which double-labels it.",
+          "Using Label as general-purpose text styling; use typography classes on the right element instead."
+        ],
+        "accessibility": [
+          "Outside a React Aria field, link it to its control with htmlFor/id."
+        ],
+        "example": "<Label htmlFor=\"coupon\">Coupon code</Label>\n<Input id=\"coupon\" />"
+      },
+      "source": "src/components/label.tsx"
+    },
+    {
+      "id": "modal",
+      "exports": [
+        "Modal"
+      ],
+      "import": "import { Modal } from '@brafols/ui'",
+      "description": "Modal dialog with focus trap, focus restore, scroll lock and Escape to close.",
+      "usage": [
+        "For short, focused tasks that block the page (an edit form, a decision); not for long content."
+      ],
+      "props": [
+        {
+          "type": "ModalProps",
+          "extends": [],
+          "own": [
+            {
+              "name": "open",
+              "type": "boolean",
+              "optional": false
+            },
+            {
+              "name": "onClose",
+              "type": "() => void",
+              "optional": false
+            },
+            {
+              "name": "title",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "aria-label",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Accessible name when there is no visible `title`."
+            },
+            {
+              "name": "isDismissable",
+              "type": "boolean | undefined",
+              "optional": true,
+              "doc": "Close when the backdrop is clicked. Escape always closes."
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "children",
+              "type": "ReactNode",
+              "optional": false
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "modal",
+          "import": "import { modal } from '@brafols/ui/recipes'",
+          "slots": [
+            "overlay",
+            "dialog",
+            "title"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--border",
+        "--foreground",
+        "--overlay",
+        "--popover",
+        "--popover-foreground",
+        "--radius"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Modal",
+        "category": "overlay",
+        "summary": "A dialog over the page that traps focus until the user finishes or dismisses it.",
+        "whenToUse": [
+          "A short edit form opened from a list or detail view.",
+          "A focused decision that needs more than yes/no."
+        ],
+        "whenNotToUse": [
+          "A plain \"are you sure?\" before a destructive action: use ConfirmDialog.",
+          "Long or primary content: give it its own page.",
+          "Grouping content on a page: use Card."
+        ],
+        "alternatives": [
+          {
+            "component": "ConfirmDialog",
+            "when": "The step is only a yes/no confirmation."
+          },
+          {
+            "component": "Card",
+            "when": "The content can live on the page without blocking it."
+          }
+        ],
+        "keyProps": [
+          "open",
+          "onClose",
+          "title",
+          "aria-label",
+          "isDismissable"
+        ],
+        "antiPatterns": [
+          "No title and no aria-label; the dialog then has no accessible name.",
+          "Toggling open without handling onClose; Escape and backdrop clicks call onClose, so update your state there.",
+          "Setting the theme on an inner element; modals render on <body>, so data-theme belongs on <html>."
+        ],
+        "accessibility": [
+          "Handles the focus trap, focus restore, scroll lock and Escape to close.",
+          "Uses title as the accessible name; without a title, pass aria-label."
+        ],
+        "example": "<Modal open={isOpen} onClose={close} title=\"Edit profile\">\n  <form className=\"grid gap-4\" onSubmit={submit}>\n    <TextField label=\"Name\" defaultValue={user.name} />\n    <div className=\"flex justify-end gap-3\">\n      <Button variant=\"secondary\" onPress={close}>Cancel</Button>\n      <Button type=\"submit\">Save</Button>\n    </div>\n  </form>\n</Modal>"
+      },
+      "source": "src/components/modal.tsx"
+    },
+    {
+      "id": "number-field",
+      "exports": [
+        "NumberField"
+      ],
+      "import": "import { NumberField } from '@brafols/ui'",
+      "description": "Numeric field. Value-based numeric `onChange`. Pass\n`formatOptions={{ useGrouping: false }}` for year-like values so `2024`\nisn't shown as `2,024`.",
+      "props": [
+        {
+          "type": "NumberFieldProps",
+          "extends": [
+            "Omit<react-aria-components NumberFieldProps, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "error",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "placeholder",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "inputRef",
+              "type": "Ref<HTMLInputElement> | undefined",
+              "optional": true
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "NumberField",
+        "category": "form",
+        "summary": "A labelled field for numeric values, with locale-aware formatting and parsing.",
+        "whenToUse": [
+          "Quantities, prices, ages or counts.",
+          "Years, with formatOptions={{ useGrouping: false }} so 2024 isn’t shown as 2,024."
+        ],
+        "whenNotToUse": [
+          "Codes that only look numeric (postcodes, phone numbers, IDs): use TextField.",
+          "Choosing from a few fixed values: use Select."
+        ],
+        "alternatives": [
+          {
+            "component": "TextField",
+            "when": "The value is digits but not a number you calculate with."
+          },
+          {
+            "component": "Select",
+            "when": "Only a few specific values are allowed."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "value",
+          "onChange",
+          "minValue",
+          "maxValue",
+          "formatOptions",
+          "error"
+        ],
+        "antiPatterns": [
+          "Parsing a string from onChange; it already receives a number (NaN when empty).",
+          "Formatting years with default options, which adds a thousands separator."
+        ],
+        "accessibility": [
+          "Handles the label, description and error wiring, plus arrow-key stepping."
+        ],
+        "example": "<NumberField label=\"Seats\" minValue={1} value={seats} onChange={setSeats} />"
+      },
+      "source": "src/components/number-field.tsx"
+    },
+    {
+      "id": "search-field",
+      "exports": [
+        "SearchField"
+      ],
+      "import": "import { SearchField } from '@brafols/ui'",
+      "description": "Search field. Value-based `onChange`; shows a clear button while it has a\nvalue. Give it a `label` or an `aria-label`.",
+      "props": [
+        {
+          "type": "SearchFieldProps",
+          "extends": [
+            "Omit<react-aria-components SearchFieldProps, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "placeholder",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "clearLabel",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Accessible name of the clear button. Defaults to a localised label."
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "SearchField",
+        "category": "form",
+        "summary": "A search input with a clear button that appears while it has a value.",
+        "whenToUse": [
+          "Filtering a list or table as the user types.",
+          "A search box above results."
+        ],
+        "whenNotToUse": [
+          "Ordinary form text: use TextField."
+        ],
+        "alternatives": [
+          {
+            "component": "TextField",
+            "when": "The input is form data, not a query."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "aria-label",
+          "value",
+          "onChange",
+          "onSubmit",
+          "placeholder"
+        ],
+        "antiPatterns": [
+          "No label and no aria-label; a placeholder is not an accessible name.",
+          "Running a network request on every keystroke; debounce the value from onChange."
+        ],
+        "accessibility": [
+          "Escape clears the field, and the clear button is labelled (a localised default from React Aria’s locale, or clearLabel).",
+          "The caller provides label or aria-label."
+        ],
+        "example": "<SearchField aria-label=\"Search members\" placeholder=\"Name or email\" value={query} onChange={setQuery} />"
+      },
+      "source": "src/components/search-field.tsx"
+    },
+    {
+      "id": "select",
+      "exports": [
+        "Select"
+      ],
+      "import": "import { Select } from '@brafols/ui'",
+      "description": "Accessible listbox in a popover, not a native `<select>`. Use `selectedKey`\n/ `onSelectionChange`. In tests, click the trigger and then the `option`;\n`userEvent.selectOptions` does not work.",
+      "usage": [
+        "For 4+ options; with 2–3 options a set of buttons or checkboxes is often clearer."
+      ],
+      "props": [
+        {
+          "type": "SelectProps",
+          "extends": [
+            "Omit<react-aria-components SelectProps<SelectOption>, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "error",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "options",
+              "type": "SelectOption[]",
+              "optional": false
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        },
+        {
+          "name": "select",
+          "import": "import { select } from '@brafols/ui/recipes'",
+          "slots": [
+            "trigger",
+            "value",
+            "icon",
+            "popover",
+            "listbox",
+            "item"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--accent",
+        "--accent-foreground",
+        "--background",
+        "--border",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--popover",
+        "--popover-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Select",
+        "category": "form",
+        "summary": "A labelled dropdown for picking one option from a list, built as a listbox in a popover.",
+        "whenToUse": [
+          "Picking one value from four or more options, such as a plan, role or country.",
+          "Form fields where the options are known up front."
+        ],
+        "whenNotToUse": [
+          "Two or three options: buttons or checkboxes are usually clearer.",
+          "Picking several options: use Checkbox items.",
+          "Free text or long searchable lists: use TextField or SearchField."
+        ],
+        "alternatives": [
+          {
+            "component": "Checkbox",
+            "when": "Several options can be selected."
+          },
+          {
+            "component": "SearchField",
+            "when": "The list is long enough that people need to search it."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "options",
+          "selectedKey",
+          "onSelectionChange",
+          "placeholder",
+          "error"
+        ],
+        "antiPatterns": [
+          "Treating it as a native <select> (value/onChange, userEvent.selectOptions); use selectedKey/onSelectionChange, and in tests click the trigger and then the option.",
+          "Passing options without stable value strings; value is the key emitted by onSelectionChange."
+        ],
+        "accessibility": [
+          "Handles listbox semantics, typeahead, keyboard navigation and focus management.",
+          "The popover renders on <body>, so the theme must be set on <html>."
+        ],
+        "example": "<Select\n  label=\"Plan\"\n  placeholder=\"Choose a plan\"\n  options={[{ value: 'monthly', label: 'Monthly' }, { value: 'yearly', label: 'Yearly' }]}\n  selectedKey={plan}\n  onSelectionChange={(key) => setPlan(String(key))}\n/>"
+      },
+      "source": "src/components/select.tsx"
+    },
+    {
+      "id": "spinner",
+      "exports": [
+        "Spinner"
+      ],
+      "import": "import { Spinner } from '@brafols/ui'",
+      "description": "Indeterminate loading indicator.",
+      "props": [
+        {
+          "type": "SpinnerProps",
+          "extends": [
+            "SpinnerVariants"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true,
+              "doc": "Accessible name announced to screen readers. Defaults to a localised label."
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "spinner",
+          "import": "import { spinner } from '@brafols/ui/recipes'",
+          "variants": {
+            "size": [
+              "sm",
+              "md",
+              "lg"
+            ]
+          },
+          "defaultVariants": {
+            "size": "md"
+          }
+        }
+      ],
+      "tokens": [
+        "--muted",
+        "--primary",
+        "--radius"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "Spinner",
+        "category": "feedback",
+        "summary": "An indeterminate loading indicator announced to screen readers.",
+        "whenToUse": [
+          "A section or page is waiting for data.",
+          "A short wait with no known progress."
+        ],
+        "whenNotToUse": [
+          "A button’s own pending state: disable the Button and change its label (as ConfirmDialog does).",
+          "Loaded data that came back empty: use EmptyState."
+        ],
+        "alternatives": [
+          {
+            "component": "EmptyState",
+            "when": "Loading has finished and there is nothing to show."
+          }
+        ],
+        "keyProps": [
+          "size",
+          "label"
+        ],
+        "antiPatterns": [
+          "Several spinners on one screen for the same request; show one for the region that is loading.",
+          "Leaving the generic localised default label when the context matters (\"Loading invoices\")."
+        ],
+        "accessibility": [
+          "Renders role=\"status\" with an accessible label, localised (en, es, ca) from React Aria’s locale by default.",
+          "The caller can make the label specific."
+        ],
+        "example": "{query.isLoading ? <Spinner label=\"Loading members\" /> : <MembersTable data={query.data} />}"
+      },
+      "source": "src/components/spinner.tsx"
+    },
+    {
+      "id": "text-area",
+      "exports": [
+        "TextArea"
+      ],
+      "import": "import { TextArea } from '@brafols/ui'",
+      "description": "Multi-line text field. Value-based `onChange`. `error` marks it invalid.",
+      "props": [
+        {
+          "type": "TextAreaProps",
+          "extends": [
+            "Omit<react-aria-components TextFieldProps, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "error",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "placeholder",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "rows",
+              "type": "number | undefined",
+              "optional": true
+            },
+            {
+              "name": "textAreaRef",
+              "type": "Ref<HTMLTextAreaElement> | undefined",
+              "optional": true
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "TextArea",
+        "category": "form",
+        "summary": "A labelled multi-line text field with description and error built in.",
+        "whenToUse": [
+          "Free-form text longer than one line, such as messages, notes or descriptions."
+        ],
+        "whenNotToUse": [
+          "Single-line values such as names or emails: use TextField."
+        ],
+        "alternatives": [
+          {
+            "component": "TextField",
+            "when": "The value fits on one line."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "value",
+          "onChange",
+          "rows",
+          "description",
+          "error"
+        ],
+        "antiPatterns": [
+          "Reading event.target.value in onChange; it receives the string directly.",
+          "Showing validation messages outside the field; pass error so it is announced and linked."
+        ],
+        "accessibility": [
+          "Handles label, description and error wiring, including aria-invalid."
+        ],
+        "example": "<TextArea label=\"Message\" rows={4} value={message} onChange={setMessage} error={errors.message} />"
+      },
+      "source": "src/components/text-area.tsx"
+    },
+    {
+      "id": "text-field",
+      "exports": [
+        "TextField"
+      ],
+      "import": "import { TextField } from '@brafols/ui'",
+      "description": "Single-line text field. Value-based `onChange`. `error` marks it invalid.",
+      "props": [
+        {
+          "type": "TextFieldProps",
+          "extends": [
+            "Omit<react-aria-components TextFieldProps, 'className' | 'children'>"
+          ],
+          "own": [
+            {
+              "name": "label",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "description",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "error",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "placeholder",
+              "type": "string | undefined",
+              "optional": true
+            },
+            {
+              "name": "inputRef",
+              "type": "Ref<HTMLInputElement> | undefined",
+              "optional": true
+            },
+            {
+              "name": "className",
+              "type": "string | undefined",
+              "optional": true
+            }
+          ]
+        }
+      ],
+      "recipes": [
+        {
+          "name": "field",
+          "import": "import { field } from '@brafols/ui/recipes'",
+          "slots": [
+            "root",
+            "label",
+            "input",
+            "description",
+            "error"
+          ],
+          "variants": {},
+          "defaultVariants": {}
+        }
+      ],
+      "tokens": [
+        "--background",
+        "--destructive",
+        "--foreground",
+        "--input",
+        "--muted-foreground",
+        "--radius",
+        "--ring"
+      ],
+      "since": "1.0.0",
+      "metadataFresh": true,
+      "metadata": {
+        "component": "TextField",
+        "category": "form",
+        "summary": "A labelled single-line text field with description and error built in.",
+        "whenToUse": [
+          "Names, emails, passwords, URLs and other single-line text.",
+          "Any form field that shows a validation error."
+        ],
+        "whenNotToUse": [
+          "Multi-line text: use TextArea.",
+          "Numbers you calculate with: use NumberField.",
+          "Search and filter boxes: use SearchField."
+        ],
+        "alternatives": [
+          {
+            "component": "TextArea",
+            "when": "The text can span several lines."
+          },
+          {
+            "component": "NumberField",
+            "when": "The value is a number."
+          },
+          {
+            "component": "SearchField",
+            "when": "The field filters or searches."
+          }
+        ],
+        "keyProps": [
+          "label",
+          "type",
+          "value",
+          "onChange",
+          "description",
+          "error",
+          "isRequired"
+        ],
+        "antiPatterns": [
+          "Reading event.target.value in onChange; it receives the string directly.",
+          "Building a field from Input + Label + a <p> for errors; TextField already wires them accessibly.",
+          "Using placeholder as the label; always pass label (or aria-label)."
+        ],
+        "accessibility": [
+          "Handles the label, description and error wiring, including aria-invalid when error is set.",
+          "Provide autocomplete hints (autoComplete=\"email\") where they apply."
+        ],
+        "example": "<TextField label=\"Email\" type=\"email\" autoComplete=\"email\" value={email} onChange={setEmail} error={errors.email} />"
+      },
+      "source": "src/components/text-field.tsx"
+    }
+  ]
+}
