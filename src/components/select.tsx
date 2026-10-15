@@ -33,6 +33,8 @@ const slots = select()
  * Accessible listbox in a popover, not a native `<select>`. Use `selectedKey`
  * / `onSelectionChange`. In tests, click the trigger and then the `option`;
  * `userEvent.selectOptions` does not work.
+ *
+ * @usage For 4+ options; with 2–3 options a set of buttons or checkboxes is often clearer.
  */
 export function Select({ label, error, options, className, isInvalid, ...props }: SelectProps) {
   return (

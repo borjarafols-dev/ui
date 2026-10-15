@@ -2,6 +2,7 @@ name: CI
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
   push:
     branches: [main]
 
@@ -17,4 +18,21 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      - run: npm run lint:tokens
       - run: npm run build
+
+  # Its own job so it can be a required check by name. With the
+  # skip-metadata label it still runs and passes, so the check stays green.
+  metadata:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - name: Skipped by label
+        if: contains(github.event.pull_request.labels.*.name, 'skip-metadata')
+        run: echo "skip-metadata label set; stale metadata allowed for this PR."
+      - name: Check metadata is fresh
+        if: ${{ !contains(github.event.pull_request.labels.*.name, 'skip-metadata') }}
+        run: node scripts/metadata.mjs check

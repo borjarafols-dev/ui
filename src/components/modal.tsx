@@ -17,7 +17,11 @@ export interface ModalProps {
 
 const slots = modal()
 
-/** Modal dialog with focus trap, focus restore, scroll lock and Escape to close. */
+/**
+ * Modal dialog with focus trap, focus restore, scroll lock and Escape to close.
+ *
+ * @usage For short, focused tasks that block the page (an edit form, a decision); not for long content.
+ */
 export function Modal({
   open,
   onClose,
