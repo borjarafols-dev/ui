@@ -1,9 +1,11 @@
 import type { Decorator, Preview } from '@storybook/react-vite'
 
+// Preflight (wrapped in @layer base) is included in the preview only, for
+// consistent viewing between Storybook and a typical consumer app. It is NOT
+// part of the shipped CSS. Must be imported before src/styles.css so the
+// base layer is ordered below utilities.
+import './preview.css'
 import '../src/styles.css'
-// Preflight is included in the preview only, for consistent viewing between
-// Storybook and a typical consumer app. It is NOT part of the shipped CSS.
-import 'tailwindcss/preflight.css'
 
 const withTheme: Decorator = (Story, context) => {
   const theme = (context.globals.theme as string | undefined) ?? 'light'

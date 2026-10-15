@@ -1,0 +1,11 @@
+/* Preflight for the Storybook preview only — same as a full `tailwindcss`
+ * import, but without duplicating theme/utilities (those come from
+ * src/styles.css). The layer-order statement must run before any stylesheet
+ * declares a layer: it pins theme < base < components < utilities so the
+ * utility classes in src/styles.css override preflight's element resets.
+ * Importing 'tailwindcss/preflight.css' bare from preview.tsx would leave its
+ * rules UNLAYERED, and unlayered CSS beats every layer — preflight's
+ * `button { background-color: transparent }` would win over bg-button-primary.
+ */
+@layer theme, base, components, utilities;
+@import 'tailwindcss/preflight.css' layer(base);

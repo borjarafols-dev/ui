@@ -10,6 +10,12 @@
  * No preflight: only the theme + utilities layers are imported.
  * ----------------------------------------------------------------------- */
 
+/* Pin Tailwind's canonical layer order up front (same statement as
+ * tailwindcss/index.css) so base-layer resets — preflight in a consumer app
+ * or the Storybook preview — always sort below utilities, regardless of the
+ * order stylesheets are imported in. */
+@layer theme, base, components, utilities;
+
 @import 'tailwindcss/theme.css' layer(theme);
 @import 'tailwindcss/utilities.css' layer(utilities);
 
