@@ -89,7 +89,7 @@ Use the React components only inside islands that need interaction.
 Tokens come in three layers, following shadcn/Radix naming:
 
 1. **Primitive**: `--gray-1…12`, `--brand-1…12`
-2. **Semantic**: `--background`, `--foreground`, `--primary`, `--border`, `--ring`, `--overlay`, …
+2. **Semantic**: `--background`, `--foreground`, `--primary`, `--destructive`, `--success`, `--border`, `--ring`, `--overlay`, …
 3. **Component**: e.g. `--button-primary-bg`, `--button-primary-bg-hover`
 
 An app gives the library its own look in one `theme.css`. Override both themes:
@@ -135,8 +135,13 @@ To use the same tokens in an app's own Tailwind utilities:
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
 }
 ```
+
+`--success` gives `bg-success`, `text-success` and `border-success`; pair `bg-success` with `text-success-foreground`.
 
 ## Enforcing tokens in apps
 
