@@ -1,6 +1,6 @@
 {
   "name": "@brafols/ui",
-  "version": "0.0.0-development",
+  "version": "1.0.0",
   "description": "brafols design-system base: React Aria Components + tailwind-variants on Tailwind CSS v4, themed through CSS-variable tokens. Apps override tokens for their own look.",
   "license": "ISC",
   "type": "module",
