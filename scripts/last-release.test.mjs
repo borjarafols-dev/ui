@@ -17,7 +17,7 @@ const commit = (message) => {
   return git('rev-parse', 'HEAD')
 }
 
-// Mirrors scripts/release.mjs: detach, commit dist/, annotate-tag, back to main.
+// Mirrors the legacy scripts/release.mjs: detach, commit dist/, annotate-tag, back to main.
 const release = (tag) => {
   git('checkout', '-q', '--detach')
   commit(`chore(release): ${tag}`)
@@ -42,6 +42,15 @@ describe('lastRelease', () => {
     commit('feat: b')
     expect(lastRelease(dir)).toEqual({ tag: 'v1.0.0', base: built })
     expect(git('log', '--format=%s', `${lastRelease(dir).base}..HEAD`)).toBe('feat: b')
+  })
+
+  it('bases a tag on a main commit at that commit', () => {
+    commit('feat: a')
+    const built = commit('feat: b')
+    git('tag', '-a', 'v2.0.0', '-m', 'v2.0.0')
+    commit('feat: c')
+    expect(lastRelease(dir)).toEqual({ tag: 'v2.0.0', base: built })
+    expect(git('log', '--format=%s', `${lastRelease(dir).base}..HEAD`)).toBe('feat: c')
   })
 
   it('takes the highest version, not the latest lexically', () => {

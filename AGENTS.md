@@ -1,6 +1,6 @@
-# @brafols/ui: agent instructions
+# @borjarafols-dev/ui: agent instructions
 
-This repo is the shared UI base for every brafols frontend. Apps install it by git tag and give it their own look by overriding tokens. Whatever you change here ships to every app, so keep components generic.
+This repo is the shared UI base for every brafols frontend. Apps install it from GitHub Packages (`@borjarafols-dev/ui`) and give it their own look by overriding tokens. Whatever you change here ships to every app, so keep components generic.
 
 Rules for apps that *consume* the library live in `docs/USAGE.md`, which ships in the package. This file covers working *on* the library.
 
@@ -13,7 +13,7 @@ Rules for apps that *consume* the library live in `docs/USAGE.md`, which ships i
 ## Layout
 
 ```
-src/recipes/<id>.ts                  tv() recipes, no React; also exported as @brafols/ui/recipes
+src/recipes/<id>.ts                  tv() recipes, no React; also exported as @borjarafols-dev/ui/recipes
 src/components/<id>.tsx              React Aria component using the recipe
 src/components/<id>.stories.tsx      stories (required)
 src/components/<id>.test.tsx         tests (required)
@@ -63,9 +63,10 @@ scripts/                             metadata, manifest, token check, release
 - Use conventional commits; they decide the version.
   - `feat:` → minor.
   - `fix:` / `perf:` → patch.
-  - `!` or a `BREAKING CHANGE:` footer → major. Use it for any prop, variant, token or export rename or removal, because apps pin exact tags.
+  - `!` or a `BREAKING CHANGE:` footer → major. Use it for any prop, variant, token or export rename or removal, because apps pin a version range.
   - `chore:`, `docs:`, `test:`, `ci:` and `refactor:` don't release.
-- Never commit `dist/`. The release script builds it into the tag commit.
+- Never commit `dist/`. The release script builds it and publishes it in the npm tarball; tags sit on main commits.
+- Never add an `.npmrc` mapping the `@borjarafols-dev` scope: that lives in developers' `~/.npmrc` and CI's `setup-node`.
 
 ## Don'ts
 

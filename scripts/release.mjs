@@ -1,10 +1,10 @@
 // Cut a release from main: compute the next version from conventional
-// commits since the last v* tag, build, commit dist/ on a detached commit
-// (main never contains dist/), tag it vX.Y.Z, push the tag and create the
-// GitHub release. Consumers install `github:borjarafols-dev/ui#vX.Y.Z` and
-// get prebuilt files — no install scripts run on their side.
+// commits since the last v* tag, build, publish @borjarafols-dev/ui@X.Y.Z to
+// GitHub Packages, tag the main commit vX.Y.Z, push the tag and create the
+// GitHub release. dist/ only ever exists in the published tarball.
 //
-// Usage: node scripts/release.mjs [--dry-run]   (CI: needs GH_TOKEN for `gh`)
+// Usage: node scripts/release.mjs [--dry-run]
+// CI needs GH_TOKEN for `gh` and NODE_AUTH_TOKEN for `npm publish` (see release.yml).
 
 import { execFileSync } from 'node:child_process'
 import { readFileSync, writeFileSync } from 'node:fs'
@@ -42,8 +42,6 @@ if (run('git', ['tag', '--list', next])) {
 }
 if (dryRun) process.exit(0)
 
-const mainSha = run('git', ['rev-parse', 'HEAD'])
-
 // Version first: the build stamps it into dist/ai/components.json.
 const pkg = JSON.parse(readFileSync('package.json', 'utf8'))
 pkg.version = version
@@ -51,11 +49,11 @@ writeFileSync('package.json', `${JSON.stringify(pkg, null, 2)}\n`)
 
 run('npm', ['run', 'build'], { stdio: 'inherit', env: { ...process.env, RELEASE_VERSION: version } })
 
-run('git', ['checkout', '--detach'])
-run('git', ['add', '-f', 'dist', 'package.json'])
-// CI runners have no git identity; both the commit and the annotated tag need one.
+// Publish before tagging: a failed publish leaves no tag, so the next run retries.
+run('npm', ['publish'], { stdio: 'inherit' })
+
+// CI runners have no git identity; the annotated tag needs one.
 const bot = ['-c', 'user.name=github-actions[bot]', '-c', 'user.email=41898282+github-actions[bot]@users.noreply.github.com']
-run('git', [...bot, 'commit', '-m', `chore(release): ${next}`, '-m', `Built from ${mainSha}.`])
 run('git', [...bot, 'tag', '-a', next, '-m', next])
 run('git', ['push', 'origin', next], { stdio: 'inherit' })
 const notesFrom = tag ? ['--notes-start-tag', tag] : []

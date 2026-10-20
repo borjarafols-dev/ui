@@ -1,6 +1,6 @@
-# Using @brafols/ui (for agents and people building app UI)
+# Using @borjarafols-dev/ui (for agents and people building app UI)
 
-This file ships inside the package at `node_modules/@brafols/ui/dist/ai/USAGE.md`, next to `components.json`, and matches the installed version.
+This file ships inside the package at `node_modules/@borjarafols-dev/ui/dist/ai/USAGE.md`, next to `components.json`, and matches the installed version.
 
 ## Before you build any UI
 
@@ -13,10 +13,40 @@ This file ships inside the package at `node_modules/@brafols/ui/dist/ai/USAGE.md
 3. **Don't re-implement a library component** (button, field, select, modal, table, …), even with different styles. Change its look through tokens.
 4. **If something the ticket needs is missing from the library, stop and report it.** Gaps should have been caught when the spec was written. Don't hand-roll a lookalike.
 
+## Install
+
+`npm i @borjarafols-dev/ui@^X.Y.Z` (published to GitHub Packages).
+
+Developer, once: add this to `~/.npmrc`, with a personal access token that has `read:packages`:
+
+```ini
+@borjarafols-dev:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=<read:packages token>
+```
+
+CI, in the workflow that runs `npm ci`:
+
+```yaml
+permissions:
+  contents: read
+  packages: read
+steps:
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 24
+      registry-url: https://npm.pkg.github.com
+      scope: '@borjarafols-dev'
+  - run: npm ci
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The package must grant the consuming repo Read under "Manage Actions access". Don't add an `.npmrc` that maps the scope to the repo.
+
 ## Setup (once per app)
 
 ```ts
-import '@brafols/ui/styles.css' // in the app entry, before the app's own CSS
+import '@borjarafols-dev/ui/styles.css' // in the app entry, before the app's own CSS
 ```
 
 Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and modals portal to `<body>`, so a theme on an inner element doesn't reach them.
@@ -57,7 +87,7 @@ Set the provider's `locale` from the app's own language setting, so library labe
   - `Select`: `selectedKey` / `onSelectionChange`.
 - **Testing:** `Select` is a listbox, not a native `<select>`. Click the trigger, then the `option`; `userEvent.selectOptions` won't work. Query by role and accessible name.
 - **Links that look like buttons:** put the `button()` recipe on the router link or a React Aria `Link`. Don't wrap a `Button` in an `<a>`.
-- **Astro and other non-React markup:** use recipes from `@brafols/ui/recipes` (`class={button({ variant: 'primary' })}`). Use the React components only inside islands that need interaction.
+- **Astro and other non-React markup:** use recipes from `@borjarafols-dev/ui/recipes` (`class={button({ variant: 'primary' })}`). Use the React components only inside islands that need interaction.
 - **State styling:** target data attributes (`data-variant`, `data-selected`, `data-invalid`, …), never internal class names.
 
 ## Enforcing tokens in your app
@@ -91,8 +121,8 @@ Add it to the app's scripts and run it in CI next to the typecheck and tests:
 ```md
 ## UI
 
-This app's UI is built on @brafols/ui (React Aria + tailwind-variants, token-themed).
-Before writing or changing UI, read node_modules/@brafols/ui/dist/ai/USAGE.md and
-node_modules/@brafols/ui/dist/ai/components.json, and follow them. The app's look
+This app's UI is built on @borjarafols-dev/ui (React Aria + tailwind-variants, token-themed).
+Before writing or changing UI, read node_modules/@borjarafols-dev/ui/dist/ai/USAGE.md and
+node_modules/@borjarafols-dev/ui/dist/ai/components.json, and follow them. The app's look
 lives in src/styles/theme.css (token overrides only). App composites live in src/ui/.
 ```
