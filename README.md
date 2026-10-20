@@ -1,4 +1,4 @@
-# @brafols/ui
+# @borjarafols-dev/ui
 
 The shared UI base for brafols frontends: accessible components on **React Aria Components**, styled with **tailwind-variants** recipes on **Tailwind CSS v4**. Everything is themed through **CSS-variable tokens**. Each app keeps the components and gives them its own look by overriding tokens.
 
@@ -6,19 +6,51 @@ Tailwind is an implementation detail. The shipped CSS is precompiled and every u
 
 ## Install
 
-Distributed by git tag. Pin an exact version:
+Published to GitHub Packages as `@borjarafols-dev/ui`. Install a caret range of the version you want:
 
 ```sh
-npm i github:borjarafols-dev/ui#v1.0.0
+npm i @borjarafols-dev/ui@^2.0.0
 ```
 
-Each tag contains the built `dist/`, so no install scripts run. `react` and `react-dom` 19 are peer dependencies.
+The tarball contains the built `dist/`, so no install scripts run. `react` and `react-dom` 19 are peer dependencies.
+
+### One-time setup
+
+The package lives on GitHub Packages. Map the scope to that registry in your `~/.npmrc`, with a personal access token that has `read:packages`:
+
+```ini
+@borjarafols-dev:registry=https://npm.pkg.github.com
+//npm.pkg.github.com/:_authToken=<read:packages token>
+```
+
+This repo deliberately has no `.npmrc` for the scope, so environments such as agentic's sandbox pods can point it at their own registry proxy.
+
+### CI
+
+In a GitHub Actions workflow that runs `npm ci`:
+
+```yaml
+permissions:
+  contents: read
+  packages: read
+steps:
+  - uses: actions/setup-node@v4
+    with:
+      node-version: 24
+      registry-url: https://npm.pkg.github.com
+      scope: '@borjarafols-dev'
+  - run: npm ci
+    env:
+      NODE_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+```
+
+The package must also grant the consuming repo Read access: package settings, "Manage Actions access", add the repo.
 
 ## Use in React
 
 ```tsx
-import '@brafols/ui/styles.css' // tokens + precompiled utilities (no preflight)
-import { Button, Card, CardContent, CardHeader, CardTitle, TextField } from '@brafols/ui'
+import '@borjarafols-dev/ui/styles.css' // tokens + precompiled utilities (no preflight)
+import { Button, Card, CardContent, CardHeader, CardTitle, TextField } from '@borjarafols-dev/ui'
 
 export function SignIn() {
   return (
@@ -70,8 +102,8 @@ The style recipes don't depend on React, so static markup can use them without h
 
 ```astro
 ---
-import '@brafols/ui/styles.css'
-import { button, card } from '@brafols/ui/recipes'
+import '@borjarafols-dev/ui/styles.css'
+import { button, card } from '@borjarafols-dev/ui/recipes'
 const { root, header, title, content } = card()
 ---
 <article class={root()}>
@@ -155,7 +187,7 @@ It checks `.ts`, `.tsx` and `.astro` files and skips tests, stories and metadata
 
 ## For agents
 
-The package ships an agent-facing manifest at `node_modules/@brafols/ui/dist/ai/`:
+The package ships an agent-facing manifest at `node_modules/@borjarafols-dev/ui/dist/ai/`:
 
 - **`components.json`** has two halves:
   - facts extracted from source on every build: exports, the props each component declares, recipe variants, the tokens it uses, and the version it first shipped in;
@@ -175,7 +207,7 @@ Tests and app CSS should target these.
 
 ## Releases
 
-A merge to `main` with a releasable conventional commit cuts a tag (`scripts/release.mjs`):
+A merge to `main` with a releasable conventional commit publishes `@borjarafols-dev/ui` to GitHub Packages and tags `vX.Y.Z` (`scripts/release.mjs`):
 
 - `feat` → minor
 - `fix` / `perf` → patch

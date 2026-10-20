@@ -87,7 +87,7 @@ function recipesOf(recipeFile) {
     const r = recipes[name]
     return {
       name,
-      import: `import { ${name} } from '@brafols/ui/recipes'`,
+      import: `import { ${name} } from '@borjarafols-dev/ui/recipes'`,
       slots: r.slots && Object.keys(r.slots).length ? Object.keys(r.slots).filter((s) => s !== 'base') : undefined,
       variants: Object.fromEntries(Object.entries(r.variants ?? {}).map(([k, v]) => [k, Object.keys(v)])),
       defaultVariants: r.defaultVariants ?? {},
@@ -128,7 +128,7 @@ for (const id of componentIds()) {
   components.push({
     id,
     exports: facts.components,
-    import: `import { ${facts.components.join(', ')} } from '@brafols/ui'`,
+    import: `import { ${facts.components.join(', ')} } from '@borjarafols-dev/ui'`,
     description: facts.docs || undefined,
     usage: facts.usage.length ? facts.usage : undefined,
     props: facts.props,

@@ -1,6 +1,6 @@
 # Generate component metadata
 
-You write `src/components/<id>.metadata.ts` for one component of `@brafols/ui`, a React Aria + tailwind-variants design system that several apps share. Agents building app UI read this metadata to choose components. Write for them: concrete, short and correct.
+You write `src/components/<id>.metadata.ts` for one component of `@borjarafols-dev/ui`, a React Aria + tailwind-variants design system that several apps share. Agents building app UI read this metadata to choose components. Write for them: concrete, short and correct.
 
 ## Inputs
 
