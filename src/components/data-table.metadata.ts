@@ -3,7 +3,7 @@ import type { DataTableProps } from './data-table'
 
 export default {
   component: 'DataTable',
-  sourceHash: 'sha256:946e02c02a243505e97831196a26eacdd4d68f288fcccbdc9ddc3819ae110929',
+  sourceHash: 'sha256:cfdb81f9c65dbf858a90e22a05bce250c12e6b03e9309035526d318af7c73047',
   category: 'data',
   summary: 'A read-only, keyboard-navigable table rendered from columns and rows of data.',
   whenToUse: [

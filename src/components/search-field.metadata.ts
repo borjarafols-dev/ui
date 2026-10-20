@@ -3,7 +3,7 @@ import type { SearchFieldProps } from './search-field'
 
 export default {
   component: 'SearchField',
-  sourceHash: 'sha256:d0ae8db3586021daf5bb1bf114490b73949369b64d3e433496c16c6495e264e6',
+  sourceHash: 'sha256:aae4bc360311dc069a1a70ca46cfec83269641790739b2e3223be9dd4ea55dc5',
   category: 'form',
   summary: 'A search input with a clear button that appears while it has a value.',
   whenToUse: ['Filtering a list or table as the user types.', 'A search box above results.'],

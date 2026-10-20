@@ -3,7 +3,7 @@ import type { TextAreaProps } from './text-area'
 
 export default {
   component: 'TextArea',
-  sourceHash: 'sha256:d39a98d0a0735dfc0c68c328bfe254aa6cedd87b9d89780fbab29f37d5cc3dc6',
+  sourceHash: 'sha256:53bc6b423bf826bd1c16b6e3c86ce5b499e78a1bad149279c28346881bf3f686',
   category: 'form',
   summary: 'A labelled multi-line text field with description and error built in.',
   whenToUse: ['Free-form text longer than one line, such as messages, notes or descriptions.'],

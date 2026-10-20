@@ -5,7 +5,7 @@ import type { Card } from './card'
 
 export default {
   component: 'Card',
-  sourceHash: 'sha256:9c4f609427efdfb25abd153f5b1ad26a851adf3fb9d48a236857ad427fd65a82',
+  sourceHash: 'sha256:170c2bd40ec6c4784404d49b581c3e511c46a81f539c33cb48ac8266e9d4e293',
   category: 'layout',
   summary: 'A bordered surface that groups related content, built from CardHeader, CardTitle, CardDescription, CardContent and CardFooter.',
   whenToUse: [

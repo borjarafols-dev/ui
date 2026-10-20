@@ -3,7 +3,7 @@ import type { CheckboxProps } from './checkbox'
 
 export default {
   component: 'Checkbox',
-  sourceHash: 'sha256:b91f0ac8b3285e803cb2670c1f04e9e237522a0152083883ac71ac64ca1fec67',
+  sourceHash: 'sha256:8d0e90ade451f56e80e39c77d6d7de1cd1dfc421194d58f1f24f41f5fcaebcbe',
   category: 'form',
   summary: 'A labelled checkbox for a yes/no choice or for picking items from a set.',
   whenToUse: [

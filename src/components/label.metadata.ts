@@ -3,7 +3,7 @@ import type { LabelProps } from './label'
 
 export default {
   component: 'Label',
-  sourceHash: 'sha256:5b192bce5c75782eeb012136329a3cae184d2eaa7aace2874801fbcb99c01921',
+  sourceHash: 'sha256:3522764196756475f2a7b838e29ce23c1032af4b288ad79b5dc792672ffbf3a8',
   category: 'form',
   summary: 'A styled form label that links to its control automatically inside React Aria fields.',
   whenToUse: ['Labelling a control in a custom field built from Input or other React Aria parts.'],

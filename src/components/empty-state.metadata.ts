@@ -3,7 +3,7 @@ import type { EmptyStateProps } from './empty-state'
 
 export default {
   component: 'EmptyState',
-  sourceHash: 'sha256:42d716b1928f011398764ed5b09fa15ff3f90697212cde2c8a57cf070af4fd5c',
+  sourceHash: 'sha256:e3d9d11d353f13f7201b48d3c0869cb21e484b8bc9857e1d184684ebb06af21f',
   category: 'feedback',
   summary: 'A centered message for a list or section that has no items yet, with an optional action.',
   whenToUse: [

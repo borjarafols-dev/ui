@@ -3,7 +3,7 @@ import type { BadgeProps } from './badge'
 
 export default {
   component: 'Badge',
-  sourceHash: 'sha256:6adbdf5ade3c6366ca16b82268d372712beed5c4e9915eca9a7f0cf1fa41a692',
+  sourceHash: 'sha256:1d3f395ec8c41e3e5aaad990079862d43b0b7b6ead0e0ef541ec5e35604bc711',
   category: 'display',
   summary: 'A small static label for a status or category, such as "Active" or "Draft".',
   whenToUse: [

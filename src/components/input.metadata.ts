@@ -3,7 +3,7 @@ import type { InputProps } from './input'
 
 export default {
   component: 'Input',
-  sourceHash: 'sha256:e010d1cc36bdca73ddd76652cc28cd01e898673452b71a9f36c4c854954cd0b5',
+  sourceHash: 'sha256:75ddbf84e9738988b7a0fdf38781b8d18d2141d4d71bdb34ad9f9da70de3b2bd',
   category: 'form',
   summary: 'A bare styled text input for composing a custom field.',
   whenToUse: ['Building a custom field layout that TextField can’t express, paired with Label.'],

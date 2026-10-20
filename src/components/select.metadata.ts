@@ -3,7 +3,7 @@ import type { SelectProps } from './select'
 
 export default {
   component: 'Select',
-  sourceHash: 'sha256:0213d484edc7070617813db657021d3009ac11b41f3947d713d17fbd88308b0d',
+  sourceHash: 'sha256:ef39ae1c614f5b8470b4a2b52363928bf5216f11bd48142ac03ad77b09c7b517',
   category: 'form',
   summary: 'A labelled dropdown for picking one option from a list, built as a listbox in a popover.',
   whenToUse: [
