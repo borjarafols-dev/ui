@@ -1,0 +1,22 @@
+# The repo's check environment: one `app` service on the Node major CI uses, with the repo mounted.
+# An agentic sandbox pod brings it up (agentic.yaml) and runs every check there; so can you:
+#   docker compose up -d --wait && docker compose exec -T app npm ci
+#   docker compose exec -T app npm test
+# The repo is bind-mounted with its node_modules: a separate node_modules volume would belong to
+# root, and npm runs as uid 1000.
+services:
+  app:
+    image: node:24
+    working_dir: /app
+    user: "${HOST_UID:-1000}:${HOST_GID:-1000}"
+    command: ["sleep", "infinity"]
+    environment:
+      HOME: /tmp
+      CI: "true"
+    volumes:
+      - ./:/app
+    healthcheck:
+      test: ["CMD", "true"]
+      interval: 5s
+      timeout: 3s
+      retries: 3
