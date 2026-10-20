@@ -25,7 +25,6 @@ export {
   ToastRegion,
   toasts,
   type SuccessToastOptions,
-  type ToastContent,
   type ToastOptions,
   type ToastRegionProps,
   type ToastVariant,

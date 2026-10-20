@@ -12,7 +12,7 @@ import { toast } from '../recipes/toast'
 
 export type ToastVariant = 'success' | 'error'
 
-export interface ToastContent {
+interface ToastContent {
   variant: ToastVariant
   title: string
   description?: string
@@ -43,25 +43,22 @@ const queue = new RACToastQueue<ToastContent>({ maxVisibleToasts: 5 })
 
 /**
  * Queue toasts from anywhere: event handlers, mutation callbacks, code outside
- * React. They render in the app's `ToastRegion`. Each call returns the toast's
- * key, for `toasts.close(key)`.
+ * React. They render in the app's `ToastRegion`.
  */
 export const toasts = {
   /** A confirmation. Closes itself after its timeout. */
-  success(title: string, { description, onClose, timeout = SUCCESS_TIMEOUT }: SuccessToastOptions = {}): string {
-    return queue.add({ variant: 'success', title, description }, { onClose, timeout })
+  success(title: string, { description, onClose, timeout = SUCCESS_TIMEOUT }: SuccessToastOptions = {}): void {
+    queue.add({ variant: 'success', title, description }, { onClose, timeout })
   },
   /** A failure. Stays until the user closes it. */
-  error(title: string, { description, onClose }: ToastOptions = {}): string {
-    return queue.add({ variant: 'error', title, description }, { onClose })
+  error(title: string, { description, onClose }: ToastOptions = {}): void {
+    queue.add({ variant: 'error', title, description }, { onClose })
   },
-  close(key: string): void {
-    queue.close(key)
-  },
-  /** Close every toast. */
-  clear(): void {
-    queue.clear()
-  },
+}
+
+/** Close every toast. For tests; not exported from the package. */
+export function clearToasts(): void {
+  queue.clear()
 }
 
 /**

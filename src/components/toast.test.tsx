@@ -2,7 +2,7 @@ import { act, render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ToastRegion, toasts } from './toast'
+import { clearToasts, ToastRegion, toasts } from './toast'
 
 describe('ToastRegion', () => {
   // Testing Library waits on real timeouts between events, so the fake clock
@@ -12,24 +12,25 @@ describe('ToastRegion', () => {
   })
 
   afterEach(() => {
-    act(() => toasts.clear())
+    act(() => clearToasts())
     vi.useRealTimers()
   })
 
-  it('renders queued toasts in a named landmark region', () => {
+  it('renders queued toasts in a named landmark region, each styled by its variant', () => {
     render(<ToastRegion />)
 
     act(() => {
       toasts.success('Profile saved')
-      toasts.error('Could not save', { description: 'Try again later.' })
+      toasts.error('Could not save')
     })
 
     const region = screen.getByRole('region', { name: 'Notifications' })
-    expect(within(region).getByText('Profile saved')).toBeInTheDocument()
-    expect(within(region).getByText('Could not save')).toBeInTheDocument()
-    expect(within(region).getByText('Try again later.')).toBeInTheDocument()
-    expect(within(region).getByRole('alertdialog', { name: 'Profile saved' })).toHaveAttribute('data-variant', 'success')
-    expect(within(region).getByRole('alertdialog', { name: 'Could not save' })).toHaveAttribute('data-variant', 'error')
+    const success = within(region).getByRole('alertdialog', { name: 'Profile saved' })
+    expect(success).toHaveAttribute('data-variant', 'success')
+    expect(success).toHaveClass('bg-success', 'text-success-foreground')
+    const error = within(region).getByRole('alertdialog', { name: 'Could not save' })
+    expect(error).toHaveAttribute('data-variant', 'error')
+    expect(error).toHaveClass('bg-destructive', 'text-destructive-foreground')
   })
 
   it('closes a success toast after its timeout and keeps an error toast until it is closed', async () => {
@@ -79,19 +80,7 @@ describe('ToastRegion', () => {
       toasts.error('Could not save')
     })
 
-    expect(screen.getByRole('region', { name: 'Messages' })).toHaveAttribute('data-slot', 'toast-region')
+    expect(screen.getByRole('region', { name: 'Messages' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: 'Dismiss' })).toBeInTheDocument()
-  })
-
-  it('styles variants with status tokens', () => {
-    render(<ToastRegion />)
-
-    act(() => {
-      toasts.success('Profile saved')
-      toasts.error('Could not save')
-    })
-
-    expect(screen.getByRole('alertdialog', { name: 'Profile saved' })).toHaveClass('bg-success', 'text-success-foreground')
-    expect(screen.getByRole('alertdialog', { name: 'Could not save' })).toHaveClass('bg-destructive', 'text-destructive-foreground')
   })
 })

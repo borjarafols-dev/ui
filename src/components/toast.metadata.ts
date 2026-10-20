@@ -3,7 +3,7 @@ import type { ToastRegionProps } from './toast'
 
 export default {
   component: 'ToastRegion',
-  sourceHash: 'sha256:47041a0642b6ea770216d84ea698ce7427ca5a1b808e4a9a317f46b666c19988',
+  sourceHash: 'sha256:ba0a905d8b468832cae0fe48822d19443d99489128df45969a4a9a5e5320c806',
   category: 'feedback',
   summary: 'A region at the bottom end of the screen that shows short success and error messages queued with toasts.success and toasts.error.',
   whenToUse: [
