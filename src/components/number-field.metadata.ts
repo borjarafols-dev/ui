@@ -3,7 +3,7 @@ import type { NumberFieldProps } from './number-field'
 
 export default {
   component: 'NumberField',
-  sourceHash: 'sha256:917df6fade6b8d953b98bdcd57182f48b7b3c49eeb4625472fbd6a99025efa3b',
+  sourceHash: 'sha256:316d6962c82fc601a1d91cd38e647dc5a430e46d58371b5a07ec1a5bb7c8ce53',
   category: 'form',
   summary: 'A labelled field for numeric values, with locale-aware formatting and parsing.',
   whenToUse: [

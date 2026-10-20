@@ -3,7 +3,7 @@ import type { ConfirmDialogProps } from './confirm-dialog'
 
 export default {
   component: 'ConfirmDialog',
-  sourceHash: 'sha256:382f3403ef3977309f8624cef4318ac054c341ba1c33cf51051a75f463ab11b2',
+  sourceHash: 'sha256:9c3bf9da8e2d6f079e809621359b886274f7f1d81ac29dc2195e33aeba4a8e3c',
   category: 'overlay',
   summary: 'A modal "are you sure?" step with a cancel and a confirm button, destructive by default.',
   whenToUse: [

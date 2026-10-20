@@ -3,7 +3,7 @@ import type { ButtonProps } from './button'
 
 export default {
   component: 'Button',
-  sourceHash: 'sha256:6958557299824f2d1aad30ef86ec8198ca41ddc1d865f5cd75443f3e20729cc4',
+  sourceHash: 'sha256:2f0600b827b17f8cd8d74d8c330767066f571e6387e1c57006544dd07dff35c6',
   category: 'action',
   summary: 'A pressable control that runs an action, such as saving a form or opening a dialog.',
   whenToUse: [

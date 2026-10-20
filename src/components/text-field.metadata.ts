@@ -3,7 +3,7 @@ import type { TextFieldProps } from './text-field'
 
 export default {
   component: 'TextField',
-  sourceHash: 'sha256:59cc012f93fc19f5a3a2f34efd05f327d9db4ee8cee08fb23ac3c607b8d2c87a',
+  sourceHash: 'sha256:80a7c0448066eee0f7c8b2b20f3197fe79e8c1a5745895e5745a745655cdd082',
   category: 'form',
   summary: 'A labelled single-line text field with description and error built in.',
   whenToUse: [

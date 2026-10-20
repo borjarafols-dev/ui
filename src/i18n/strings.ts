@@ -12,6 +12,8 @@ const en = {
   confirm: 'Confirm',
   cancel: 'Cancel',
   working: 'Working…',
+  notifications: 'Notifications',
+  close: 'Close',
 }
 
 export type Strings = typeof en
@@ -26,6 +28,8 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     confirm: 'Confirmar',
     cancel: 'Cancelar',
     working: 'Procesando…',
+    notifications: 'Notificaciones',
+    close: 'Cerrar',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -35,6 +39,8 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     confirm: 'Confirma',
     cancel: 'Cancel·la',
     working: 'Processant…',
+    notifications: 'Notificacions',
+    close: 'Tanca',
   },
 }
 

@@ -3,7 +3,7 @@ import type { ModalProps } from './modal'
 
 export default {
   component: 'Modal',
-  sourceHash: 'sha256:6e516f002475920de569538618eff4affac6ce9944702daa4f0f1ab95395377f',
+  sourceHash: 'sha256:4a00cace1b38bac787de0416dc9b6c7927ddc9b471f8658fcc130e9464e4a3e8',
   category: 'overlay',
   summary: 'A dialog over the page that traps focus until the user finishes or dismisses it.',
   whenToUse: [

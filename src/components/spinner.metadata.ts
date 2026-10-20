@@ -3,7 +3,7 @@ import type { SpinnerProps } from './spinner'
 
 export default {
   component: 'Spinner',
-  sourceHash: 'sha256:5937c9c056161205fb2974192b680baa60f02f5484c4fa8fb649278426e058df',
+  sourceHash: 'sha256:d3465d50ec853a681d0a8d47c4c36fb13beb11cd1bb6d1f9226a8e6e2a6d4c91',
   category: 'feedback',
   summary: 'An indeterminate loading indicator announced to screen readers.',
   whenToUse: ['A section or page is waiting for data.', 'A short wait with no known progress.'],
