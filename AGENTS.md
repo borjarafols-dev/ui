@@ -49,6 +49,7 @@ scripts/                             metadata, manifest, token check, release
 5. **Test** behaviour through roles and accessible names. Test variants through `data-*` attributes and token classes.
 6. **Metadata.** Write `src/components/<id>.metadata.ts` per `.ai/metadata.prompt.md` (inputs: `npm run metadata:inputs -- <id>`), then `npm run metadata:stamp -- <id>`. On PRs, agentic adds this commit for you.
 7. Run `npm run typecheck && npm test && npm run lint:tokens && npm run metadata:check && npm run build`.
+   In an agentic sandbox pod, run each one in the stack: `docker compose exec -T app npm run <script>` (`agentic.yaml`, `compose.yaml`).
 
 ## Metadata
 

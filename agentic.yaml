@@ -1,0 +1,6 @@
+# How an agentic sandbox pod runs this repo: it brings up compose.yaml, installs the dependencies in
+# `app`, and the agent runs every check there with `docker compose exec -T app npm run <script>`.
+compose: [compose.yaml]
+service: app
+setup:
+  - npm ci --no-audit --no-fund
