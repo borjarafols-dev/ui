@@ -16,6 +16,7 @@ export {
   type DataTableColumnDef,
   type DataTableColumnHelper,
   type DataTableColumnVisibility,
+  type DataTableExpanded,
   type DataTableProps,
 } from './components/data-table'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'

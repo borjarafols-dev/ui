@@ -13,6 +13,11 @@ export const table = tv({
       'border-b border-border text-left text-xs font-medium tracking-wider text-muted-foreground uppercase outline-none focus-visible:ring-2 focus-visible:ring-ring',
     row: 'border-b border-border text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
     cell: 'outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset',
+    treeCell: 'flex items-center gap-1',
+    expand:
+      'flex size-5 shrink-0 cursor-default items-center justify-center rounded-sm text-muted-foreground outline-none hover:bg-muted focus-visible:ring-2 focus-visible:ring-ring',
+    expandIcon: 'size-3 transition-transform motion-reduce:transition-none rtl:rotate-180 in-data-expanded:rotate-90',
+    expandSpacer: 'size-5 shrink-0',
     empty: 'py-8 text-center text-sm text-muted-foreground',
   },
   variants: {

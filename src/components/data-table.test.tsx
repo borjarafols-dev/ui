@@ -3,7 +3,12 @@ import userEvent from '@testing-library/user-event'
 import { I18nProvider } from 'react-aria-components'
 import { describe, expect, it, vi } from 'vitest'
 
-import { createDataTableColumnHelper, DataTable, type DataTableColumnVisibility } from './data-table'
+import {
+  createDataTableColumnHelper,
+  DataTable,
+  type DataTableColumnVisibility,
+  type DataTableExpanded,
+} from './data-table'
 
 interface Row {
   id: string
@@ -198,6 +203,184 @@ describe('DataTable', () => {
       )
 
       expect(screen.getByRole('button', { name: 'Columnas' })).toBeInTheDocument()
+    })
+  })
+
+  describe('nested rows', () => {
+    interface Job {
+      id: string
+      name: string
+      slug: string
+      steps?: Job[]
+    }
+
+    const jobs: Job[] = [
+      {
+        id: 'build',
+        name: 'Build',
+        slug: 'build',
+        steps: [
+          { id: 'build-install', name: 'Install', slug: 'install' },
+          { id: 'build-compile', name: 'Compile', slug: 'compile' },
+        ],
+      },
+      { id: 'deploy', name: 'Deploy', slug: 'deploy' },
+    ]
+
+    const jobColumn = createDataTableColumnHelper<Job>()
+    const jobColumns = jobColumn.columns([
+      jobColumn.accessor('name', { header: 'Name', enableHiding: false }),
+      jobColumn.accessor('slug', { header: 'Slug' }),
+    ])
+
+    const getJobId = (job: Job) => job.id
+    const getSteps = (job: Job) => job.steps
+    const rowOf = (name: string) => screen.getByRole('rowheader', { name: new RegExp(name) }).closest('[role="row"]')!
+
+    it('is a tree grid whose parent rows expand to their children with the chevron', async () => {
+      const user = userEvent.setup()
+      render(<DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} aria-label="Jobs" />)
+
+      expect(screen.getByRole('treegrid', { name: 'Jobs' })).toBeInTheDocument()
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'false')
+      expect(rowOf('Deploy')).not.toHaveAttribute('aria-expanded')
+      expect(screen.queryByRole('rowheader', { name: 'Install' })).not.toBeInTheDocument()
+      expect(screen.getAllByRole('button', { name: 'Expand row Build' })).toHaveLength(1)
+
+      await user.click(screen.getByRole('button', { name: 'Expand row Build' }))
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'true')
+      expect(rowOf('Build')).toHaveAttribute('data-expanded', 'true')
+      expect(rowOf('Install')).toHaveAttribute('data-level', '2')
+      expect(screen.getAllByRole('rowheader').map((header) => header.textContent)).toEqual([
+        'Build',
+        'Install',
+        'Compile',
+        'Deploy',
+      ])
+
+      await user.click(screen.getByRole('button', { name: 'Collapse row Build' }))
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'false')
+      expect(screen.queryByRole('rowheader', { name: 'Install' })).not.toBeInTheDocument()
+    })
+
+    it('expands with Arrow Right and collapses with Arrow Left', async () => {
+      const user = userEvent.setup()
+      render(<DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} />)
+
+      await user.tab()
+      await user.tab()
+      expect(document.activeElement).toBe(rowOf('Build'))
+
+      await user.keyboard('{ArrowRight}')
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'true')
+      expect(rowOf('Install')).toBeInTheDocument()
+
+      await user.keyboard('{ArrowDown}{ArrowLeft}')
+      expect(document.activeElement).toBe(rowOf('Build'))
+
+      await user.keyboard('{ArrowLeft}')
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'false')
+      expect(screen.queryByRole('rowheader', { name: 'Install' })).not.toBeInTheDocument()
+    })
+
+    it('indents children in the tree column', () => {
+      render(
+        <DataTable
+          columns={jobColumns}
+          data={jobs}
+          getRowId={getJobId}
+          getSubRows={getSteps}
+          expanded={{ build: true }}
+        />,
+      )
+
+      const indent = (name: string) =>
+        (screen.getByRole('rowheader', { name: new RegExp(name) }).firstElementChild as HTMLElement).style
+          .paddingInlineStart
+      expect(indent('Build')).toBe('calc(var(--spacing) * 5 * 0)')
+      expect(indent('Install')).toBe('calc(var(--spacing) * 5 * 1)')
+    })
+
+    it('renders the controlled state and reports changes without applying them', async () => {
+      const user = userEvent.setup()
+      const onExpandedChange = vi.fn()
+      const { rerender } = render(
+        <DataTable
+          columns={jobColumns}
+          data={jobs}
+          getRowId={getJobId}
+          getSubRows={getSteps}
+          expanded={{ build: true }}
+          onExpandedChange={onExpandedChange}
+        />,
+      )
+      expect(rowOf('Install')).toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Collapse row Build' }))
+      expect(onExpandedChange).toHaveBeenCalledWith({})
+      expect(rowOf('Install')).toBeInTheDocument()
+
+      const expanded: DataTableExpanded = {}
+      rerender(
+        <DataTable
+          columns={jobColumns}
+          data={jobs}
+          getRowId={getJobId}
+          getSubRows={getSteps}
+          expanded={expanded}
+          onExpandedChange={onExpandedChange}
+        />,
+      )
+      expect(screen.queryByRole('rowheader', { name: 'Install' })).not.toBeInTheDocument()
+
+      await user.click(screen.getByRole('button', { name: 'Expand row Build' }))
+      expect(onExpandedChange).toHaveBeenLastCalledWith({ build: true })
+    })
+
+    it('expands every parent with expanded={true}', () => {
+      render(<DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} expanded />)
+
+      expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'true')
+      expect(rowOf('Compile')).toBeInTheDocument()
+    })
+
+    it('keeps rows expanded when data changes', async () => {
+      const user = userEvent.setup()
+      const { rerender } = render(
+        <DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} />,
+      )
+      await user.click(screen.getByRole('button', { name: 'Expand row Build' }))
+
+      rerender(<DataTable columns={jobColumns} data={[...jobs]} getRowId={getJobId} getSubRows={getSteps} />)
+      expect(rowOf('Install')).toBeInTheDocument()
+    })
+
+    it('hides a column of child rows too', async () => {
+      const user = userEvent.setup()
+      render(
+        <DataTable
+          columns={jobColumns}
+          data={jobs}
+          getRowId={getJobId}
+          getSubRows={getSteps}
+          expanded={{ build: true }}
+        />,
+      )
+
+      await user.click(screen.getByRole('button', { name: 'Columns' }))
+      await user.click(await screen.findByRole('checkbox', { name: 'Slug' }))
+      expect(headerTexts()).toEqual(['Name'])
+      expect(screen.queryByText('install')).not.toBeInTheDocument()
+    })
+
+    it('localises the expand button', () => {
+      render(
+        <I18nProvider locale="es-ES">
+          <DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} />
+        </I18nProvider>,
+      )
+
+      expect(screen.getByRole('button', { name: 'Expandir fila Build' })).toBeInTheDocument()
     })
   })
 })
