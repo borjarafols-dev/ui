@@ -56,6 +56,7 @@ export {
 export { Select, type SelectOption, type SelectProps } from './components/select'
 export { Skeleton, type SkeletonProps } from './components/skeleton'
 export { Spinner, type SpinnerProps } from './components/spinner'
+export { Switch, type SwitchProps } from './components/switch'
 export {
   Tab,
   TabList,
