@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { describe, expect, it, vi } from 'vitest'
@@ -39,6 +39,8 @@ const getRowId = (row: Row) => row.id
 // The replace drops the sort indicator, which is aria-hidden but still text.
 const headerTexts = () =>
   screen.getAllByRole('columnheader', { hidden: true }).map((header) => header.textContent?.replace(/[▲▼↕]/, ''))
+
+const rowHeaderTexts = () => screen.getAllByRole('rowheader').map((cell) => cell.textContent)
 
 describe('DataTable', () => {
   it('renders a row per datum, with the first column as row header', () => {
@@ -83,20 +85,38 @@ describe('DataTable', () => {
     expect(screen.getByText('Nothing here.')).toBeInTheDocument()
   })
 
-  it('shows the default empty message', () => {
-    render(<DataTable columns={columns} data={[]} getRowId={getRowId} />)
-
-    expect(screen.getByText('No data available.')).toBeInTheDocument()
-  })
-
-  it('localises its default name and empty message', () => {
-    render(
+  it('localises its built-in labels', async () => {
+    const user = userEvent.setup()
+    const subRows = (row: Row) => (row.id === 'a' ? [{ id: 'a1', name: 'Alpha 1', slug: 'alpha-1' }] : undefined)
+    const localised = (rows: Row[]) => (
       <I18nProvider locale="ca-ES">
-        <DataTable columns={columns} data={[]} getRowId={getRowId} />
-      </I18nProvider>,
+        <DataTable
+          columns={columns}
+          data={rows}
+          getRowId={getRowId}
+          getSubRows={subRows}
+          enableSearch
+          enablePagination
+          pageSizeOptions={[5]}
+          holdNewRows
+        />
+      </I18nProvider>
     )
+    const { rerender } = render(localised(data))
 
-    expect(screen.getByRole('grid', { name: 'Taula de dades' })).toBeInTheDocument()
+    expect(screen.getByRole('treegrid', { name: 'Taula de dades' })).toBeInTheDocument()
+    expect(screen.getByRole('searchbox', { name: 'Cerca' })).toHaveAttribute('placeholder', 'Cerca…')
+    expect(screen.getByRole('button', { name: 'Columnes' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Desplega la fila Alpha' })).toBeInTheDocument()
+    expect(screen.getByText('1–2 de 2')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Següent' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /Files per pàgina/ })).toBeInTheDocument()
+
+    await user.hover(screen.getByRole('rowheader', { name: /Alpha/ }))
+    rerender(localised([{ id: 'c', name: 'Gamma', slug: 'gamma' }, ...data]))
+    expect(screen.getByRole('button', { name: 'Mostra 1 fila nova' })).toBeInTheDocument()
+
+    rerender(localised([]))
     expect(screen.getByText('No hi ha dades disponibles.')).toBeInTheDocument()
   })
 
@@ -107,19 +127,17 @@ describe('DataTable', () => {
       { id: 'a', name: 'Alpha', slug: 'alpha' },
     ]
 
-    const names = () => screen.getAllByRole('rowheader').map((cell) => cell.textContent)
-
     it('sorts on a header click and sets aria-sort', async () => {
       const user = userEvent.setup()
       render(<DataTable columns={columns} data={unsorted} getRowId={getRowId} />)
 
       const header = screen.getByRole('columnheader', { name: 'Name' })
       await user.click(header)
-      expect(names()).toEqual(['Alpha', 'Beta', 'Gamma'])
+      expect(rowHeaderTexts()).toEqual(['Alpha', 'Beta', 'Gamma'])
       expect(header).toHaveAttribute('aria-sort', 'ascending')
 
       await user.click(header)
-      expect(names()).toEqual(['Gamma', 'Beta', 'Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Gamma', 'Beta', 'Alpha'])
       expect(header).toHaveAttribute('aria-sort', 'descending')
     })
 
@@ -133,7 +151,7 @@ describe('DataTable', () => {
       expect(document.activeElement).toBe(screen.getByRole('columnheader', { name: 'Name' }))
 
       await user.keyboard('{Enter}')
-      expect(names()).toEqual(['Alpha', 'Beta', 'Gamma'])
+      expect(rowHeaderTexts()).toEqual(['Alpha', 'Beta', 'Gamma'])
       expect(document.activeElement).toHaveAttribute('aria-sort', 'ascending')
     })
 
@@ -147,7 +165,7 @@ describe('DataTable', () => {
 
       const header = screen.getByRole('columnheader', { name: 'Name' })
       await user.click(header)
-      expect(names()).toEqual(['Beta', 'Gamma', 'Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Beta', 'Gamma', 'Alpha'])
       expect(header).not.toHaveAttribute('aria-sort')
       expect(screen.getByRole('columnheader', { name: 'Slug' })).toHaveAttribute('aria-sort', 'none')
     })
@@ -166,12 +184,12 @@ describe('DataTable', () => {
       )
 
       const header = screen.getByRole('columnheader', { name: 'Name' })
-      expect(names()).toEqual(['Gamma', 'Beta', 'Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Gamma', 'Beta', 'Alpha'])
       expect(header).toHaveAttribute('aria-sort', 'descending')
 
       await user.click(header)
       expect(onSortingChange).toHaveBeenCalledWith([])
-      expect(names()).toEqual(['Gamma', 'Beta', 'Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Gamma', 'Beta', 'Alpha'])
     })
 
     it('leaves the rows in server mode', async () => {
@@ -191,7 +209,7 @@ describe('DataTable', () => {
       await user.click(header)
       expect(onSortingChange).toHaveBeenCalledWith([{ id: 'name', desc: false }])
       expect(header).toHaveAttribute('aria-sort', 'ascending')
-      expect(names()).toEqual(['Beta', 'Gamma', 'Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Beta', 'Gamma', 'Alpha'])
     })
   })
 
@@ -211,7 +229,7 @@ describe('DataTable', () => {
 
       await user.type(screen.getByRole('searchbox', { name: 'Search' }), 'bet')
       expect(onGlobalFilterChange).toHaveBeenLastCalledWith('bet')
-      expect(screen.getAllByRole('rowheader').map((cell) => cell.textContent)).toEqual(['Beta'])
+      expect(rowHeaderTexts()).toEqual(['Beta'])
     })
 
     it('only reports the filter in server mode', async () => {
@@ -249,22 +267,12 @@ describe('DataTable', () => {
 
       const search = screen.getByRole('searchbox')
       expect(search).toHaveValue('alp')
-      expect(screen.getAllByRole('rowheader').map((cell) => cell.textContent)).toEqual(['Alpha'])
+      expect(rowHeaderTexts()).toEqual(['Alpha'])
 
       await user.type(search, 'x')
       expect(onGlobalFilterChange).toHaveBeenCalledWith('alpx')
       expect(search).toHaveValue('alp')
-      expect(screen.getAllByRole('rowheader').map((cell) => cell.textContent)).toEqual(['Alpha'])
-    })
-
-    it('localises the search field', () => {
-      render(
-        <I18nProvider locale="es-ES">
-          <DataTable enableSearch columns={columns} data={data} getRowId={getRowId} />
-        </I18nProvider>,
-      )
-
-      expect(screen.getByRole('searchbox', { name: 'Buscar' })).toHaveAttribute('placeholder', 'Buscar…')
+      expect(rowHeaderTexts()).toEqual(['Alpha'])
     })
   })
 
@@ -275,21 +283,19 @@ describe('DataTable', () => {
       slug: `item-${index + 1}`,
     }))
 
-    const names = () => screen.getAllByRole('rowheader').map((cell) => cell.textContent)
-
     it('shows one page and its position in client mode', async () => {
       const user = userEvent.setup()
       render(
         <DataTable enablePagination pageSizeOptions={[5, 10]} columns={columns} data={many} getRowId={getRowId} />,
       )
 
-      expect(names()).toEqual(['Item 01', 'Item 02', 'Item 03', 'Item 04', 'Item 05'])
+      expect(rowHeaderTexts()).toEqual(['Item 01', 'Item 02', 'Item 03', 'Item 04', 'Item 05'])
       expect(screen.getByText('1–5 of 12')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Previous' })).toBeDisabled()
 
       await user.click(screen.getByRole('button', { name: 'Next' }))
       await user.click(screen.getByRole('button', { name: 'Next' }))
-      expect(names()).toEqual(['Item 11', 'Item 12'])
+      expect(rowHeaderTexts()).toEqual(['Item 11', 'Item 12'])
       expect(screen.getByText('11–12 of 12')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Next' })).toBeDisabled()
     })
@@ -311,7 +317,7 @@ describe('DataTable', () => {
       await user.click(screen.getByRole('button', { name: /Rows per page/ }))
       await user.click(screen.getByRole('option', { name: '10' }))
       expect(onPaginationChange).toHaveBeenCalledWith({ pageIndex: 0, pageSize: 10 })
-      expect(names()).toHaveLength(10)
+      expect(rowHeaderTexts()).toHaveLength(10)
       expect(screen.getByText('1–10 of 12')).toBeInTheDocument()
     })
 
@@ -330,7 +336,7 @@ describe('DataTable', () => {
 
       await user.click(screen.getByRole('button', { name: 'Next' }))
       await user.type(screen.getByRole('searchbox'), 'item-1')
-      expect(names()).toEqual(['Item 01', 'Item 10', 'Item 11', 'Item 12'])
+      expect(rowHeaderTexts()).toEqual(['Item 01', 'Item 10', 'Item 11', 'Item 12'])
       expect(screen.getByText('1–4 of 4')).toBeInTheDocument()
     })
 
@@ -348,7 +354,7 @@ describe('DataTable', () => {
         />,
       )
 
-      expect(names()).toEqual(['Item 06', 'Item 07', 'Item 08', 'Item 09', 'Item 10'])
+      expect(rowHeaderTexts()).toEqual(['Item 06', 'Item 07', 'Item 08', 'Item 09', 'Item 10'])
       await user.click(screen.getByRole('button', { name: 'Next' }))
       expect(onPaginationChange).toHaveBeenCalledWith({ pageIndex: 2, pageSize: 5 })
       expect(screen.getByText('6–10 of 12')).toBeInTheDocument()
@@ -370,23 +376,11 @@ describe('DataTable', () => {
         />,
       )
 
-      expect(names()).toEqual(['Item 01', 'Item 02', 'Item 03'])
+      expect(rowHeaderTexts()).toEqual(['Item 01', 'Item 02', 'Item 03'])
       expect(screen.getByText('7–9 of 42')).toBeInTheDocument()
 
       await user.click(screen.getByRole('button', { name: 'Next' }))
       expect(onPaginationChange).toHaveBeenCalledWith({ pageIndex: 3, pageSize: 3 })
-    })
-
-    it('localises the footer', () => {
-      render(
-        <I18nProvider locale="ca-ES">
-          <DataTable enablePagination pageSizeOptions={[5]} columns={columns} data={many} getRowId={getRowId} />
-        </I18nProvider>,
-      )
-
-      expect(screen.getByText('1–5 de 12')).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: 'Següent' })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /Files per pàgina/ })).toBeInTheDocument()
     })
   })
 
@@ -582,16 +576,6 @@ describe('DataTable', () => {
       expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
       await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Columns' })))
     })
-
-    it('localises the Columns label', () => {
-      render(
-        <I18nProvider locale="es-ES">
-          <DataTable columns={columns} data={data} getRowId={getRowId} />
-        </I18nProvider>,
-      )
-
-      expect(screen.getByRole('button', { name: 'Columnas' })).toBeInTheDocument()
-    })
   })
 
   describe('nested rows', () => {
@@ -639,7 +623,9 @@ describe('DataTable', () => {
       expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'true')
       expect(rowOf('Build')).toHaveAttribute('data-expanded', 'true')
       expect(rowOf('Install')).toHaveAttribute('data-level', '2')
-      expect(screen.getAllByRole('rowheader').map((header) => header.textContent)).toEqual([
+      expect(screen.getByText('Install')).toHaveClass('ps-5')
+      expect(screen.getByText('Build')).not.toHaveClass('ps-5')
+      expect(rowHeaderTexts()).toEqual([
         'Build',
         'Install',
         'Compile',
@@ -669,24 +655,6 @@ describe('DataTable', () => {
       await user.keyboard('{ArrowLeft}')
       expect(rowOf('Build')).toHaveAttribute('aria-expanded', 'false')
       expect(screen.queryByRole('rowheader', { name: 'Install' })).not.toBeInTheDocument()
-    })
-
-    it('indents children in the tree column', () => {
-      render(
-        <DataTable
-          columns={jobColumns}
-          data={jobs}
-          getRowId={getJobId}
-          getSubRows={getSteps}
-          expanded={{ build: true }}
-        />,
-      )
-
-      const indent = (name: string) =>
-        (screen.getByRole('rowheader', { name: new RegExp(name) }).firstElementChild as HTMLElement).style
-          .paddingInlineStart
-      expect(indent('Build')).toBe('calc(var(--spacing) * 5 * 0)')
-      expect(indent('Install')).toBe('calc(var(--spacing) * 5 * 1)')
     })
 
     it('renders the controlled state and reports changes without applying them', async () => {
@@ -775,7 +743,7 @@ describe('DataTable', () => {
 
       await user.click(screen.getByRole('columnheader', { name: /Name/ }))
       await user.click(screen.getByRole('columnheader', { name: /Name/ }))
-      expect(screen.getAllByRole('rowheader').map((header) => header.textContent)).toEqual([
+      expect(rowHeaderTexts()).toEqual([
         'Deploy',
         'Build',
         'Install',
@@ -797,18 +765,8 @@ describe('DataTable', () => {
       )
 
       await user.type(screen.getByRole('searchbox'), 'compile')
-      expect(screen.getAllByRole('rowheader').map((header) => header.textContent)).toEqual(['Build', 'Compile'])
+      expect(rowHeaderTexts()).toEqual(['Build', 'Compile'])
       expect(rowOf('Compile')).toHaveAttribute('data-level', '2')
-    })
-
-    it('localises the expand button', () => {
-      render(
-        <I18nProvider locale="es-ES">
-          <DataTable columns={jobColumns} data={jobs} getRowId={getJobId} getSubRows={getSteps} />
-        </I18nProvider>,
-      )
-
-      expect(screen.getByRole('button', { name: 'Expandir fila Build' })).toBeInTheDocument()
     })
   })
 
@@ -924,32 +882,67 @@ describe('DataTable', () => {
       expect(screen.getByRole('status')).toHaveTextContent('Show 2 new rows')
     })
 
-    it('uses showNewRowsLabel and localises the default label', () => {
-      const { rerender } = render(
-        <I18nProvider locale="ca-ES">
-          <DataTable columns={columns} data={data} getRowId={getRowId} holdNewRows />
-        </I18nProvider>,
+    it('uses showNewRowsLabel', async () => {
+      const user = userEvent.setup()
+      const labelled = (rows: Row[]) => (
+        <DataTable columns={columns} data={rows} getRowId={getRowId} holdNewRows showNewRowsLabel={(n) => `${n} more`} />
       )
-      fireEvent.pointerEnter(screen.getByRole('grid'))
-      rerender(
-        <I18nProvider locale="ca-ES">
-          <DataTable columns={columns} data={[gamma, ...data]} getRowId={getRowId} holdNewRows />
-        </I18nProvider>,
-      )
-      expect(screen.getByRole('button', { name: 'Mostra 1 fila nova' })).toBeInTheDocument()
+      const { rerender } = render(labelled(data))
 
-      rerender(
-        <I18nProvider locale="ca-ES">
-          <DataTable
-            columns={columns}
-            data={[gamma, ...data]}
-            getRowId={getRowId}
-            holdNewRows
-            showNewRowsLabel={(count) => `${count} more`}
-          />
-        </I18nProvider>,
-      )
+      await user.hover(screen.getByRole('rowheader', { name: 'Alpha' }))
+      rerender(labelled([gamma, ...data]))
       expect(screen.getByRole('button', { name: '1 more' })).toBeInTheDocument()
+    })
+
+    it('holds new child rows of a shown parent', async () => {
+      const user = userEvent.setup()
+      const step = (id: string): Row => ({ id, name: `Step ${id}`, slug: id })
+      const tree = (steps: Row[]) => (
+        <DataTable
+          columns={columns}
+          data={[...data]}
+          getRowId={getRowId}
+          getSubRows={(row) => (row.id === 'a' ? steps : undefined)}
+          expanded
+          holdNewRows
+        />
+      )
+      const { rerender } = render(tree([step('a1')]))
+
+      await user.hover(screen.getByRole('rowheader', { name: /Alpha/ }))
+      rerender(tree([step('a1'), step('a2')]))
+      expect(rowHeaderTexts()).toEqual(['Alpha', 'Step a1', 'Beta'])
+
+      await user.click(screen.getByRole('button', { name: 'Show 1 new row' }))
+      expect(rowHeaderTexts()).toEqual(['Alpha', 'Step a1', 'Step a2', 'Beta'])
+    })
+
+    it('shows the server page the user asked for, and holds rows that arrive after it', async () => {
+      const user = userEvent.setup()
+      const delta: Row = { id: 'd', name: 'Delta', slug: 'delta' }
+      const epsilon: Row = { id: 'e', name: 'Epsilon', slug: 'epsilon' }
+      const server = (rows: Row[]) => (
+        <DataTable
+          mode="server"
+          enablePagination
+          pageSizeOptions={[2]}
+          rowCount={4}
+          columns={columns}
+          data={rows}
+          getRowId={getRowId}
+          holdNewRows
+        />
+      )
+      const { rerender } = render(server(data))
+
+      await user.click(screen.getByRole('button', { name: 'Next' }))
+      rerender(server([gamma, delta]))
+      expect(rowHeaderTexts()).toEqual(['Gamma', 'Delta'])
+      expect(screen.queryByRole('button', { name: /new row/ })).not.toBeInTheDocument()
+
+      rerender(server([epsilon, gamma, delta]))
+      expect(rowHeaderTexts()).toEqual(['Gamma', 'Delta'])
+      expect(screen.getByRole('button', { name: 'Show 1 new row' })).toBeInTheDocument()
     })
 
     it('never holds without holdNewRows', async () => {

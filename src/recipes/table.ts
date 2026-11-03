@@ -39,6 +39,10 @@ export const table = tv({
     link: {
       true: { row: 'cursor-pointer hover:bg-muted' },
     },
+    // Child rows of the tree column; DataTable supports one level of nesting.
+    nested: {
+      true: { treeCell: 'ps-5' },
+    },
   },
   defaultVariants: { density: 'comfortable' },
 })

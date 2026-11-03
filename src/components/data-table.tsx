@@ -1,5 +1,6 @@
 import {
   type CellData,
+  type Column as TanStackColumn,
   type ColumnDef,
   type ColumnHelper,
   columnFilteringFeature,
@@ -113,8 +114,7 @@ export interface DataTableProps<T extends RowData> {
   mode?: 'client' | 'server'
   /** Server mode: the total number of rows across every page. */
   rowCount?: number
-  /** Sortable headers. A column opts out with `enableSorting: false`. Defaults to true. */
-  enableSorting?: boolean
+  /** Sorted columns. Every header sorts; a column opts out with `enableSorting: false`. */
   sorting?: DataTableSorting
   onSortingChange?: (sorting: DataTableSorting) => void
   /** Shows a search field above the table, bound to `globalFilter`. */
@@ -167,6 +167,153 @@ function useControllableState<V>(
   return [current, update]
 }
 
+interface HeldRows<T extends RowData> {
+  data: ReadonlyArray<T>
+  getSubRows: ((row: T, index: number) => ReadonlyArray<T> | undefined) | undefined
+  getRowId: (row: T, index: number) => string
+  heldCount: number
+  enter: (via: 'pointer' | 'focus') => void
+  leave: (via: 'pointer' | 'focus') => void
+  show: () => void
+  /** The next `data` answers a change the user made, so its rows show instead of being held. */
+  showNextData: () => void
+}
+
+function useHeldRows<T extends RowData>(
+  data: ReadonlyArray<T>,
+  getRowId: (row: T, index: number) => string,
+  getSubRows: ((row: T, index: number) => ReadonlyArray<T> | undefined) | undefined,
+  holdNewRows: boolean,
+): HeldRows<T> {
+  const inside = React.useRef({ pointer: false, focus: false })
+  // Ids shown when the pointer or focus came in; null while nothing is held.
+  const [shownIds, setShownIds] = React.useState<ReadonlySet<string> | null>(null)
+  // The `data` on screen when the user changed the sort, search or page; the next `data` answers it.
+  const [answered, setAnswered] = React.useState<ReadonlyArray<T> | null>(null)
+
+  // Filtering shifts indexes, so ids are computed once against the full tree and TanStack gets them back.
+  const idOf = new Map<T, string>()
+  const collect = (rows: ReadonlyArray<T>) =>
+    rows.forEach((row, index) => {
+      idOf.set(row, getRowId(row, index))
+      const subRows = getSubRows?.(row, index)
+      if (subRows) collect(subRows)
+    })
+  collect(data)
+  const allIds = () => new Set(idOf.values())
+
+  if (!holdNewRows && shownIds !== null) setShownIds(null)
+  if (answered !== null && data !== answered) {
+    setAnswered(null)
+    if (shownIds !== null) setShownIds(allIds())
+  }
+
+  // By id, not by `idOf`: `getSubRows` may build new child objects on every call.
+  const isShown = (row: T, index: number) => shownIds === null || shownIds.has(getRowId(row, index))
+  // A held parent counts once: its children arrive with it.
+  const countHeld = (rows: ReadonlyArray<T>): number =>
+    rows.reduce((count, row, index) => count + (isShown(row, index) ? countHeld(getSubRows?.(row, index) ?? []) : 1), 0)
+
+  return {
+    data: shownIds === null ? data : data.filter(isShown),
+    getSubRows:
+      shownIds === null || !getSubRows ? getSubRows : (row, index) => getSubRows(row, index)?.filter(isShown),
+    getRowId: (row, index) => idOf.get(row) ?? getRowId(row, index),
+    heldCount: shownIds === null ? 0 : countHeld(data),
+    enter: (via) => {
+      if (holdNewRows && !inside.current.pointer && !inside.current.focus) setShownIds(allIds())
+      inside.current[via] = true
+    },
+    leave: (via) => {
+      inside.current[via] = false
+      if (!inside.current.pointer && !inside.current.focus) setShownIds(null)
+    },
+    show: () => setShownIds(allIds()),
+    showNextData: () => setAnswered(data),
+  }
+}
+
+function DataTableColumnsMenu<T extends RowData>({
+  columns,
+}: {
+  columns: ReadonlyArray<TanStackColumn<DataTableFeatures, T, unknown>>
+}) {
+  const t = useStrings()
+  const slots = table()
+  return (
+    <DialogTrigger>
+      <Button variant="outline" size="sm" className={slots.columnsButton()}>
+        {t.columns}
+      </Button>
+      <Popover placement="bottom end" className={slots.popover()}>
+        <Dialog aria-label={t.columns} className={slots.columnList()}>
+          {columns.map((column) => (
+            <Checkbox
+              key={column.id}
+              label={typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
+              isSelected={column.getIsVisible()}
+              onChange={(isSelected) => column.toggleVisibility(isSelected)}
+            />
+          ))}
+        </Dialog>
+      </Popover>
+    </DialogTrigger>
+  )
+}
+
+interface DataTablePaginationFooterProps {
+  pagination: DataTablePagination
+  pageSizeOptions: ReadonlyArray<number>
+  rowsOnPage: number
+  total: number
+  canPreviousPage: boolean
+  canNextPage: boolean
+  onPageSizeChange: (pageSize: number) => void
+  onPreviousPage: () => void
+  onNextPage: () => void
+}
+
+function DataTablePaginationFooter({
+  pagination,
+  pageSizeOptions,
+  rowsOnPage,
+  total,
+  canPreviousPage,
+  canNextPage,
+  onPageSizeChange,
+  onPreviousPage,
+  onNextPage,
+}: DataTablePaginationFooterProps) {
+  const t = useStrings()
+  const { locale } = useLocale()
+  const slots = table()
+  const format = new Intl.NumberFormat(locale)
+  const first = rowsOnPage === 0 ? 0 : pagination.pageIndex * pagination.pageSize + 1
+  const last = rowsOnPage === 0 ? 0 : first + rowsOnPage - 1
+  return (
+    <div data-slot="data-table-pagination" className={slots.footer()}>
+      <Select
+        label={t.pageSize}
+        options={pageSizeOptions.map((size) => ({ value: String(size), label: format.format(size) }))}
+        selectedKey={String(pagination.pageSize)}
+        onSelectionChange={(key) => onPageSizeChange(Number(key))}
+        className={slots.pageSize()}
+      />
+      <span aria-live="polite" className={slots.position()}>
+        {t.pageRange(format.format(first), format.format(last), format.format(total))}
+      </span>
+      <div className={slots.pager()}>
+        <Button variant="outline" size="sm" isDisabled={!canPreviousPage} onPress={onPreviousPage}>
+          {t.previousPage}
+        </Button>
+        <Button variant="outline" size="sm" isDisabled={!canNextPage} onPress={onNextPage}>
+          {t.nextPage}
+        </Button>
+      </div>
+    </div>
+  )
+}
+
 /**
  * Data table: TanStack Table computes the rows from `columns` and `data`
  * (sorting, global search, paging, column visibility), React Aria's `Table`
@@ -200,7 +347,6 @@ export function DataTable<T extends RowData>({
   getRowId,
   mode = 'client',
   rowCount,
-  enableSorting = true,
   sorting: sortingProp,
   onSortingChange,
   enableSearch = false,
@@ -224,7 +370,6 @@ export function DataTable<T extends RowData>({
   className,
 }: DataTableProps<T>) {
   const t = useStrings()
-  const { locale } = useLocale()
   const slots = table({ density })
   const [sorting, setSorting] = useControllableState(sortingProp, [], onSortingChange)
   const [globalFilter, setGlobalFilter] = useControllableState(globalFilterProp, '', onGlobalFilterChange)
@@ -238,28 +383,12 @@ export function DataTable<T extends RowData>({
   const isServer = mode === 'server'
 
   const tableRef = React.useRef<HTMLTableElement>(null)
-  const inside = React.useRef({ pointer: false, focus: false })
-  // Ids shown when the pointer or focus came in; null while nothing is held.
-  const [shownIds, setShownIds] = React.useState<ReadonlySet<string> | null>(null)
-  if (!holdNewRows && shownIds !== null) setShownIds(null)
-  const ids = data.map(getRowId)
-  const shownData = shownIds === null ? data : data.filter((_, index) => shownIds.has(ids[index]!))
-  const heldCount = data.length - shownData.length
-  // Filtering shifts indexes, so TanStack gets back the id computed against the full `data`.
-  const idOf = new Map(data.map((row, index) => [row, ids[index]!]))
-  const enter = (via: 'pointer' | 'focus') => {
-    if (holdNewRows && !inside.current.pointer && !inside.current.focus) setShownIds(new Set(ids))
-    inside.current[via] = true
-  }
-  const leave = (via: 'pointer' | 'focus') => {
-    inside.current[via] = false
-    if (!inside.current.pointer && !inside.current.focus) setShownIds(null)
-  }
+  const held = useHeldRows(data, getRowId, getSubRows, holdNewRows)
   const showNewRows = () => {
     tableRef.current?.focus()
-    setShownIds(new Set(ids))
+    held.show()
   }
-  const newRowsLabel = (showNewRowsLabel ?? t.newRows)(heldCount)
+  const newRowsLabel = (showNewRowsLabel ?? t.newRows)(held.heldCount)
 
   // A new sort or search changes which rows exist, so the user goes back to
   // the first page. TanStack's own reset is off: it also fires on new `data`,
@@ -267,26 +396,34 @@ export function DataTable<T extends RowData>({
   const toFirstPage = () => {
     if (enablePagination && pagination.pageIndex !== 0) setPagination({ ...pagination, pageIndex: 0 })
   }
+  // In server mode the app answers a sort, search or page change with new rows, which aren't new to the user.
+  const userChanged = () => {
+    if (isServer) held.showNextData()
+  }
 
   const instance = useTable({
     features,
     columns,
-    data: shownData,
-    getRowId: (row, index) => idOf.get(row) ?? getRowId(row, index),
-    getSubRows,
+    data: held.data,
+    getRowId: held.getRowId,
+    getSubRows: held.getSubRows,
     state: { sorting, globalFilter, pagination, columnVisibility: visibility, expanded: expansion },
     onSortingChange: (updater) => {
       setSorting(updater)
       toFirstPage()
+      userChanged()
     },
     onGlobalFilterChange: (updater) => {
       setGlobalFilter(updater)
       toFirstPage()
+      userChanged()
     },
-    onPaginationChange: setPagination,
+    onPaginationChange: (updater) => {
+      setPagination(updater)
+      userChanged()
+    },
     onColumnVisibilityChange: setVisibility,
     onExpandedChange: setExpansion,
-    enableSorting,
     enableMultiSort: false,
     manualSorting: isServer,
     manualFiltering: isServer,
@@ -335,10 +472,7 @@ export function DataTable<T extends RowData>({
             <Cell id={cell.id} className={slots.cell()}>
               {({ isTreeColumn, hasChildItems, isExpanded, level }) =>
                 isTreeColumn ? (
-                  <div
-                    className={slots.treeCell()}
-                    style={{ paddingInlineStart: `calc(var(--spacing) * 5 * ${level - 1})` }}
-                  >
+                  <div className={slots.treeCell({ nested: level > 1 })}>
                     {hasChildItems ? (
                       <AriaButton
                         slot="chevron"
@@ -382,7 +516,7 @@ export function DataTable<T extends RowData>({
       ref={tableRef}
       data-slot="data-table"
       data-density={density}
-      data-held={heldCount > 0 || undefined}
+      data-held={held.heldCount > 0 || undefined}
       aria-label={ariaLabel ?? t.dataTable}
       sortDescriptor={sortDescriptor}
       onSortChange={(descriptor) => instance.getColumn(String(descriptor.column))?.toggleSorting()}
@@ -422,25 +556,20 @@ export function DataTable<T extends RowData>({
     </Table>
   )
 
-  const format = new Intl.NumberFormat(locale)
-  const total = instance.getRowCount()
-  const first = rows.length === 0 ? 0 : pagination.pageIndex * pagination.pageSize + 1
-  const last = rows.length === 0 ? 0 : first + rows.length - 1
-
   return (
     <div
       data-slot="data-table-container"
       className={slots.container()}
-      onPointerEnter={() => enter('pointer')}
-      onPointerLeave={() => leave('pointer')}
-      onFocus={() => enter('focus')}
+      onPointerEnter={() => held.enter('pointer')}
+      onPointerLeave={() => held.leave('pointer')}
+      onFocus={() => held.enter('focus')}
       onBlur={(event) => {
-        if (!event.currentTarget.contains(event.relatedTarget)) leave('focus')
+        if (!event.currentTarget.contains(event.relatedTarget)) held.leave('focus')
       }}
     >
       {holdNewRows && (
         <div role="status" className={slots.announcer()}>
-          {heldCount > 0 && newRowsLabel}
+          {held.heldCount > 0 && newRowsLabel}
         </div>
       )}
       {(enableSearch || hideableColumns.length > 0 || holdNewRows) && (
@@ -454,64 +583,27 @@ export function DataTable<T extends RowData>({
               className={slots.search()}
             />
           )}
-          {heldCount > 0 && (
+          {held.heldCount > 0 && (
             <AriaButton data-slot="data-table-new-rows" className={slots.newRows()} onPress={showNewRows}>
               {newRowsLabel}
             </AriaButton>
           )}
-          {hideableColumns.length > 0 && (
-            <DialogTrigger>
-              <Button variant="outline" size="sm" className={slots.columnsButton()}>
-                {t.columns}
-              </Button>
-              <Popover placement="bottom end" className={slots.popover()}>
-                <Dialog aria-label={t.columns} className={slots.columnList()}>
-                  {hideableColumns.map((column) => (
-                    <Checkbox
-                      key={column.id}
-                      label={typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
-                      isSelected={column.getIsVisible()}
-                      onChange={(isSelected) => column.toggleVisibility(isSelected)}
-                    />
-                  ))}
-                </Dialog>
-              </Popover>
-            </DialogTrigger>
-          )}
+          {hideableColumns.length > 0 && <DataTableColumnsMenu columns={hideableColumns} />}
         </div>
       )}
       {grid}
       {enablePagination && (
-        <div data-slot="data-table-pagination" className={slots.footer()}>
-          <Select
-            label={t.pageSize}
-            options={pageSizeOptions.map((size) => ({ value: String(size), label: format.format(size) }))}
-            selectedKey={String(pagination.pageSize)}
-            onSelectionChange={(key) => instance.setPagination({ pageIndex: 0, pageSize: Number(key) })}
-            className={slots.pageSize()}
-          />
-          <span aria-live="polite" className={slots.position()}>
-            {t.pageRange(format.format(first), format.format(last), format.format(total))}
-          </span>
-          <div className={slots.pager()}>
-            <Button
-              variant="outline"
-              size="sm"
-              isDisabled={!instance.getCanPreviousPage()}
-              onPress={() => instance.previousPage()}
-            >
-              {t.previousPage}
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              isDisabled={!instance.getCanNextPage()}
-              onPress={() => instance.nextPage()}
-            >
-              {t.nextPage}
-            </Button>
-          </div>
-        </div>
+        <DataTablePaginationFooter
+          pagination={pagination}
+          pageSizeOptions={pageSizeOptions}
+          rowsOnPage={rows.length}
+          total={instance.getRowCount()}
+          canPreviousPage={instance.getCanPreviousPage()}
+          canNextPage={instance.getCanNextPage()}
+          onPageSizeChange={(pageSize) => instance.setPagination({ pageIndex: 0, pageSize })}
+          onPreviousPage={() => instance.previousPage()}
+          onNextPage={() => instance.nextPage()}
+        />
       )}
     </div>
   )
