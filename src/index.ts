@@ -28,6 +28,7 @@ export {
   type DisclosureGroupProps,
   type DisclosureProps,
 } from './components/disclosure'
+export { Drawer, type DrawerProps } from './components/drawer'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Kbd, type KbdProps } from './components/kbd'
@@ -46,6 +47,12 @@ export { Meter, type MeterProps } from './components/meter'
 export { Modal, type ModalProps } from './components/modal'
 export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
+export {
+  SegmentedControl,
+  SegmentedControlItem,
+  type SegmentedControlItemProps,
+  type SegmentedControlProps,
+} from './components/segmented-control'
 export { Select, type SelectOption, type SelectProps } from './components/select'
 export { Skeleton, type SkeletonProps } from './components/skeleton'
 export { Spinner, type SpinnerProps } from './components/spinner'
