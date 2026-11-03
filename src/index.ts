@@ -13,7 +13,9 @@ export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dia
 export { DataTable, type DataTableColumn, type DataTableProps } from './components/data-table'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
+export { Kbd, type KbdProps } from './components/kbd'
 export { Label, type LabelProps } from './components/label'
+export { Meter, type MeterProps } from './components/meter'
 export { Modal, type ModalProps } from './components/modal'
 export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
@@ -39,5 +41,6 @@ export {
   type ToastRegionProps,
   type ToastVariant,
 } from './components/toast'
+export { Tooltip, type TooltipProps } from './components/tooltip'
 export { cn } from './lib/utils'
 export { applyTheme, createTheme, createThemeCss, type ThemeVars, type ThemeStyle } from './theme'
