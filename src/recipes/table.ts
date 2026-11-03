@@ -2,6 +2,11 @@ import { tv } from 'tailwind-variants'
 
 export const table = tv({
   slots: {
+    container: 'flex w-full flex-col gap-2',
+    toolbar: 'flex justify-end',
+    popover:
+      'min-w-40 rounded-md border border-border bg-popover text-popover-foreground shadow-lg',
+    columnList: 'flex flex-col gap-2 p-3 outline-none',
     root: 'w-full border-collapse text-sm',
     header: 'bg-muted',
     column:
