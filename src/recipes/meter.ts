@@ -7,7 +7,7 @@ export const meter = tv({
     label: 'font-medium text-foreground',
     value: 'tabular-nums text-muted-foreground',
     track: 'w-full overflow-hidden rounded-full bg-muted',
-    fill: 'h-full rounded-full bg-meter-fill transition-[width] motion-reduce:transition-none',
+    fill: 'h-full w-(--meter-value) rounded-full bg-meter-fill transition-[width] motion-reduce:transition-none',
   },
   variants: {
     size: {

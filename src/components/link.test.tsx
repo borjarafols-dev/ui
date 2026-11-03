@@ -45,9 +45,9 @@ describe('Link', () => {
   })
 
   it('opens an external link in a new tab and says so', () => {
-    render(<Link href="https://linear.app/x/issue/BOR-1" isExternal>BOR-1</Link>)
+    render(<Link href="https://example.com/docs" isExternal>Docs</Link>)
 
-    const link = screen.getByRole('link', { name: 'BOR-1 (opens in a new tab)' })
+    const link = screen.getByRole('link', { name: 'Docs (opens in a new tab)' })
     expect(link).toHaveAttribute('target', '_blank')
     expect(link).toHaveAttribute('rel', 'noopener noreferrer')
     expect(link).toHaveAttribute('data-external', 'true')
@@ -84,15 +84,18 @@ describe('Link', () => {
     const navigate = vi.fn()
     const clicks: MouseEvent[] = []
     const record = (e: MouseEvent) => clicks.push(e)
-    document.addEventListener('click', record, true)
     render(
       <RouterProvider navigate={navigate}>
         <Link href="/projects/42">Apollo</Link>
       </RouterProvider>,
     )
 
-    await user.click(screen.getByRole('link', { name: 'Apollo' }))
-    document.removeEventListener('click', record, true)
+    document.addEventListener('click', record, true)
+    try {
+      await user.click(screen.getByRole('link', { name: 'Apollo' }))
+    } finally {
+      document.removeEventListener('click', record, true)
+    }
 
     expect(navigate).toHaveBeenCalledWith('/projects/42', undefined)
     expect(clicks).toHaveLength(1)

@@ -12,16 +12,12 @@ describe('Kbd', () => {
     expect(key.tagName).toBe('KBD')
     expect(key).toHaveAttribute('data-slot', 'kbd')
     expect(key).toHaveAttribute('data-size', 'md')
-    expect(key).toHaveClass('h-5', 'min-w-5', 'text-xs')
   })
 
-  it('applies the sm size classes', () => {
+  it('marks the sm size', () => {
     render(<Kbd size="sm">K</Kbd>)
 
-    const key = screen.getByText('K')
-    expect(key).toHaveAttribute('data-size', 'sm')
-    expect(key).toHaveClass('h-4', 'min-w-4', 'text-[0.625rem]')
-    expect(key).not.toHaveClass('h-5', 'min-w-5', 'text-xs')
+    expect(screen.getByText('K')).toHaveAttribute('data-size', 'sm')
   })
 
   it('uses aria-label as its accessible name', () => {

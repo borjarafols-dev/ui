@@ -3,7 +3,7 @@ import type { TabsProps } from './tabs'
 
 export default {
   component: 'Tabs',
-  sourceHash: 'sha256:9ec6a3c306f28c1fe5fb4eb642476475a8702bdc00f0c689695ac3db4a3c1bee',
+  sourceHash: 'sha256:c38964e4749831ae65cd81c76efe4d3c47711773479bbb9fe8c997a0921118b8',
   category: 'layout',
   summary: 'Underlined tabs that switch between panels of related content on one page, one panel at a time.',
   whenToUse: [

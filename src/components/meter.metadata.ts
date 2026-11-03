@@ -3,12 +3,12 @@ import type { MeterProps } from './meter'
 
 export default {
   component: 'Meter',
-  sourceHash: 'sha256:cc3d4ed0b4970f9770ff9c7d8389c4f175aede0ef1aa2c201ab7f625e6c584dd',
+  sourceHash: 'sha256:9b1c91abed5bda280ce88cc98a492717ff2c720ea68f18d27c57c1aaeb6f228d',
   category: 'display',
   summary: 'A bar showing a known quantity against a limit, turning warning then destructive past optional thresholds.',
   whenToUse: [
     'Showing storage used, quota consumed or budget spent against a fixed limit.',
-    'Usage limits in a header or on a usage page, with a warning as the value nears the limit.',
+    'Seat, API call or storage limits on a settings or billing page, with a warning as the value nears the limit.',
   ],
   whenNotToUse: [
     'Progress towards finishing a task or upload: use a progress bar, not a Meter.',
@@ -32,7 +32,7 @@ export default {
     'The caller provides the name (label or aria-label) and puts the warning or destructive status into text.',
   ],
   example: `<Meter
-  label="5-hour limit"
+  label="API calls"
   value={used}
   maxValue={limit}
   warningAt={limit * 0.8}

@@ -14,7 +14,7 @@ import {
   type PopoverProps,
 } from 'react-aria-components'
 
-import { menu } from '../recipes/menu'
+import { menu, type MenuVariants } from '../recipes/menu'
 import { Kbd } from './kbd'
 
 export interface MenuProps<T> extends Omit<RACMenuProps<T>, 'className'> {
@@ -57,7 +57,7 @@ export function Menu<T extends object>({
 }
 
 export interface MenuItemProps extends Omit<RACMenuItemProps, 'className' | 'children'> {
-  variant?: 'default' | 'destructive'
+  variant?: MenuVariants['variant']
   /** Keyboard shortcut shown at the end of the item. Display only: the menu doesn't bind it. */
   shortcut?: string
   children?: React.ReactNode
@@ -82,7 +82,7 @@ export function MenuItem({ variant = 'default', shortcut, children, className, t
             </span>
           )}
           {children}
-          {shortcut && <Kbd className={slots.shortcut()}>{shortcut}</Kbd>}
+          {shortcut && <Kbd size="sm" className={slots.shortcut()}>{shortcut}</Kbd>}
         </>
       )}
     </RACMenuItem>

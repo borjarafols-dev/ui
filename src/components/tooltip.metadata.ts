@@ -3,7 +3,7 @@ import type { TooltipProps } from './tooltip'
 
 export default {
   component: 'Tooltip',
-  sourceHash: 'sha256:d414374a651753173193b647e4a7b4928cd50d248747376ccc31a657cfb03479',
+  sourceHash: 'sha256:c25cfff4f4b8838180e5771cfac0d7053c693bc236a931d759e51cbeb6c5fa6c',
   category: 'overlay',
   summary: 'Short supplementary text shown on hover after a delay or at once on keyboard focus of its trigger.',
   whenToUse: [

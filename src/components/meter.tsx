@@ -1,10 +1,11 @@
+import type * as React from 'react'
 import {
   Label,
   Meter as RACMeter,
   type MeterProps as RACMeterProps,
 } from 'react-aria-components'
 
-import { meter } from '../recipes/meter'
+import { meter, type MeterVariants } from '../recipes/meter'
 
 export interface MeterProps extends Omit<RACMeterProps, 'className' | 'children'> {
   /** Visible label. When absent, pass aria-label. */
@@ -15,7 +16,7 @@ export interface MeterProps extends Omit<RACMeterProps, 'className' | 'children'
   warningAt?: number
   /** Value at which the meter turns destructive. Must be >= warningAt when both are set. */
   destructiveAt?: number
-  size?: 'sm' | 'md'
+  size?: MeterVariants['size']
   className?: string
 }
 
@@ -63,7 +64,11 @@ export function Meter({
             </div>
           )}
           <div className={slots.track()}>
-            <div data-slot="meter-fill" className={slots.fill()} style={{ width: `${percentage}%` }} />
+            <div
+              data-slot="meter-fill"
+              className={slots.fill()}
+              style={{ '--meter-value': `${percentage}%` } as React.CSSProperties}
+            />
           </div>
         </>
       )}

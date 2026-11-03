@@ -31,7 +31,6 @@ const slots = tooltip()
  * @usage Icon-only buttons still need aria-label; the tooltip doesn't name them.
  * @usage Don't put a tooltip on a disabled control; explain why it is disabled in visible text.
  * @usage For rich or interactive content on demand use a popover dialog, not a tooltip.
- * @usage isTextTrigger adds a tab stop per trigger; use it sparingly.
  */
 export function Tooltip({
   content,
@@ -46,8 +45,9 @@ export function Tooltip({
     <TooltipTrigger delay={delay} {...props}>
       {isTextTrigger ? (
         <Focusable>
-          {/* Focusable warns without an interactive role; aria-describedby is announced on button. */}
-          <span role="button" tabIndex={0} data-slot="tooltip-trigger" className={slots.textTrigger()}>
+          {/* No role: the text does nothing when activated, so a widget role would mislead
+              screen readers. Focusable warns in dev about the missing role; that is expected. */}
+          <span tabIndex={0} data-slot="tooltip-trigger" className={slots.textTrigger()}>
             {children}
           </span>
         </Focusable>

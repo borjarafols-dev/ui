@@ -69,15 +69,15 @@ export const LongText: Story = {
 interface Run {
   id: string
   name: string
-  cost: number
+  rows: number
   startedAt: string
   startedAgo: string
 }
 
 const runs: Run[] = [
-  { id: '1', name: 'Nightly import', cost: 1214, startedAt: '2026-11-03 14:02', startedAgo: '3m ago' },
-  { id: '2', name: 'Weekly report', cost: 86_430, startedAt: '2026-11-03 09:15', startedAgo: '5h ago' },
-  { id: '3', name: 'Backfill', cost: 412, startedAt: '2026-11-02 18:40', startedAgo: '20h ago' },
+  { id: '1', name: 'Nightly import', rows: 1214, startedAt: '2026-11-03 14:02', startedAgo: '3m ago' },
+  { id: '2', name: 'Weekly report', rows: 86_430, startedAt: '2026-11-03 09:15', startedAgo: '5h ago' },
+  { id: '3', name: 'Backfill', rows: 412, startedAt: '2026-11-02 18:40', startedAgo: '20h ago' },
 ]
 
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 })
@@ -86,8 +86,8 @@ const exact = new Intl.NumberFormat('en')
 const columns: DataTableColumn<Run>[] = [
   { key: 'name', header: 'Run' },
   {
-    key: 'cost',
-    header: 'Tokens',
+    key: 'rows',
+    header: 'Rows',
     render: (value) => (
       <Tooltip content={exact.format(Number(value))} isTextTrigger>
         <span>{compact.format(Number(value))}</span>

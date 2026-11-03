@@ -3,7 +3,7 @@ import type { MenuProps } from './menu'
 
 export default {
   component: 'Menu',
-  sourceHash: 'sha256:cec933ec8c5cb8b56928ca43969f4809740e2725247929ccf51a43e8d6358ff1',
+  sourceHash: 'sha256:53908a51ea6f12d32c063cc16cf9a5b60f637bac5fdc8cb7fa3046762f21a298',
   category: 'action',
   summary: 'A button that opens a popover list of actions, with sections, shortcuts, links and destructive items.',
   whenToUse: [

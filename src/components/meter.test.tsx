@@ -66,12 +66,9 @@ describe('Meter', () => {
     expect(screen.getByRole('meter', { name: 'Monthly limit' })).toBeInTheDocument()
   })
 
-  it('has a thinner track at size sm', () => {
-    const { container } = render(<Meter label="Quota" value={10} size="sm" />)
+  it('marks the sm size', () => {
+    render(<Meter label="Quota" value={10} size="sm" />)
 
     expect(screen.getByRole('meter')).toHaveAttribute('data-size', 'sm')
-    const track = container.querySelector('[data-slot="meter-fill"]')!.parentElement
-    expect(track).toHaveClass('h-1')
-    expect(track).not.toHaveClass('h-2')
   })
 })

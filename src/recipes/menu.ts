@@ -8,7 +8,7 @@ export const menu = tv({
     item: 'flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none focus:bg-accent focus:text-accent-foreground disabled:opacity-50',
     sectionHeader: 'px-2 py-1.5 text-xs font-medium text-muted-foreground',
     separator: '-mx-1 my-1 h-px bg-border',
-    shortcut: 'ms-auto text-xs text-muted-foreground',
+    shortcut: 'ms-auto',
     check: 'inline-flex w-4 shrink-0 justify-center',
   },
   variants: {

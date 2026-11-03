@@ -37,19 +37,19 @@ export const Basic: Story = {
 
 export const Controlled: Story = {
   render: function Render() {
-    const [tab, setTab] = useState<Key>('models')
+    const [tab, setTab] = useState<Key>('activity')
     return (
       <div className="grid w-96 gap-4">
         <Tabs selectedKey={tab} onSelectionChange={setTab}>
-          <TabList aria-label="Configuration">
-            <Tab id="providers">Providers</Tab>
-            <Tab id="models">Models</Tab>
+          <TabList aria-label="Project">
+            <Tab id="overview">Overview</Tab>
+            <Tab id="activity">Activity</Tab>
           </TabList>
-          <TabPanel id="providers" className="text-sm">
-            Connected providers.
+          <TabPanel id="overview" className="text-sm">
+            Project summary.
           </TabPanel>
-          <TabPanel id="models" className="text-sm">
-            Available models.
+          <TabPanel id="activity" className="text-sm">
+            Recent changes.
           </TabPanel>
         </Tabs>
         <p className="text-sm text-muted-foreground">?tab={String(tab)}</p>

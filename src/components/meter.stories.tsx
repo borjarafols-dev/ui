@@ -38,9 +38,9 @@ export const NoVisibleLabel: Story = {
 }
 
 const limits = [
-  { label: '5-hour limit', used: 38, limit: 50, reset: 'Resets in 2 h 14 min' },
-  { label: 'Weekly limit', used: 410, limit: 500, reset: 'Resets Monday 09:00' },
-  { label: 'Monthly budget', used: 96, limit: 100, reset: 'Resets on the 1st' },
+  { label: 'Storage (GB)', used: 38, limit: 50, reset: 'Resets on the 1st' },
+  { label: 'Seats', used: 41, limit: 50, reset: 'Renews on 1 January' },
+  { label: 'API calls', used: 9_600, limit: 10_000, reset: 'Resets in 6 days' },
 ]
 
 export const QuotaCard: Story = {
