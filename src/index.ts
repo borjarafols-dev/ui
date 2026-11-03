@@ -41,6 +41,7 @@ export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
 export { Select, type SelectOption, type SelectProps } from './components/select'
 export { Spinner, type SpinnerProps } from './components/spinner'
+export { Switch, type SwitchProps } from './components/switch'
 export {
   Tab,
   TabList,
