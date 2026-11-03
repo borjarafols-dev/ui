@@ -12,6 +12,22 @@ describe('Badge', () => {
     expect(badge).toHaveAttribute('data-variant', 'destructive')
   })
 
+  it.each(['success', 'warning', 'info'] as const)('renders the %s status variant', (variant) => {
+    render(<Badge variant={variant}>Status</Badge>)
+
+    const badge = screen.getByText('Status')
+    expect(badge).toHaveClass(`bg-${variant}`, `text-${variant}-foreground`)
+    expect(badge).toHaveAttribute('data-variant', variant)
+  })
+
+  it('defaults to the primary variant', () => {
+    render(<Badge>Default</Badge>)
+
+    const badge = screen.getByText('Default')
+    expect(badge).toHaveClass('bg-primary', 'text-primary-foreground')
+    expect(badge).toHaveAttribute('data-variant', 'primary')
+  })
+
   it('merges custom className', () => {
     render(<Badge className="uppercase">New</Badge>)
 
