@@ -3,7 +3,7 @@ import type { LinkProps } from './link'
 
 export default {
   component: 'Link',
-  sourceHash: 'sha256:1d4b689bacd8791be216155786b77ca5ca92f1d9405e7e5575cf04796d9a1373',
+  sourceHash: 'sha256:04c387f53d70dcf7a32dc2c450393a3c3b35fc6e23bfa19f786ce8e63e6a15e4',
   category: 'action',
   summary: 'A text link to another page, in the app through its router or outside it in a new tab.',
   whenToUse: [
