@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Badge } from './badge'
-import { DataTable, type DataTableColumn } from './data-table'
+import { createDataTableColumnHelper, DataTable } from './data-table'
 
 interface Member {
   id: string
@@ -16,21 +16,24 @@ const members: Member[] = [
   { id: '3', name: 'Anna Soler', email: 'anna@example.com', status: 'active' },
 ]
 
-const columns: DataTableColumn<Member>[] = [
-  { key: 'name', header: 'Name' },
-  { key: 'email', header: 'Email' },
-  {
-    key: 'status',
+const column = createDataTableColumnHelper<Member>()
+
+const columns = column.columns([
+  column.accessor('name', { header: 'Name' }),
+  column.accessor('email', { header: 'Email' }),
+  column.accessor('status', {
     header: 'Status',
-    render: (value) => <Badge variant={value === 'active' ? 'primary' : 'secondary'}>{String(value)}</Badge>,
-  },
-]
+    cell: (info) => (
+      <Badge variant={info.getValue() === 'active' ? 'primary' : 'secondary'}>{info.getValue()}</Badge>
+    ),
+  }),
+])
 
 const meta = {
   title: 'Components/DataTable',
   component: DataTable<Member>,
   tags: ['autodocs'],
-  args: { columns, data: members, keyField: 'id', 'aria-label': 'Members' },
+  args: { columns, data: members, getRowId: (member) => member.id, 'aria-label': 'Members' },
 } satisfies Meta<typeof DataTable<Member>>
 
 export default meta

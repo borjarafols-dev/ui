@@ -93,7 +93,7 @@ Without a provider, labels follow the browser's language. Unsupported languages 
 | `Checkbox` | Supports `isIndeterminate` |
 | `Input`, `Label` | Bare parts for custom fields |
 | `Modal`, `ConfirmDialog` | Focus trap, Escape to close |
-| `DataTable` | React Aria `Table`; `columns` / `data` / `keyField` |
+| `DataTable` | TanStack Table rows rendered with React Aria `Table`; `columns` (via `createDataTableColumnHelper`) / `data` / `getRowId` |
 | `Spinner`, `EmptyState` | |
 
 ## Use outside React (Astro)

@@ -10,7 +10,13 @@ export {
 } from './components/card'
 export { Checkbox, type CheckboxProps } from './components/checkbox'
 export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dialog'
-export { DataTable, type DataTableColumn, type DataTableProps } from './components/data-table'
+export {
+  createDataTableColumnHelper,
+  DataTable,
+  type DataTableColumnDef,
+  type DataTableColumnHelper,
+  type DataTableProps,
+} from './components/data-table'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Label, type LabelProps } from './components/label'
