@@ -25,6 +25,7 @@ const en = {
   notifications: 'Notifications',
   close: 'Close',
   opensInNewTab: '(opens in a new tab)',
+  breadcrumbs: 'Breadcrumbs',
 }
 
 export type Strings = typeof en
@@ -52,6 +53,7 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     notifications: 'Notificaciones',
     close: 'Cerrar',
     opensInNewTab: '(se abre en una pestaña nueva)',
+    breadcrumbs: 'Migas de pan',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -74,6 +76,7 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     notifications: 'Notificacions',
     close: 'Tanca',
     opensInNewTab: '(s’obre en una pestanya nova)',
+    breadcrumbs: 'Ruta de navegació',
   },
 }
 

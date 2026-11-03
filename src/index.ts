@@ -1,3 +1,4 @@
+export { Breadcrumb, Breadcrumbs, type BreadcrumbProps, type BreadcrumbsProps } from './components/breadcrumbs'
 export { Button, type ButtonProps } from './components/button'
 export { Badge, type BadgeProps } from './components/badge'
 export {
