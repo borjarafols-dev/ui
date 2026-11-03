@@ -54,6 +54,9 @@ const textPairs: Pair[] = [
 const uiPairs: Pair[] = [
   { name: 'invalid field edge on background', text: 'destructive', surface: ['background'] },
   { name: 'invalid field edge on card', text: 'destructive', surface: ['card'] },
+  { name: 'input on background', text: 'input', surface: ['background'] },
+  { name: 'input on card', text: 'input', surface: ['card'] },
+  { name: 'ring on background', text: 'ring', surface: ['background'] },
 ]
 
 function declarations(selector: string): Map<string, string> {
