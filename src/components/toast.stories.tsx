@@ -1,4 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
+import { useState } from 'react'
 
 import { Button } from './button'
 import { TextField } from './text-field'
@@ -36,6 +37,68 @@ export const ErrorToast: Story = {
   ),
 }
 
+export const InfoToast: Story = {
+  render: (args) => (
+    <>
+      <Button variant="secondary" onPress={() => toasts.info('A new version is available')}>
+        Show info
+      </Button>
+      <ToastRegion {...args} />
+    </>
+  ),
+}
+
+export const WarningToast: Story = {
+  render: (args) => (
+    <>
+      <Button
+        variant="secondary"
+        onPress={() => toasts.warning('Storage almost full', { description: 'You have used 90% of your space.' })}
+      >
+        Show warning
+      </Button>
+      <ToastRegion {...args} />
+    </>
+  ),
+}
+
+function UndoList() {
+  const [items, setItems] = useState(['Quarterly report', 'Team photo', 'Meeting notes'])
+  const remove = (item: string) => {
+    const index = items.indexOf(item)
+    setItems((current) => current.filter((other) => other !== item))
+    toasts.success('Item deleted', {
+      description: item,
+      action: {
+        label: 'Undo',
+        onAction: () =>
+          setItems((current) => (current.includes(item) ? current : [...current.slice(0, index), item, ...current.slice(index)])),
+      },
+    })
+  }
+  return (
+    <ul className="grid max-w-sm gap-2">
+      {items.map((item) => (
+        <li key={item} className="flex items-center justify-between gap-4">
+          <span>{item}</span>
+          <Button variant="destructive" size="sm" onPress={() => remove(item)}>
+            Delete
+          </Button>
+        </li>
+      ))}
+    </ul>
+  )
+}
+
+export const WithUndo: Story = {
+  render: (args) => (
+    <>
+      <UndoList />
+      <ToastRegion {...args} />
+    </>
+  ),
+}
+
 export const Stacked: Story = {
   render: (args) => (
     <>
@@ -45,6 +108,8 @@ export const Stacked: Story = {
           toasts.success('Invoice sent')
           toasts.error('Could not attach the receipt', { description: 'The file is larger than 10 MB.' })
           toasts.success('Draft saved', { timeout: 10000 })
+          toasts.info('A new version is available')
+          toasts.warning('Storage almost full')
         }}
       >
         Show several

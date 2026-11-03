@@ -57,6 +57,7 @@ export {
   ToastRegion,
   toasts,
   type SuccessToastOptions,
+  type ToastAction,
   type ToastOptions,
   type ToastRegionProps,
   type ToastVariant,
