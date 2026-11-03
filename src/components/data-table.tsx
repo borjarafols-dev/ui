@@ -3,6 +3,8 @@ import {
   type ColumnDef,
   type ColumnHelper,
   columnFilteringFeature,
+  type ColumnVisibilityState,
+  columnVisibilityFeature,
   createColumnHelper,
   createFilteredRowModel,
   createPaginatedRowModel,
@@ -27,6 +29,9 @@ import * as React from 'react'
 import {
   Cell,
   Column,
+  Dialog,
+  DialogTrigger,
+  Popover,
   Row,
   type SortDescriptor,
   Table,
@@ -38,10 +43,12 @@ import {
 import { useStrings } from '../i18n/strings'
 import { table } from '../recipes/table'
 import { Button } from './button'
+import { Checkbox } from './checkbox'
 import { SearchField } from './search-field'
 import { Select } from './select'
 
 const features = tableFeatures({
+  columnVisibilityFeature,
   rowSortingFeature,
   columnFilteringFeature,
   globalFilteringFeature,
@@ -69,6 +76,9 @@ export type DataTableSorting = SortingState
 
 /** TanStack's pagination state: a zero-based `pageIndex` and a `pageSize`. */
 export type DataTablePagination = PaginationState
+
+/** Visibility by column id; a column missing from the map is visible. */
+export type DataTableColumnVisibility = ColumnVisibilityState
 
 /**
  * Creates the column helper for `DataTable` rows of type `T`, so `accessor`
@@ -105,14 +115,17 @@ export interface DataTableProps<T extends RowData> {
   onPaginationChange?: (pagination: DataTablePagination) => void
   /** Choices of the page-size select. The first one is the initial page size. */
   pageSizeOptions?: ReadonlyArray<number>
+  /** Visible columns, controlled. Without it the table keeps its own state, starting with every column shown. */
+  columnVisibility?: DataTableColumnVisibility
+  onColumnVisibilityChange?: (columnVisibility: DataTableColumnVisibility) => void
+  /** Row height and padding. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
   /** Accessible name of the table. Defaults to a localised name. */
   'aria-label'?: string
   /** Shown when there are no rows. Defaults to a localised message. */
   emptyMessage?: React.ReactNode
   className?: string
 }
-
-const slots = table()
 
 const defaultPageSizeOptions = [10, 25, 50, 100]
 
@@ -133,15 +146,19 @@ function useControllableState<V>(
 
 /**
  * Data table: TanStack Table computes the rows from `columns` and `data`
- * (sorting, global search, paging), React Aria's `Table` renders them (grid
- * role, keyboard cell navigation, row headers, `aria-sort`). Every state slice
- * is uncontrolled by default and controlled when its value prop is passed.
- * The first column is the row header.
+ * (sorting, global search, paging, column visibility), React Aria's `Table`
+ * renders them (grid role, keyboard cell navigation, row headers,
+ * `aria-sort`). Every state slice is uncontrolled by default and controlled
+ * when its value prop is passed. The first column is the row header.
+ * A Columns button above the table hides and shows columns; a column with
+ * `enableHiding: false` always shows and has no checkbox.
  *
  * @usage Build `columns` with `createDataTableColumnHelper<Row>()` and give every row a stable id with `getRowId`.
- * @usage Put the column that identifies the row (name, title) first.
+ * @usage Put the column that identifies the row (name, title) first, and give it `enableHiding: false`.
+ * @usage Give every hideable column a string `header`: it labels the column's checkbox (a non-string header falls back to the column id).
  * @usage For data paged by an API, use `mode="server"` with `rowCount` and fetch on `onSortingChange`, `onGlobalFilterChange` and `onPaginationChange`; pass the fetched page as `data`.
- * @usage To keep the table's state in the URL, pass `sorting`, `globalFilter` and `pagination` with their change handlers.
+ * @usage To keep the table's state in the URL, pass `sorting`, `globalFilter`, `pagination` and `columnVisibility` with their change handlers.
+ * @usage Compact density for operational lists read at a glance; comfortable for everything else.
  */
 export function DataTable<T extends RowData>({
   columns,
@@ -159,12 +176,16 @@ export function DataTable<T extends RowData>({
   pagination: paginationProp,
   onPaginationChange,
   pageSizeOptions = defaultPageSizeOptions,
+  columnVisibility,
+  onColumnVisibilityChange,
+  density = 'comfortable',
   'aria-label': ariaLabel,
   emptyMessage,
   className,
 }: DataTableProps<T>) {
   const t = useStrings()
   const { locale } = useLocale()
+  const slots = table({ density })
   const [sorting, setSorting] = useControllableState(sortingProp, [], onSortingChange)
   const [globalFilter, setGlobalFilter] = useControllableState(globalFilterProp, '', onGlobalFilterChange)
   const [pagination, setPagination] = useControllableState(
@@ -172,6 +193,7 @@ export function DataTable<T extends RowData>({
     { pageIndex: 0, pageSize: pageSizeOptions[0] ?? defaultPageSizeOptions[0]! },
     onPaginationChange,
   )
+  const [visibility, setVisibility] = useControllableState(columnVisibility, {}, onColumnVisibilityChange)
   const isServer = mode === 'server'
 
   // A new sort or search changes which rows exist, so the user goes back to
@@ -186,7 +208,7 @@ export function DataTable<T extends RowData>({
     columns,
     data,
     getRowId,
-    state: { sorting, globalFilter, pagination },
+    state: { sorting, globalFilter, pagination, columnVisibility: visibility },
     onSortingChange: (updater) => {
       setSorting(updater)
       toFirstPage()
@@ -196,6 +218,7 @@ export function DataTable<T extends RowData>({
       toFirstPage()
     },
     onPaginationChange: setPagination,
+    onColumnVisibilityChange: setVisibility,
     enableSorting,
     enableMultiSort: false,
     manualSorting: isServer,
@@ -208,6 +231,7 @@ export function DataTable<T extends RowData>({
   const headers = instance.getLeafHeaders()
   const firstColumnId = headers[0]?.column.id
   const rows = instance.getRowModel().rows
+  const hideableColumns = instance.getAllLeafColumns().filter((column) => column.getCanHide())
   const [sorted] = sorting
   const sortDescriptor: SortDescriptor | undefined = sorted
     ? { column: sorted.id, direction: sorted.desc ? 'descending' : 'ascending' }
@@ -216,6 +240,7 @@ export function DataTable<T extends RowData>({
   const grid = (
     <Table
       data-slot="data-table"
+      data-density={density}
       aria-label={ariaLabel ?? t.dataTable}
       sortDescriptor={sortDescriptor}
       onSortChange={(descriptor) => instance.getColumn(String(descriptor.column))?.toggleSorting()}
@@ -242,9 +267,14 @@ export function DataTable<T extends RowData>({
           </Column>
         )}
       </TableHeader>
-      <TableBody items={rows} renderEmptyState={() => <div className={slots.empty()}>{emptyMessage ?? t.noData}</div>}>
+      <TableBody
+        items={rows}
+        // TanStack keeps the same row objects when only visibility changes, so React Aria would reuse their cells.
+        dependencies={[visibility]}
+        renderEmptyState={() => <div className={slots.empty()}>{emptyMessage ?? t.noData}</div>}
+      >
         {(row) => (
-          <Row id={row.id} columns={row.getAllCells()} className={slots.row()}>
+          <Row id={row.id} columns={row.getVisibleCells()} className={slots.row()}>
             {(cell) => (
               <Cell id={cell.id} className={slots.cell()}>
                 <FlexRender cell={cell} />
@@ -256,8 +286,6 @@ export function DataTable<T extends RowData>({
     </Table>
   )
 
-  if (!enableSearch && !enablePagination) return grid
-
   const format = new Intl.NumberFormat(locale)
   const total = instance.getRowCount()
   const first = rows.length === 0 ? 0 : pagination.pageIndex * pagination.pageSize + 1
@@ -265,15 +293,36 @@ export function DataTable<T extends RowData>({
 
   return (
     <div data-slot="data-table-container" className={slots.container()}>
-      {enableSearch && (
+      {(enableSearch || hideableColumns.length > 0) && (
         <div className={slots.toolbar()}>
-          <SearchField
-            aria-label={t.search}
-            placeholder={t.searchPlaceholder}
-            value={globalFilter}
-            onChange={(value) => instance.setGlobalFilter(value)}
-            className={slots.search()}
-          />
+          {enableSearch && (
+            <SearchField
+              aria-label={t.search}
+              placeholder={t.searchPlaceholder}
+              value={globalFilter}
+              onChange={(value) => instance.setGlobalFilter(value)}
+              className={slots.search()}
+            />
+          )}
+          {hideableColumns.length > 0 && (
+            <DialogTrigger>
+              <Button variant="outline" size="sm" className={slots.columnsButton()}>
+                {t.columns}
+              </Button>
+              <Popover placement="bottom end" className={slots.popover()}>
+                <Dialog aria-label={t.columns} className={slots.columnList()}>
+                  {hideableColumns.map((column) => (
+                    <Checkbox
+                      key={column.id}
+                      label={typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
+                      isSelected={column.getIsVisible()}
+                      onChange={(isSelected) => column.toggleVisibility(isSelected)}
+                    />
+                  ))}
+                </Dialog>
+              </Popover>
+            </DialogTrigger>
+          )}
         </div>
       )}
       {grid}

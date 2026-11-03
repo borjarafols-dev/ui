@@ -15,6 +15,7 @@ export {
   DataTable,
   type DataTableColumnDef,
   type DataTableColumnHelper,
+  type DataTableColumnVisibility,
   type DataTablePagination,
   type DataTableProps,
   type DataTableSorting,

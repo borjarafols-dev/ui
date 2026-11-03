@@ -1,9 +1,9 @@
-import { render, screen } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { I18nProvider } from 'react-aria-components'
 import { describe, expect, it, vi } from 'vitest'
 
-import { createDataTableColumnHelper, DataTable } from './data-table'
+import { createDataTableColumnHelper, DataTable, type DataTableColumnVisibility } from './data-table'
 
 interface Row {
   id: string
@@ -27,6 +27,11 @@ const columns = column.columns([
 ])
 
 const getRowId = (row: Row) => row.id
+
+// `hidden`: the open Columns popover hides the rest of the page from the accessibility tree.
+// The replace drops the sort indicator, which is aria-hidden but still text.
+const headerTexts = () =>
+  screen.getAllByRole('columnheader', { hidden: true }).map((header) => header.textContent?.replace(/[▲▼↕]/, ''))
 
 describe('DataTable', () => {
   it('renders a row per datum, with the first column as row header', () => {
@@ -54,6 +59,7 @@ describe('DataTable', () => {
     const user = userEvent.setup()
     render(<DataTable columns={columns} data={data} getRowId={getRowId} />)
 
+    await user.tab()
     await user.tab()
     expect(document.activeElement).toBe(screen.getAllByRole('row')[1])
 
@@ -114,6 +120,7 @@ describe('DataTable', () => {
       const user = userEvent.setup()
       render(<DataTable columns={columns} data={unsorted} getRowId={getRowId} />)
 
+      await user.tab()
       await user.tab()
       await user.keyboard('{ArrowUp}')
       expect(document.activeElement).toBe(screen.getByRole('columnheader', { name: 'Name' }))
@@ -373,6 +380,119 @@ describe('DataTable', () => {
       expect(screen.getByText('1–5 de 12')).toBeInTheDocument()
       expect(screen.getByRole('button', { name: 'Següent' })).toBeInTheDocument()
       expect(screen.getByRole('button', { name: /Files per pàgina/ })).toBeInTheDocument()
+    })
+  })
+
+  it('defaults to comfortable density', () => {
+    render(<DataTable columns={columns} data={data} getRowId={getRowId} />)
+
+    expect(screen.getByRole('grid')).toHaveAttribute('data-density', 'comfortable')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).toHaveClass('px-6', 'py-4')
+    expect(screen.getAllByRole('row')[1]).not.toHaveClass('h-7')
+  })
+
+  it('uses compact padding and 28 px rows with density="compact"', () => {
+    render(<DataTable columns={columns} data={data} getRowId={getRowId} density="compact" />)
+
+    expect(screen.getByRole('grid')).toHaveAttribute('data-density', 'compact')
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass('px-3', 'py-1.5')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).toHaveClass('px-3', 'py-1')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).not.toHaveClass('px-6')
+    expect(screen.getAllByRole('row')[1]).toHaveClass('h-7')
+  })
+
+  describe('column visibility', () => {
+    const hideableColumns = column.columns([
+      column.accessor('name', { header: 'Name', enableHiding: false }),
+      column.accessor('slug', { header: 'Slug' }),
+    ])
+
+    it('lists only hideable columns, and unchecking one removes its header and cells', async () => {
+      const user = userEvent.setup()
+      render(<DataTable columns={hideableColumns} data={data} getRowId={getRowId} />)
+
+      await user.click(screen.getByRole('button', { name: 'Columns' }))
+      const list = await screen.findByRole('dialog', { name: 'Columns' })
+      expect(within(list).getAllByRole('checkbox').map((box) => box.closest('label')?.textContent)).toEqual(['Slug'])
+
+      await user.click(within(list).getByRole('checkbox', { name: 'Slug' }))
+      expect(headerTexts()).toEqual(['Name'])
+      expect(screen.queryByText('alpha')).not.toBeInTheDocument()
+      expect(screen.getByRole('rowheader', { name: 'Alpha', hidden: true })).toBeInTheDocument()
+    })
+
+    it('has no Columns control when no column can hide', () => {
+      render(
+        <DataTable
+          columns={[column.accessor('name', { header: 'Name', enableHiding: false })]}
+          data={data}
+          getRowId={getRowId}
+        />,
+      )
+
+      expect(screen.queryByRole('button', { name: 'Columns' })).not.toBeInTheDocument()
+    })
+
+    it('renders the controlled state and reports changes without applying them', async () => {
+      const user = userEvent.setup()
+      const onColumnVisibilityChange = vi.fn()
+      const { rerender } = render(
+        <DataTable
+          columns={columns}
+          data={data}
+          getRowId={getRowId}
+          columnVisibility={{ slug: false }}
+          onColumnVisibilityChange={onColumnVisibilityChange}
+        />,
+      )
+      expect(headerTexts()).toEqual(['Name'])
+
+      await user.click(screen.getByRole('button', { name: 'Columns' }))
+      await user.click(await screen.findByRole('checkbox', { name: 'Slug' }))
+      expect(onColumnVisibilityChange).toHaveBeenCalledWith({ slug: true })
+      expect(headerTexts()).toEqual(['Name'])
+
+      const visibility: DataTableColumnVisibility = { slug: true }
+      rerender(
+        <DataTable
+          columns={columns}
+          data={data}
+          getRowId={getRowId}
+          columnVisibility={visibility}
+          onColumnVisibilityChange={onColumnVisibilityChange}
+        />,
+      )
+      expect(headerTexts()).toEqual(['Name', 'Slug'])
+    })
+
+    it('works from the keyboard', async () => {
+      const user = userEvent.setup()
+      render(<DataTable columns={columns} data={data} getRowId={getRowId} />)
+
+      await user.tab()
+      expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Columns' }))
+      await user.keyboard('{Enter}')
+      await screen.findByRole('dialog', { name: 'Columns' })
+      await user.tab()
+      expect(document.activeElement).toBe(screen.getByRole('checkbox', { name: 'Name' }))
+      await user.tab()
+      await user.keyboard(' ')
+      expect(screen.getByRole('checkbox', { name: 'Slug' })).not.toBeChecked()
+      expect(headerTexts()).toEqual(['Name'])
+
+      await user.keyboard('{Escape}')
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+      await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Columns' })))
+    })
+
+    it('localises the Columns label', () => {
+      render(
+        <I18nProvider locale="es-ES">
+          <DataTable columns={columns} data={data} getRowId={getRowId} />
+        </I18nProvider>,
+      )
+
+      expect(screen.getByRole('button', { name: 'Columnas' })).toBeInTheDocument()
     })
   })
 })
