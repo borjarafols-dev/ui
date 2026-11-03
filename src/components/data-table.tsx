@@ -120,6 +120,8 @@ export interface DataTableProps<T extends RowData> {
   onColumnVisibilityChange?: (columnVisibility: DataTableColumnVisibility) => void
   /** Row height and padding. Defaults to `'comfortable'`. */
   density?: 'comfortable' | 'compact'
+  /** URL a row opens, navigated through the app's `RouterProvider`. Return undefined for rows that don't link. */
+  getRowHref?: (row: T) => string | undefined
   /** Accessible name of the table. Defaults to a localised name. */
   'aria-label'?: string
   /** Shown when there are no rows. Defaults to a localised message. */
@@ -151,7 +153,8 @@ function useControllableState<V>(
  * `aria-sort`). Every state slice is uncontrolled by default and controlled
  * when its value prop is passed. The first column is the row header.
  * A Columns button above the table hides and shows columns; a column with
- * `enableHiding: false` always shows and has no checkbox.
+ * `enableHiding: false` always shows and has no checkbox. With `getRowHref`,
+ * a press or Enter on a row opens its URL; buttons in cells keep their own action.
  *
  * @usage Build `columns` with `createDataTableColumnHelper<Row>()` and give every row a stable id with `getRowId`.
  * @usage Put the column that identifies the row (name, title) first, and give it `enableHiding: false`.
@@ -159,6 +162,7 @@ function useControllableState<V>(
  * @usage For data paged by an API, use `mode="server"` with `rowCount` and fetch on `onSortingChange`, `onGlobalFilterChange` and `onPaginationChange`; pass the fetched page as `data`.
  * @usage To keep the table's state in the URL, pass `sorting`, `globalFilter`, `pagination` and `columnVisibility` with their change handlers.
  * @usage Compact density for operational lists read at a glance; comfortable for everything else.
+ * @usage getRowHref when the row opens a record; don't also put an "Open" button in the row.
  */
 export function DataTable<T extends RowData>({
   columns,
@@ -179,6 +183,7 @@ export function DataTable<T extends RowData>({
   columnVisibility,
   onColumnVisibilityChange,
   density = 'comfortable',
+  getRowHref,
   'aria-label': ariaLabel,
   emptyMessage,
   className,
@@ -273,15 +278,24 @@ export function DataTable<T extends RowData>({
         dependencies={[visibility]}
         renderEmptyState={() => <div className={slots.empty()}>{emptyMessage ?? t.noData}</div>}
       >
-        {(row) => (
-          <Row id={row.id} columns={row.getVisibleCells()} className={slots.row()}>
-            {(cell) => (
-              <Cell id={cell.id} className={slots.cell()}>
-                <FlexRender cell={cell} />
-              </Cell>
-            )}
-          </Row>
-        )}
+        {(row) => {
+          const href = getRowHref?.(row.original)
+          return (
+            <Row
+              id={row.id}
+              columns={row.getVisibleCells()}
+              href={href}
+              data-href={href}
+              className={slots.row({ link: href !== undefined })}
+            >
+              {(cell) => (
+                <Cell id={cell.id} className={slots.cell()}>
+                  <FlexRender cell={cell} />
+                </Cell>
+              )}
+            </Row>
+          )
+        }}
       </TableBody>
     </Table>
   )

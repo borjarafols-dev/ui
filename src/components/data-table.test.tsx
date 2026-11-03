@@ -1,9 +1,15 @@
 import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import { I18nProvider } from 'react-aria-components'
+import { I18nProvider, RouterProvider } from 'react-aria-components'
 import { describe, expect, it, vi } from 'vitest'
 
-import { createDataTableColumnHelper, DataTable, type DataTableColumnVisibility } from './data-table'
+import { Button } from './button'
+import {
+  createDataTableColumnHelper,
+  DataTable,
+  type DataTableColumnVisibility,
+  type DataTableProps,
+} from './data-table'
 
 interface Row {
   id: string
@@ -399,6 +405,97 @@ describe('DataTable', () => {
     expect(screen.getByRole('rowheader', { name: 'Alpha' })).toHaveClass('px-3', 'py-1')
     expect(screen.getByRole('rowheader', { name: 'Alpha' })).not.toHaveClass('px-6')
     expect(screen.getAllByRole('row')[1]).toHaveClass('h-7')
+  })
+
+  describe('row links', () => {
+    const getRowHref = (row: Row) => (row.id === 'a' ? `/projects/${row.slug}` : undefined)
+
+    const renderLinked = (linkColumns: DataTableProps<Row>['columns'] = columns) => {
+      const navigate = vi.fn()
+      render(
+        <RouterProvider navigate={navigate}>
+          <DataTable columns={linkColumns} data={data} getRowId={getRowId} getRowHref={getRowHref} />
+        </RouterProvider>,
+      )
+      return navigate
+    }
+
+    it('navigates to the row URL on click', async () => {
+      const user = userEvent.setup()
+      const navigate = renderLinked()
+
+      await user.click(screen.getByRole('rowheader', { name: 'Alpha' }))
+      expect(navigate).toHaveBeenCalledTimes(1)
+      expect(navigate.mock.calls[0]?.[0]).toBe('/projects/alpha')
+    })
+
+    it('navigates with Enter on a focused row', async () => {
+      const user = userEvent.setup()
+      const navigate = renderLinked()
+
+      await user.tab()
+      await user.tab()
+      expect(document.activeElement).toBe(screen.getAllByRole('row')[1])
+      await user.keyboard('{Enter}')
+      expect(navigate).toHaveBeenCalledTimes(1)
+      expect(navigate.mock.calls[0]?.[0]).toBe('/projects/alpha')
+    })
+
+    it('marks and styles only rows with an href', () => {
+      renderLinked()
+
+      const [, linked, plain] = screen.getAllByRole('row')
+      expect(linked).toHaveAttribute('data-href', '/projects/alpha')
+      expect(linked).toHaveClass('cursor-pointer', 'hover:bg-muted')
+      expect(plain).not.toHaveAttribute('data-href')
+      expect(plain).not.toHaveClass('cursor-pointer')
+    })
+
+    it("doesn't navigate from a row without an href", async () => {
+      const user = userEvent.setup()
+      const navigate = renderLinked()
+
+      await user.click(screen.getByRole('rowheader', { name: 'Beta' }))
+      expect(navigate).not.toHaveBeenCalled()
+    })
+
+    it('lets a button in a cell run its own action', async () => {
+      const user = userEvent.setup()
+      const onArchive = vi.fn()
+      const withButton = column.columns([
+        column.accessor('name', { header: 'Name' }),
+        column.display({
+          id: 'actions',
+          header: 'Actions',
+          cell: (info) => (
+            <Button size="sm" onPress={() => onArchive(info.row.original.id)}>
+              Archive
+            </Button>
+          ),
+        }),
+      ])
+      const navigate = renderLinked(withButton)
+
+      await user.click(within(screen.getAllByRole('row')[1]!).getByRole('button', { name: 'Archive' }))
+      expect(onArchive).toHaveBeenCalledWith('a')
+      expect(navigate).not.toHaveBeenCalled()
+    })
+
+    it("doesn't make rows links without getRowHref", async () => {
+      const user = userEvent.setup()
+      const navigate = vi.fn()
+      render(
+        <RouterProvider navigate={navigate}>
+          <DataTable columns={columns} data={data} getRowId={getRowId} />
+        </RouterProvider>,
+      )
+
+      const [, first] = screen.getAllByRole('row')
+      expect(first).not.toHaveAttribute('data-href')
+      expect(first).not.toHaveClass('cursor-pointer')
+      await user.click(screen.getByRole('rowheader', { name: 'Alpha' }))
+      expect(navigate).not.toHaveBeenCalled()
+    })
   })
 
   describe('column visibility', () => {

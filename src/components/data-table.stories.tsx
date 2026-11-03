@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { useState } from 'react'
+import { RouterProvider } from 'react-aria-components'
 
 import { Badge } from './badge'
 import {
@@ -127,4 +128,23 @@ export const ComfortableVsCompact: Story = {
       <DataTable {...args} aria-label="Members, compact" density="compact" />
     </div>
   ),
+}
+
+/**
+ * The whole row opens the member. The `RouterProvider` stands in for the app's
+ * router and logs each navigation; Jordi's row returns no href, so it doesn't link.
+ */
+export const RowLinks: Story = {
+  args: { getRowHref: (member) => (member.status === 'paused' ? undefined : `/members/${member.id}`) },
+  render: (args) => {
+    const [visited, setVisited] = useState<string[]>([])
+    return (
+      <RouterProvider navigate={(href) => setVisited((previous) => [...previous, href])}>
+        <div className="flex flex-col gap-3">
+          <DataTable {...args} />
+          <output className="text-sm text-muted-foreground">Navigated to: {visited.join(', ') || 'nothing yet'}</output>
+        </div>
+      </RouterProvider>
+    )
+  },
 }

@@ -28,6 +28,9 @@ export const table = tv({
       comfortable: { column: 'px-6 py-3', cell: 'px-6 py-4' },
       compact: { column: 'px-3 py-1.5', row: 'h-7', cell: 'px-3 py-1' },
     },
+    link: {
+      true: { row: 'cursor-pointer hover:bg-muted' },
+    },
   },
   defaultVariants: { density: 'comfortable' },
 })
