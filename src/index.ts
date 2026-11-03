@@ -14,6 +14,7 @@ export { DataTable, type DataTableColumn, type DataTableProps } from './componen
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Label, type LabelProps } from './components/label'
+export { Meter, type MeterProps } from './components/meter'
 export { Modal, type ModalProps } from './components/modal'
 export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'

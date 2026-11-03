@@ -137,21 +137,26 @@
 
 /* -----------------------------------------------------------------------
  * Layer 3 — component tokens
- * Component-specific decisions built on semantic tokens. Only Button
- * consumes these today; add a component token when an app needs to restyle
- * one component without touching the semantic layer.
+ * Component-specific decisions built on semantic tokens. Only Button and
+ * Meter consume these today; add a component token when an app needs to
+ * restyle one component without touching the semantic layer.
  * ----------------------------------------------------------------------- */
 
 :root {
   --button-primary-bg: var(--primary);
   --button-primary-bg-hover: var(--brand-10);
   --button-primary-fg: var(--primary-foreground);
+
+  --meter-fill: var(--primary);
 }
 
 [data-theme='dark'] {
   --button-primary-bg: var(--brand-9);
   --button-primary-bg-hover: var(--brand-10);
   --button-primary-fg: oklch(0.985 0.002 286.3);
+
+  /* Dark --primary is under 3:1 on dark --muted, the meter's track. */
+  --meter-fill: var(--brand-8);
 }
 
 /* -----------------------------------------------------------------------
@@ -208,4 +213,6 @@
   --color-button-primary: var(--button-primary-bg);
   --color-button-primary-hover: var(--button-primary-bg-hover);
   --color-button-primary-foreground: var(--button-primary-fg);
+
+  --color-meter-fill: var(--meter-fill);
 }
