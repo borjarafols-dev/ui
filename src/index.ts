@@ -16,7 +16,9 @@ export {
   type DataTableColumnDef,
   type DataTableColumnHelper,
   type DataTableColumnVisibility,
+  type DataTablePagination,
   type DataTableProps,
+  type DataTableSorting,
 } from './components/data-table'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
