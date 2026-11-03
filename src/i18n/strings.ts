@@ -22,9 +22,11 @@ const en = {
   confirm: 'Confirm',
   cancel: 'Cancel',
   working: 'Working…',
+  typeToConfirm: (text: string) => `Type ${text} to confirm`,
   notifications: 'Notifications',
   close: 'Close',
   opensInNewTab: '(opens in a new tab)',
+  breadcrumbs: 'Breadcrumbs',
 }
 
 export type Strings = typeof en
@@ -49,9 +51,11 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     confirm: 'Confirmar',
     cancel: 'Cancelar',
     working: 'Procesando…',
+    typeToConfirm: (text) => `Escribe ${text} para confirmar`,
     notifications: 'Notificaciones',
     close: 'Cerrar',
     opensInNewTab: '(se abre en una pestaña nueva)',
+    breadcrumbs: 'Migas de pan',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -71,9 +75,11 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     confirm: 'Confirma',
     cancel: 'Cancel·la',
     working: 'Processant…',
+    typeToConfirm: (text) => `Escriu ${text} per confirmar`,
     notifications: 'Notificacions',
     close: 'Tanca',
     opensInNewTab: '(s’obre en una pestanya nova)',
+    breadcrumbs: 'Ruta de navegació',
   },
 }
 

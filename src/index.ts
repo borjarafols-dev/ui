@@ -1,3 +1,4 @@
+export { Breadcrumb, Breadcrumbs, type BreadcrumbProps, type BreadcrumbsProps } from './components/breadcrumbs'
 export { Button, type ButtonProps } from './components/button'
 export { Badge, type BadgeProps } from './components/badge'
 export {
@@ -21,6 +22,13 @@ export {
   type DataTableProps,
   type DataTableSorting,
 } from './components/data-table'
+export {
+  Disclosure,
+  DisclosureGroup,
+  type DisclosureGroupProps,
+  type DisclosureProps,
+} from './components/disclosure'
+export { Drawer, type DrawerProps } from './components/drawer'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Kbd, type KbdProps } from './components/kbd'
@@ -39,8 +47,16 @@ export { Meter, type MeterProps } from './components/meter'
 export { Modal, type ModalProps } from './components/modal'
 export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
+export {
+  SegmentedControl,
+  SegmentedControlItem,
+  type SegmentedControlItemProps,
+  type SegmentedControlProps,
+} from './components/segmented-control'
 export { Select, type SelectOption, type SelectProps } from './components/select'
+export { Skeleton, type SkeletonProps } from './components/skeleton'
 export { Spinner, type SpinnerProps } from './components/spinner'
+export { Switch, type SwitchProps } from './components/switch'
 export {
   Tab,
   TabList,
@@ -57,6 +73,7 @@ export {
   ToastRegion,
   toasts,
   type SuccessToastOptions,
+  type ToastAction,
   type ToastOptions,
   type ToastRegionProps,
   type ToastVariant,
