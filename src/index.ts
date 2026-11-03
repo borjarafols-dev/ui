@@ -19,6 +19,16 @@ export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
 export { Select, type SelectOption, type SelectProps } from './components/select'
 export { Spinner, type SpinnerProps } from './components/spinner'
+export {
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+  type TabListProps,
+  type TabPanelProps,
+  type TabProps,
+  type TabsProps,
+} from './components/tabs'
 export { TextArea, type TextAreaProps } from './components/text-area'
 export { TextField, type TextFieldProps } from './components/text-field'
 export {
