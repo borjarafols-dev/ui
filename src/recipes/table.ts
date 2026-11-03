@@ -3,7 +3,10 @@ import { tv } from 'tailwind-variants'
 export const table = tv({
   slots: {
     container: 'flex w-full flex-col gap-2',
-    toolbar: 'flex justify-end',
+    toolbar: 'flex min-h-8 items-center justify-end gap-2',
+    newRows:
+      'mr-auto inline-flex h-8 cursor-default items-center rounded-md border border-border bg-muted px-3 text-xs font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring',
+    announcer: 'sr-only',
     popover:
       'min-w-40 rounded-md border border-border bg-popover text-popover-foreground shadow-lg',
     columnList: 'flex flex-col gap-2 p-3 outline-none',

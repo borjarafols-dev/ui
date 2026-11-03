@@ -13,7 +13,18 @@ import {
   useTable,
 } from '@tanstack/react-table'
 import * as React from 'react'
-import { Cell, Column, Dialog, DialogTrigger, Popover, Row, Table, TableBody, TableHeader } from 'react-aria-components'
+import {
+  Button as AriaButton,
+  Cell,
+  Column,
+  Dialog,
+  DialogTrigger,
+  Popover,
+  Row,
+  Table,
+  TableBody,
+  TableHeader,
+} from 'react-aria-components'
 
 import { useStrings } from '../i18n/strings'
 import { table } from '../recipes/table'
@@ -56,6 +67,10 @@ export interface DataTableProps<T extends RowData> {
   onColumnVisibilityChange?: (columnVisibility: DataTableColumnVisibility) => void
   /** Row height and padding. Defaults to `'comfortable'`. */
   density?: 'comfortable' | 'compact'
+  /** Hold rows with new ids while the pointer or focus is in the table, behind a button that shows them. */
+  holdNewRows?: boolean
+  /** Label of the button that shows held rows. Defaults to a localised "Show {n} new rows". */
+  showNewRowsLabel?: (count: number) => string
   /** Accessible name of the table. Defaults to a localised name. */
   'aria-label'?: string
   /** Shown when `data` is empty. Defaults to a localised message. */
@@ -68,13 +83,17 @@ export interface DataTableProps<T extends RowData> {
  * Aria's `Table` renders them (grid role, keyboard cell navigation, row
  * headers). No sorting or pagination yet. The first column is the row header.
  * A Columns button above the table hides and shows columns; a column with
- * `enableHiding: false` always shows and has no checkbox.
+ * `enableHiding: false` always shows and has no checkbox. With `holdNewRows`,
+ * rows with an unseen id wait behind a "Show n new rows" button while the
+ * pointer or focus is in the table, so the row being read doesn't move; rows
+ * already shown update in place and removed rows go at once.
  *
  * @usage Build `columns` with `createDataTableColumnHelper<Row>()` and give every row a stable id with `getRowId`.
  * @usage Put the column that identifies the row (name, title) first, and give it `enableHiding: false`.
  * @usage Give every hideable column a string `header`: it labels the column's checkbox (a non-string header falls back to the column id).
  * @usage To keep hidden columns in the URL, pass `columnVisibility` and `onColumnVisibilityChange`.
  * @usage Compact density for operational lists read at a glance; comfortable for everything else.
+ * @usage holdNewRows for lists that update while the user reads them; not for lists that only change after a user action.
  */
 export function DataTable<T extends RowData>({
   columns,
@@ -83,6 +102,8 @@ export function DataTable<T extends RowData>({
   columnVisibility,
   onColumnVisibilityChange,
   density = 'comfortable',
+  holdNewRows = false,
+  showNewRowsLabel,
   'aria-label': ariaLabel,
   emptyMessage,
   className,
@@ -91,11 +112,34 @@ export function DataTable<T extends RowData>({
   const slots = table({ density })
   const [ownColumnVisibility, setOwnColumnVisibility] = React.useState<DataTableColumnVisibility>({})
   const visibility = columnVisibility ?? ownColumnVisibility
+  const tableRef = React.useRef<HTMLTableElement>(null)
+  const inside = React.useRef({ pointer: false, focus: false })
+  // Ids shown when the pointer or focus came in; null while nothing is held.
+  const [shownIds, setShownIds] = React.useState<ReadonlySet<string> | null>(null)
+  if (!holdNewRows && shownIds !== null) setShownIds(null)
+  const ids = data.map(getRowId)
+  const rows = shownIds === null ? data : data.filter((_, index) => shownIds.has(ids[index]!))
+  const heldCount = data.length - rows.length
+  // Filtering shifts indexes, so TanStack gets back the id computed against the full `data`.
+  const idOf = new Map(data.map((row, index) => [row, ids[index]!]))
+  const enter = (via: 'pointer' | 'focus') => {
+    if (holdNewRows && !inside.current.pointer && !inside.current.focus) setShownIds(new Set(ids))
+    inside.current[via] = true
+  }
+  const leave = (via: 'pointer' | 'focus') => {
+    inside.current[via] = false
+    if (!inside.current.pointer && !inside.current.focus) setShownIds(null)
+  }
+  const showNewRows = () => {
+    tableRef.current?.focus()
+    setShownIds(new Set(ids))
+  }
+  const newRowsLabel = (showNewRowsLabel ?? t.newRows)(heldCount)
   const instance = useTable({
     features,
     columns,
-    data,
-    getRowId,
+    data: rows,
+    getRowId: (row, index) => idOf.get(row) ?? getRowId(row, index),
     state: { columnVisibility: visibility },
     onColumnVisibilityChange: (updater: Updater<DataTableColumnVisibility>) => {
       const next = functionalUpdate(updater, visibility)
@@ -107,31 +151,53 @@ export function DataTable<T extends RowData>({
   const firstColumnId = headers[0]?.column.id
   const hideableColumns = instance.getAllLeafColumns().filter((column) => column.getCanHide())
   return (
-    <div className={slots.container()}>
-      {hideableColumns.length > 0 && (
+    <div
+      className={slots.container()}
+      onPointerEnter={() => enter('pointer')}
+      onPointerLeave={() => leave('pointer')}
+      onFocus={() => enter('focus')}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) leave('focus')
+      }}
+    >
+      {holdNewRows && (
+        <div role="status" className={slots.announcer()}>
+          {heldCount > 0 && newRowsLabel}
+        </div>
+      )}
+      {(hideableColumns.length > 0 || holdNewRows) && (
         <div className={slots.toolbar()}>
-          <DialogTrigger>
-            <Button variant="outline" size="sm">
-              {t.columns}
-            </Button>
-            <Popover placement="bottom end" className={slots.popover()}>
-              <Dialog aria-label={t.columns} className={slots.columnList()}>
-                {hideableColumns.map((column) => (
-                  <Checkbox
-                    key={column.id}
-                    label={typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
-                    isSelected={column.getIsVisible()}
-                    onChange={(isSelected) => column.toggleVisibility(isSelected)}
-                  />
-                ))}
-              </Dialog>
-            </Popover>
-          </DialogTrigger>
+          {heldCount > 0 && (
+            <AriaButton data-slot="data-table-new-rows" className={slots.newRows()} onPress={showNewRows}>
+              {newRowsLabel}
+            </AriaButton>
+          )}
+          {hideableColumns.length > 0 && (
+            <DialogTrigger>
+              <Button variant="outline" size="sm">
+                {t.columns}
+              </Button>
+              <Popover placement="bottom end" className={slots.popover()}>
+                <Dialog aria-label={t.columns} className={slots.columnList()}>
+                  {hideableColumns.map((column) => (
+                    <Checkbox
+                      key={column.id}
+                      label={typeof column.columnDef.header === 'string' ? column.columnDef.header : column.id}
+                      isSelected={column.getIsVisible()}
+                      onChange={(isSelected) => column.toggleVisibility(isSelected)}
+                    />
+                  ))}
+                </Dialog>
+              </Popover>
+            </DialogTrigger>
+          )}
         </div>
       )}
       <Table
+        ref={tableRef}
         data-slot="data-table"
         data-density={density}
+        data-held={heldCount > 0 || undefined}
         aria-label={ariaLabel ?? t.dataTable}
         className={slots.root({ className })}
       >
