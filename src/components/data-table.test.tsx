@@ -88,6 +88,24 @@ describe('DataTable', () => {
     expect(screen.getByText('No hi ha dades disponibles.')).toBeInTheDocument()
   })
 
+  it('defaults to comfortable density', () => {
+    render(<DataTable columns={columns} data={data} getRowId={getRowId} />)
+
+    expect(screen.getByRole('grid')).toHaveAttribute('data-density', 'comfortable')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).toHaveClass('px-6', 'py-4')
+    expect(screen.getAllByRole('row')[1]).not.toHaveClass('h-7')
+  })
+
+  it('uses compact padding and 28 px rows with density="compact"', () => {
+    render(<DataTable columns={columns} data={data} getRowId={getRowId} density="compact" />)
+
+    expect(screen.getByRole('grid')).toHaveAttribute('data-density', 'compact')
+    expect(screen.getByRole('columnheader', { name: 'Name' })).toHaveClass('px-3', 'py-1.5')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).toHaveClass('px-3', 'py-1')
+    expect(screen.getByRole('rowheader', { name: 'Alpha' })).not.toHaveClass('px-6')
+    expect(screen.getAllByRole('row')[1]).toHaveClass('h-7')
+  })
+
   describe('column visibility', () => {
     const hideableColumns = column.columns([
       column.accessor('name', { header: 'Name', enableHiding: false }),

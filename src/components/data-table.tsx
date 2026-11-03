@@ -54,14 +54,14 @@ export interface DataTableProps<T extends RowData> {
   /** Visible columns, controlled. Without it the table keeps its own state, starting with every column shown. */
   columnVisibility?: DataTableColumnVisibility
   onColumnVisibilityChange?: (columnVisibility: DataTableColumnVisibility) => void
+  /** Row height and padding. Defaults to `'comfortable'`. */
+  density?: 'comfortable' | 'compact'
   /** Accessible name of the table. Defaults to a localised name. */
   'aria-label'?: string
   /** Shown when `data` is empty. Defaults to a localised message. */
   emptyMessage?: React.ReactNode
   className?: string
 }
-
-const slots = table()
 
 /**
  * Data table: TanStack Table builds the rows from `columns` and `data`, React
@@ -74,6 +74,7 @@ const slots = table()
  * @usage Put the column that identifies the row (name, title) first, and give it `enableHiding: false`.
  * @usage Give every hideable column a string `header`: it labels the column's checkbox (a non-string header falls back to the column id).
  * @usage To keep hidden columns in the URL, pass `columnVisibility` and `onColumnVisibilityChange`.
+ * @usage Compact density for operational lists read at a glance; comfortable for everything else.
  */
 export function DataTable<T extends RowData>({
   columns,
@@ -81,11 +82,13 @@ export function DataTable<T extends RowData>({
   getRowId,
   columnVisibility,
   onColumnVisibilityChange,
+  density = 'comfortable',
   'aria-label': ariaLabel,
   emptyMessage,
   className,
 }: DataTableProps<T>) {
   const t = useStrings()
+  const slots = table({ density })
   const [ownColumnVisibility, setOwnColumnVisibility] = React.useState<DataTableColumnVisibility>({})
   const visibility = columnVisibility ?? ownColumnVisibility
   const instance = useTable({
@@ -126,7 +129,12 @@ export function DataTable<T extends RowData>({
           </DialogTrigger>
         </div>
       )}
-      <Table data-slot="data-table" aria-label={ariaLabel ?? t.dataTable} className={slots.root({ className })}>
+      <Table
+        data-slot="data-table"
+        data-density={density}
+        aria-label={ariaLabel ?? t.dataTable}
+        className={slots.root({ className })}
+      >
         <TableHeader className={slots.header()} columns={headers}>
           {(header) => (
             <Column id={header.column.id} isRowHeader={header.column.id === firstColumnId} className={slots.column()}>

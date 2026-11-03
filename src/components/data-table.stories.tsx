@@ -50,3 +50,14 @@ export const ControlledColumnVisibility: Story = {
     return <DataTable {...args} columnVisibility={columnVisibility} onColumnVisibilityChange={setColumnVisibility} />
   },
 }
+
+export const Compact: Story = { args: { density: 'compact' } }
+
+export const ComfortableVsCompact: Story = {
+  render: (args) => (
+    <div className="grid grid-cols-2 gap-6">
+      <DataTable {...args} aria-label="Members, comfortable" density="comfortable" />
+      <DataTable {...args} aria-label="Members, compact" density="compact" />
+    </div>
+  ),
+}

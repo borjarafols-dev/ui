@@ -3,13 +3,14 @@ import type { DataTableProps } from './data-table'
 
 export default {
   component: 'DataTable',
-  sourceHash: 'sha256:6fd19035d0535ee47d17e85287936ead25a6bcba7550c6332f270f8d5e8a5cbd',
+  sourceHash: 'sha256:3c38a8ecceff1ea5add0488845a518ea02acccebf08f87d9c6ff901092d2bdfb',
   category: 'data',
   summary:
     'A keyboard-navigable table whose rows TanStack Table builds from column definitions and data, with a "Columns" button to hide and show columns.',
   whenToUse: [
     'Lists of records with several comparable fields, such as members, invoices or bookings.',
     'Admin views where people scan rows and compare columns, and may hide the columns they don’t need.',
+    'Operational lists read at a glance, such as logs, job runs or queues, with density="compact" for 28 px rows.',
   ],
   whenNotToUse: [
     'A handful of items with one or two fields: use a simple list or Cards.',
@@ -20,7 +21,16 @@ export default {
     { component: 'Card', when: 'Items are few and each needs its own actions or rich content.' },
     { component: 'EmptyState', when: 'The section has no data and needs a call to action.' },
   ],
-  keyProps: ['columns', 'data', 'getRowId', 'aria-label', 'columnVisibility', 'onColumnVisibilityChange', 'emptyMessage'],
+  keyProps: [
+    'columns',
+    'data',
+    'getRowId',
+    'aria-label',
+    'columnVisibility',
+    'onColumnVisibilityChange',
+    'density',
+    'emptyMessage',
+  ],
   antiPatterns: [
     'Leaving aria-label at its generic localised default; name what the table lists ("Members").',
     'Putting the identifying column (name, title) anywhere but first, or letting it hide; put it first with enableHiding: false, since it is the row header.',
