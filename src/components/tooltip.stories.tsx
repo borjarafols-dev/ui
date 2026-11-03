@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { Button } from './button'
-import { DataTable, type DataTableColumn } from './data-table'
+import { createDataTableColumnHelper, DataTable } from './data-table'
 import { Tooltip } from './tooltip'
 
 const meta = {
@@ -83,28 +83,28 @@ const runs: Run[] = [
 const compact = new Intl.NumberFormat('en', { notation: 'compact', maximumFractionDigits: 1 })
 const exact = new Intl.NumberFormat('en')
 
-const columns: DataTableColumn<Run>[] = [
-  { key: 'name', header: 'Run' },
-  {
-    key: 'rows',
+const column = createDataTableColumnHelper<Run>()
+
+const columns = column.columns([
+  column.accessor('name', { header: 'Run' }),
+  column.accessor('rows', {
     header: 'Rows',
-    render: (value) => (
-      <Tooltip content={exact.format(Number(value))} isTextTrigger>
-        <span>{compact.format(Number(value))}</span>
+    cell: (info) => (
+      <Tooltip content={exact.format(info.getValue())} isTextTrigger>
+        <span>{compact.format(info.getValue())}</span>
       </Tooltip>
     ),
-  },
-  {
-    key: 'startedAgo',
+  }),
+  column.accessor('startedAgo', {
     header: 'Started',
-    render: (value, row) => (
-      <Tooltip content={row.startedAt} isTextTrigger>
-        <time dateTime={row.startedAt.replace(' ', 'T')}>{String(value)}</time>
+    cell: (info) => (
+      <Tooltip content={info.row.original.startedAt} isTextTrigger>
+        <time dateTime={info.row.original.startedAt.replace(' ', 'T')}>{info.getValue()}</time>
       </Tooltip>
     ),
-  },
-]
+  }),
+])
 
 export const TableRow: Story = {
-  render: () => <DataTable aria-label="Runs" columns={columns} data={runs} keyField="id" />,
+  render: () => <DataTable aria-label="Runs" columns={columns} data={runs} getRowId={(run) => run.id} />,
 }

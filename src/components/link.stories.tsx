@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 
 import { button } from '../recipes/button'
 import { Badge } from './badge'
-import { DataTable, type DataTableColumn } from './data-table'
+import { createDataTableColumnHelper, DataTable } from './data-table'
 import { Link } from './link'
 
 const meta = {
@@ -51,24 +51,31 @@ const issues: Issue[] = [
   { id: '43', project: 'Gemini', key: 'ENG-131', url: 'https://example.com/issues/ENG-131', status: 'closed' },
 ]
 
-const columns: DataTableColumn<Issue>[] = [
-  {
-    key: 'project',
+const column = createDataTableColumnHelper<Issue>()
+
+const columns = column.columns([
+  column.accessor('project', {
     header: 'Project',
-    render: (value, row) => <Link href={`#/projects/${row.id}`} variant="plain">{String(value)}</Link>,
-  },
-  {
-    key: 'key',
+    cell: (info) => (
+      <Link href={`#/projects/${info.row.original.id}`} variant="plain">
+        {info.getValue()}
+      </Link>
+    ),
+  }),
+  column.accessor('key', {
     header: 'Issue',
-    render: (value, row) => <Link href={row.url} isExternal>{String(value)}</Link>,
-  },
-  {
-    key: 'status',
+    cell: (info) => (
+      <Link href={info.row.original.url} isExternal>
+        {info.getValue()}
+      </Link>
+    ),
+  }),
+  column.accessor('status', {
     header: 'Status',
-    render: (value) => <Badge variant={value === 'open' ? 'primary' : 'secondary'}>{String(value)}</Badge>,
-  },
-]
+    cell: (info) => <Badge variant={info.getValue() === 'open' ? 'primary' : 'secondary'}>{info.getValue()}</Badge>,
+  }),
+])
 
 export const InTable: Story = {
-  render: () => <DataTable columns={columns} data={issues} keyField="id" aria-label="Issues" />,
+  render: () => <DataTable columns={columns} data={issues} getRowId={(issue) => issue.id} aria-label="Issues" />,
 }
