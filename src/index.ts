@@ -30,5 +30,6 @@ export {
   type ToastRegionProps,
   type ToastVariant,
 } from './components/toast'
+export { Tooltip, type TooltipProps } from './components/tooltip'
 export { cn } from './lib/utils'
 export { applyTheme, createTheme, createThemeCss, type ThemeVars, type ThemeStyle } from './theme'
