@@ -9,6 +9,8 @@ export const toast = tv({
     content: 'flex min-w-0 flex-1 flex-col gap-1',
     title: 'font-medium',
     description: 'opacity-90',
+    action:
+      'shrink-0 rounded-md px-2 py-1 text-sm font-medium underline-offset-4 outline-none hover:underline focus-visible:ring-2 focus-visible:ring-ring',
     close:
       'flex size-6 shrink-0 cursor-default items-center justify-center rounded-md opacity-80 outline-none hover:opacity-100 focus-visible:opacity-100 focus-visible:ring-2 focus-visible:ring-ring',
   },
@@ -16,6 +18,8 @@ export const toast = tv({
     variant: {
       success: { toast: 'bg-success text-success-foreground' },
       error: { toast: 'bg-destructive text-destructive-foreground' },
+      info: { toast: 'bg-info text-info-foreground' },
+      warning: { toast: 'bg-warning text-warning-foreground' },
     },
   },
   defaultVariants: { variant: 'success' },

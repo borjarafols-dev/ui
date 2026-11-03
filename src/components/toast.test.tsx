@@ -73,6 +73,85 @@ describe('ToastRegion', () => {
     expect(onClose).toHaveBeenCalled()
   })
 
+  it('renders info and warning toasts styled by their status tokens', () => {
+    render(<ToastRegion />)
+
+    act(() => {
+      toasts.info('New version available')
+      toasts.warning('Storage almost full')
+    })
+
+    const info = screen.getByRole('alertdialog', { name: 'New version available' })
+    expect(info).toHaveAttribute('data-variant', 'info')
+    expect(info).toHaveClass('bg-info', 'text-info-foreground')
+    const warning = screen.getByRole('alertdialog', { name: 'Storage almost full' })
+    expect(warning).toHaveAttribute('data-variant', 'warning')
+    expect(warning).toHaveClass('bg-warning', 'text-warning-foreground')
+  })
+
+  it('closes an info toast after its timeout and keeps a warning toast', () => {
+    render(<ToastRegion />)
+
+    act(() => {
+      toasts.info('New version available')
+      toasts.warning('Storage almost full')
+    })
+    act(() => vi.advanceTimersByTime(5000))
+
+    expect(screen.queryByText('New version available')).not.toBeInTheDocument()
+    act(() => vi.advanceTimersByTime(60_000))
+    expect(screen.getByText('Storage almost full')).toBeInTheDocument()
+  })
+
+  it('runs the action, then closes the toast', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    const onAction = vi.fn()
+    const onClose = vi.fn()
+    render(<ToastRegion />)
+
+    act(() => {
+      toasts.success('Item deleted', { onClose, action: { label: 'Undo', onAction } })
+    })
+
+    const toast = screen.getByRole('alertdialog', { name: 'Item deleted' })
+    const undo = within(toast).getByRole('button', { name: 'Undo' })
+    expect(undo).toHaveAttribute('data-slot', 'toast-action')
+    await user.click(undo)
+
+    expect(onAction).toHaveBeenCalledTimes(1)
+    expect(onClose).toHaveBeenCalled()
+    expect(screen.queryByText('Item deleted')).not.toBeInTheDocument()
+  })
+
+  it('gives a success toast with an action 10 seconds by default', () => {
+    render(<ToastRegion />)
+
+    act(() => {
+      toasts.success('Item deleted', { action: { label: 'Undo', onAction: () => {} } })
+    })
+    act(() => vi.advanceTimersByTime(5000))
+    expect(screen.getByText('Item deleted')).toBeInTheDocument()
+
+    act(() => vi.advanceTimersByTime(5000))
+    expect(screen.queryByText('Item deleted')).not.toBeInTheDocument()
+  })
+
+  it('reaches the action before the close button with Tab', async () => {
+    const user = userEvent.setup({ advanceTimers: vi.advanceTimersByTime })
+    render(<ToastRegion />)
+
+    act(() => {
+      toasts.warning('Item archived', { action: { label: 'Undo', onAction: () => {} } })
+    })
+
+    await user.tab()
+    expect(screen.getByRole('alertdialog', { name: 'Item archived' })).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Undo' })).toHaveFocus()
+    await user.tab()
+    expect(screen.getByRole('button', { name: 'Close' })).toHaveFocus()
+  })
+
   it('takes explicit labels over the localised defaults', () => {
     render(<ToastRegion aria-label="Messages" closeLabel="Dismiss" />)
 
