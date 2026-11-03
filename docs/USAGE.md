@@ -53,7 +53,7 @@ Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and
 
 ### Language of built-in labels
 
-The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name, empty message, search field, paging footer, Columns button, expand and collapse buttons and "Show n new rows" button, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
+The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name, empty message, search field, paging footer, Columns button, expand and collapse buttons and "Show n new rows" button, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button, Link's "opens in a new tab" cue) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
 
 - To set the language, wrap the app's root in React Aria's `I18nProvider`. Don't add a wrapper of your own.
 - Without a provider, labels follow the browser's language.
@@ -71,6 +71,36 @@ createRoot(root).render(
 ```
 
 Set the provider's `locale` from the app's own language setting, so library labels match the app's copy. Modals and popovers keep the locale, because React context reaches through portals.
+
+### Client-side navigation
+
+`Link` (and any React Aria component with an `href`) navigates with a full page load unless the app mounts React Aria's `RouterProvider`. Mount it once, at the app root, inside the router, with the router's `navigate` and `useHref`. Don't wrap `Link` in the router's own link component, and don't add a provider of your own.
+
+With React Router, put it in the root layout route, where the router's hooks work:
+
+```tsx
+import { Outlet, useHref, useNavigate, type NavigateOptions } from 'react-router'
+import { RouterProvider } from 'react-aria-components'
+
+declare module 'react-aria-components' {
+  interface RouterConfig {
+    routerOptions: NavigateOptions
+  }
+}
+
+export function RootLayout() {
+  const navigate = useNavigate()
+  return (
+    <RouterProvider navigate={navigate} useHref={useHref}>
+      <Outlet />
+    </RouterProvider>
+  )
+}
+```
+
+- `useHref` turns a router path into the real `href` (base path included), so modifier clicks and "open in new tab" still work.
+- The `RouterConfig` declaration types `routerOptions` on every `Link`: `<Link href="/projects" routerOptions={{ replace: true }}>`.
+- Links with `isExternal` (or a `target` other than `_self`) and hrefs to another origin skip the router and load normally.
 
 ## Rules
 

@@ -44,6 +44,9 @@ const uiPairs: Pair[] = [
   { name: 'input on background', text: 'input', surface: ['background'] },
   { name: 'input on card', text: 'input', surface: ['card'] },
   { name: 'ring on background', text: 'ring', surface: ['background'] },
+  { name: 'meter-fill on muted', text: 'meter-fill', surface: ['muted'] },
+  { name: 'warning meter fill on muted', text: 'warning', surface: ['muted'] },
+  { name: 'destructive meter fill on muted', text: 'destructive', surface: ['muted'] },
 ]
 
 describe.each<Theme>(['light', 'dark'])('%s theme token contrast', (theme) => {

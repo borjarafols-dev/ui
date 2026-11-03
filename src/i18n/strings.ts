@@ -24,6 +24,7 @@ const en = {
   working: 'Working…',
   notifications: 'Notifications',
   close: 'Close',
+  opensInNewTab: '(opens in a new tab)',
 }
 
 export type Strings = typeof en
@@ -50,6 +51,7 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     working: 'Procesando…',
     notifications: 'Notificaciones',
     close: 'Cerrar',
+    opensInNewTab: '(se abre en una pestaña nueva)',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -71,6 +73,7 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     working: 'Processant…',
     notifications: 'Notificacions',
     close: 'Tanca',
+    opensInNewTab: '(s’obre en una pestanya nova)',
   },
 }
 
