@@ -53,7 +53,7 @@ Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and
 
 ### Language of built-in labels
 
-The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name and empty message, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
+The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name, empty message, search field and paging footer, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
 
 - To set the language, wrap the app's root in React Aria's `I18nProvider`. Don't add a wrapper of your own.
 - Without a provider, labels follow the browser's language.
