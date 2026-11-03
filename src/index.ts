@@ -21,6 +21,7 @@ export {
   type DataTableProps,
   type DataTableSorting,
 } from './components/data-table'
+export { Drawer, type DrawerProps } from './components/drawer'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Kbd, type KbdProps } from './components/kbd'
