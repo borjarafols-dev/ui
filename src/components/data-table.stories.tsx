@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { RouterProvider } from 'react-aria-components'
 
 import { Badge } from './badge'
@@ -227,5 +227,23 @@ export const RowLinks: Story = {
         </div>
       </RouterProvider>
     )
+  },
+}
+
+/** A row arrives at the top every two seconds; hover or focus the table to hold them behind the "Show n new rows" button. */
+export const LiveInsert: Story = {
+  args: { density: 'compact', holdNewRows: true },
+  render: (args) => {
+    const [rows, setRows] = useState(members)
+    useEffect(() => {
+      const interval = setInterval(() => {
+        setRows((current) => {
+          const id = String(current.length + 1)
+          return [{ id, name: `Member ${id}`, email: `member${id}@example.com`, status: 'active' }, ...current]
+        })
+      }, 2000)
+      return () => clearInterval(interval)
+    }, [])
+    return <DataTable {...args} data={rows} />
   },
 }

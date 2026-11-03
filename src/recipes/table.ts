@@ -3,9 +3,12 @@ import { tv } from 'tailwind-variants'
 export const table = tv({
   slots: {
     container: 'flex w-full flex-col gap-3',
-    toolbar: 'flex items-end gap-3',
+    toolbar: 'flex min-h-8 items-end gap-3',
     search: 'w-full max-w-xs',
+    newRows:
+      'inline-flex h-8 cursor-default items-center rounded-md border border-border bg-muted px-3 text-xs font-medium text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring',
     columnsButton: 'ml-auto',
+    announcer: 'sr-only',
     popover:
       'min-w-40 rounded-md border border-border bg-popover text-popover-foreground shadow-lg',
     columnList: 'flex flex-col gap-2 p-3 outline-none',

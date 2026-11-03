@@ -30,7 +30,7 @@ import {
 } from '@tanstack/react-table'
 import * as React from 'react'
 import {
-  Button as RACButton,
+  Button as AriaButton,
   Cell,
   Collection,
   Column,
@@ -137,6 +137,10 @@ export interface DataTableProps<T extends RowData> {
   onExpandedChange?: (expanded: DataTableExpanded) => void
   /** Row height and padding. Defaults to `'comfortable'`. */
   density?: 'comfortable' | 'compact'
+  /** Hold rows with new ids while the pointer or focus is in the table, behind a button that shows them. */
+  holdNewRows?: boolean
+  /** Label of the button that shows held rows. Defaults to a localised "Show {n} new rows". */
+  showNewRowsLabel?: (count: number) => string
   /** URL a row opens, navigated through the app's `RouterProvider`. Return undefined for rows that don't link. */
   getRowHref?: (row: T) => string | undefined
   /** Accessible name of the table. Defaults to a localised name. */
@@ -175,6 +179,9 @@ function useControllableState<V>(
  * chevron or the arrow keys; sorting and search keep children under their
  * parent. With `getRowHref`, a press or Enter on a row opens its URL; buttons
  * in cells keep their own action.
+ * With `holdNewRows`, rows with an unseen id wait behind a "Show n new rows"
+ * button while the pointer or focus is in the table, so the row being read
+ * doesn't move; rows already shown update in place and removed rows go at once.
  *
  * @usage Build `columns` with `createDataTableColumnHelper<Row>()` and give every row a stable id with `getRowId`.
  * @usage Put the column that identifies the row (name, title) first, and give it `enableHiding: false`.
@@ -185,6 +192,7 @@ function useControllableState<V>(
  * @usage Nested rows for one level of parent and children (a job and its steps); not for deep file trees: use a tree.
  * @usage Child row ids from `getRowId` must be unique across the whole tree.
  * @usage getRowHref when the row opens a record; don't also put an "Open" button in the row.
+ * @usage holdNewRows for lists that update while the user reads them; not for lists that only change after a user action.
  */
 export function DataTable<T extends RowData>({
   columns,
@@ -209,6 +217,8 @@ export function DataTable<T extends RowData>({
   onExpandedChange,
   density = 'comfortable',
   getRowHref,
+  holdNewRows = false,
+  showNewRowsLabel,
   'aria-label': ariaLabel,
   emptyMessage,
   className,
@@ -227,6 +237,30 @@ export function DataTable<T extends RowData>({
   const [expansion, setExpansion] = useControllableState<DataTableExpanded>(expanded, {}, onExpandedChange)
   const isServer = mode === 'server'
 
+  const tableRef = React.useRef<HTMLTableElement>(null)
+  const inside = React.useRef({ pointer: false, focus: false })
+  // Ids shown when the pointer or focus came in; null while nothing is held.
+  const [shownIds, setShownIds] = React.useState<ReadonlySet<string> | null>(null)
+  if (!holdNewRows && shownIds !== null) setShownIds(null)
+  const ids = data.map(getRowId)
+  const shownData = shownIds === null ? data : data.filter((_, index) => shownIds.has(ids[index]!))
+  const heldCount = data.length - shownData.length
+  // Filtering shifts indexes, so TanStack gets back the id computed against the full `data`.
+  const idOf = new Map(data.map((row, index) => [row, ids[index]!]))
+  const enter = (via: 'pointer' | 'focus') => {
+    if (holdNewRows && !inside.current.pointer && !inside.current.focus) setShownIds(new Set(ids))
+    inside.current[via] = true
+  }
+  const leave = (via: 'pointer' | 'focus') => {
+    inside.current[via] = false
+    if (!inside.current.pointer && !inside.current.focus) setShownIds(null)
+  }
+  const showNewRows = () => {
+    tableRef.current?.focus()
+    setShownIds(new Set(ids))
+  }
+  const newRowsLabel = (showNewRowsLabel ?? t.newRows)(heldCount)
+
   // A new sort or search changes which rows exist, so the user goes back to
   // the first page. TanStack's own reset is off: it also fires on new `data`,
   // which in server mode is every page change.
@@ -237,8 +271,8 @@ export function DataTable<T extends RowData>({
   const instance = useTable({
     features,
     columns,
-    data,
-    getRowId,
+    data: shownData,
+    getRowId: (row, index) => idOf.get(row) ?? getRowId(row, index),
     getSubRows,
     state: { sorting, globalFilter, pagination, columnVisibility: visibility, expanded: expansion },
     onSortingChange: (updater) => {
@@ -306,7 +340,7 @@ export function DataTable<T extends RowData>({
                     style={{ paddingInlineStart: `calc(var(--spacing) * 5 * ${level - 1})` }}
                   >
                     {hasChildItems ? (
-                      <RACButton
+                      <AriaButton
                         slot="chevron"
                         aria-label={isExpanded ? t.collapseRow : t.expandRow}
                         className={slots.expand()}
@@ -321,7 +355,7 @@ export function DataTable<T extends RowData>({
                             strokeLinejoin="round"
                           />
                         </svg>
-                      </RACButton>
+                      </AriaButton>
                     ) : (
                       <span className={slots.expandSpacer()} />
                     )}
@@ -345,8 +379,10 @@ export function DataTable<T extends RowData>({
 
   const grid = (
     <Table
+      ref={tableRef}
       data-slot="data-table"
       data-density={density}
+      data-held={heldCount > 0 || undefined}
       aria-label={ariaLabel ?? t.dataTable}
       sortDescriptor={sortDescriptor}
       onSortChange={(descriptor) => instance.getColumn(String(descriptor.column))?.toggleSorting()}
@@ -392,8 +428,22 @@ export function DataTable<T extends RowData>({
   const last = rows.length === 0 ? 0 : first + rows.length - 1
 
   return (
-    <div data-slot="data-table-container" className={slots.container()}>
-      {(enableSearch || hideableColumns.length > 0) && (
+    <div
+      data-slot="data-table-container"
+      className={slots.container()}
+      onPointerEnter={() => enter('pointer')}
+      onPointerLeave={() => leave('pointer')}
+      onFocus={() => enter('focus')}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) leave('focus')
+      }}
+    >
+      {holdNewRows && (
+        <div role="status" className={slots.announcer()}>
+          {heldCount > 0 && newRowsLabel}
+        </div>
+      )}
+      {(enableSearch || hideableColumns.length > 0 || holdNewRows) && (
         <div className={slots.toolbar()}>
           {enableSearch && (
             <SearchField
@@ -403,6 +453,11 @@ export function DataTable<T extends RowData>({
               onChange={(value) => instance.setGlobalFilter(value)}
               className={slots.search()}
             />
+          )}
+          {heldCount > 0 && (
+            <AriaButton data-slot="data-table-new-rows" className={slots.newRows()} onPress={showNewRows}>
+              {newRowsLabel}
+            </AriaButton>
           )}
           {hideableColumns.length > 0 && (
             <DialogTrigger>

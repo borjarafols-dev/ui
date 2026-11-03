@@ -3,7 +3,7 @@ import type { DataTableProps } from './data-table'
 
 export default {
   component: 'DataTable',
-  sourceHash: 'sha256:b4c6c150784d9c5650b568d89051d014c6add1438be1f5e48998be7a8d228bb8',
+  sourceHash: 'sha256:61038be5d59988b046e7f82cb2728da519c882747ef08f070d037df29f9af202',
   category: 'data',
   summary:
     'A keyboard-navigable table whose rows TanStack Table builds from column definitions and data, with sortable headers, a "Columns" button to hide and show columns, an optional search field, an optional paging footer and optional parent rows that expand to their children.',
@@ -13,6 +13,7 @@ export default {
     'Lists paged by an API: mode="server" renders the fetched page and reports sort, search and page changes.',
     'Operational lists read at a glance, such as logs, job runs or queues, with density="compact" for 28 px rows and getSubRows for one level of child records, such as a job and its steps.',
     'Lists where each row opens its record: getRowHref makes the whole row a link.',
+    'Lists that update while people read them (live job runs, queues), with holdNewRows so new rows wait behind a "Show n new rows" button instead of moving the row being read.',
   ],
   whenNotToUse: [
     'A handful of items with one or two fields: use a simple list or Cards.',
@@ -42,6 +43,8 @@ export default {
     'onExpandedChange',
     'density',
     'getRowHref',
+    'holdNewRows',
+    'showNewRowsLabel',
     'emptyMessage',
   ],
   antiPatterns: [
@@ -51,12 +54,14 @@ export default {
     'Adding an "Open" button or a link cell to every row; return the record URL from getRowHref instead, and keep cell buttons for other actions.',
     'Building a separate search input, pager or column picker around the table; turn on enableSearch and enablePagination, and pass sorting, globalFilter, pagination and columnVisibility with their handlers to keep them in the URL.',
     'Writing column objects by hand, keying rows by index or reusing a parent id for a child; build columns with createDataTableColumnHelper and pass a getRowId unique across the whole tree.',
+    'Turning on holdNewRows for a list that only changes after the user acts (saving, deleting); the user expects to see their change at once.',
   ],
   accessibility: [
     'Rendered with React Aria Table: grid semantics, arrow-key cell navigation, row headers, and sortable headers that sort on click or Enter and set aria-sort; with getSubRows it is a treegrid where parent rows expose aria-expanded, Arrow Right expands, Arrow Left collapses or moves to the parent, and the chevron button is named.',
     'With getRowHref, a click or Enter on a row navigates through the app’s RouterProvider, modifier clicks open a new tab, and buttons in cells keep their own action.',
     'The "Columns" button opens a labelled popover of checkboxes that works with Tab, Space and Escape and returns focus to the button.',
-    'The default name, empty message, search, paging, "Columns" and expand/collapse labels are localised (en, es, ca) from React Aria’s locale, and the page position is announced politely.',
+    'With holdNewRows, a polite live region announces how many rows are held, and the "Show n new rows" button inserts them and moves focus into the table; leaving the table with the pointer and focus also inserts them.',
+    'The default name, empty message, search, paging, "Columns", expand/collapse and "Show n new rows" labels are localised (en, es, ca) from React Aria’s locale, and the page position is announced politely.',
     'The caller provides the accessible name (aria-label), string column headers and readable cell content.',
   ],
   example: `const column = createDataTableColumnHelper<Member>()
