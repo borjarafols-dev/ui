@@ -5,6 +5,7 @@ import { describe, expect, it } from 'vitest'
 
 import confirmDialog from '../components/confirm-dialog.tsx?raw'
 import dataTable from '../components/data-table.tsx?raw'
+import link from '../components/link.tsx?raw'
 import searchField from '../components/search-field.tsx?raw'
 import spinner from '../components/spinner.tsx?raw'
 import toast from '../components/toast.tsx?raw'
@@ -38,7 +39,7 @@ describe('strings', () => {
   })
 
   it('leaves no hard-coded English defaults in the components', () => {
-    const sources = { confirmDialog, dataTable, searchField, spinner, toast }
+    const sources = { confirmDialog, dataTable, link, searchField, spinner, toast }
     for (const [name, source] of Object.entries(sources)) {
       for (const english of Object.values(strings.en)) {
         expect(source.includes(`'${english}'`) || source.includes(`"${english}"`), `${name}: '${english}'`).toBe(false)
