@@ -121,7 +121,7 @@ Use the React components only inside islands that need interaction.
 Tokens come in three layers, following shadcn/Radix naming:
 
 1. **Primitive**: `--gray-1…12`, `--brand-1…12`
-2. **Semantic**: `--background`, `--foreground`, `--primary`, `--destructive`, `--success`, `--border`, `--ring`, `--overlay`, …
+2. **Semantic**: `--background`, `--foreground`, `--primary`, `--destructive`, `--success`, `--warning`, `--info`, `--border`, `--ring`, `--overlay`, …
 3. **Component**: e.g. `--button-primary-bg`, `--button-primary-bg-hover`
 
 An app gives the library its own look in one `theme.css`. Override both themes:
