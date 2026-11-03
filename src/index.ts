@@ -13,6 +13,7 @@ export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dia
 export { DataTable, type DataTableColumn, type DataTableProps } from './components/data-table'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
+export { Kbd, type KbdProps } from './components/kbd'
 export { Label, type LabelProps } from './components/label'
 export {
   Menu,
@@ -29,6 +30,16 @@ export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
 export { Select, type SelectOption, type SelectProps } from './components/select'
 export { Spinner, type SpinnerProps } from './components/spinner'
+export {
+  Tab,
+  TabList,
+  TabPanel,
+  Tabs,
+  type TabListProps,
+  type TabPanelProps,
+  type TabProps,
+  type TabsProps,
+} from './components/tabs'
 export { TextArea, type TextAreaProps } from './components/text-area'
 export { TextField, type TextFieldProps } from './components/text-field'
 export {
@@ -39,5 +50,6 @@ export {
   type ToastRegionProps,
   type ToastVariant,
 } from './components/toast'
+export { Tooltip, type TooltipProps } from './components/tooltip'
 export { cn } from './lib/utils'
 export { applyTheme, createTheme, createThemeCss, type ThemeVars, type ThemeStyle } from './theme'

@@ -15,6 +15,7 @@ import {
 } from 'react-aria-components'
 
 import { menu } from '../recipes/menu'
+import { Kbd } from './kbd'
 
 export interface MenuProps<T> extends Omit<RACMenuProps<T>, 'className'> {
   /** The trigger: a library Button. */
@@ -81,7 +82,7 @@ export function MenuItem({ variant = 'default', shortcut, children, className, t
             </span>
           )}
           {children}
-          {shortcut && <kbd className={slots.shortcut()}>{shortcut}</kbd>}
+          {shortcut && <Kbd className={slots.shortcut()}>{shortcut}</Kbd>}
         </>
       )}
     </RACMenuItem>
