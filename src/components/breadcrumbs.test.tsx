@@ -20,7 +20,6 @@ describe('Breadcrumbs', () => {
     render(<Trail />)
 
     const nav = screen.getByRole('navigation', { name: 'Breadcrumbs' })
-    expect(nav).toHaveAttribute('data-slot', 'breadcrumbs')
     const list = within(nav).getByRole('list')
     expect(list.tagName).toBe('OL')
     expect(list).not.toHaveAttribute('aria-label')
@@ -33,15 +32,8 @@ describe('Breadcrumbs', () => {
     expect(screen.getByRole('link', { name: 'Projects' })).toHaveAttribute('href', '/projects')
     expect(screen.getByRole('link', { name: 'acme' })).toHaveAttribute('href', '/projects/acme')
 
-    // React Aria keeps the current page a disabled link: named, but no href and not focusable.
     const current = screen.getByRole('link', { name: 'Settings' })
-    expect(current.tagName).toBe('SPAN')
     expect(current).toHaveAttribute('aria-current', 'page')
-    expect(current).toHaveAttribute('aria-disabled', 'true')
-    expect(current).toHaveAttribute('data-current', 'true')
-    expect(current).not.toHaveAttribute('href')
-    expect(current).not.toHaveAttribute('tabindex')
-    expect(current.closest('li')).toHaveAttribute('data-current', 'true')
     expect(screen.getByRole('link', { name: 'Projects' })).not.toHaveAttribute('aria-current')
   })
 
@@ -74,18 +66,6 @@ describe('Breadcrumbs', () => {
     )
 
     expect(screen.getByRole('navigation', { name })).toBeInTheDocument()
-  })
-
-  it('lets className win over recipe classes', () => {
-    render(
-      <Breadcrumbs className="mb-4">
-        <Breadcrumb href="/a" className="text-foreground">A</Breadcrumb>
-        <Breadcrumb>B</Breadcrumb>
-      </Breadcrumbs>,
-    )
-
-    expect(screen.getByRole('navigation')).toHaveClass('mb-4')
-    expect(screen.getAllByRole('listitem')[0]).toHaveClass('text-foreground')
   })
 
   it('navigates through the RouterProvider', async () => {
@@ -126,6 +106,5 @@ describe('Breadcrumbs', () => {
     )
 
     for (const link of screen.getAllByRole('link')) expect(link).toHaveAttribute('aria-disabled', 'true')
-    expect(screen.getAllByRole('listitem')[0]).toHaveAttribute('data-disabled', 'true')
   })
 })

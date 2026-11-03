@@ -60,31 +60,30 @@ const queue = new RACToastQueue<ToastContent>({ maxVisibleToasts: 5 })
 export const toasts = {
   /** A confirmation. Closes itself after its timeout. */
   success(title: string, options: SuccessToastOptions = {}): void {
-    addTimed('success', title, options)
+    add('success', title, options)
   },
   /** A failure. Stays until the user closes it. */
   error(title: string, options: ToastOptions = {}): void {
-    addPersistent('error', title, options)
+    add('error', title, options)
   },
   /** Neutral news. Closes itself after its timeout. */
   info(title: string, options: SuccessToastOptions = {}): void {
-    addTimed('info', title, options)
+    add('info', title, options)
   },
   /** Something the user should notice that is not a failure. Stays until the user closes it. */
   warning(title: string, options: ToastOptions = {}): void {
-    addPersistent('warning', title, options)
+    add('warning', title, options)
   },
 }
 
-function addTimed(variant: ToastVariant, title: string, { description, onClose, action, timeout }: SuccessToastOptions) {
+const SELF_CLOSING: ReadonlySet<ToastVariant> = new Set(['success', 'info'])
+
+function add(variant: ToastVariant, title: string, { description, onClose, action, timeout }: SuccessToastOptions) {
+  const selfClosing = SELF_CLOSING.has(variant)
   queue.add(
     { variant, title, description, action },
-    { onClose, timeout: timeout ?? (action ? ACTION_TIMEOUT : SUCCESS_TIMEOUT) },
+    { onClose, timeout: selfClosing ? (timeout ?? (action ? ACTION_TIMEOUT : SUCCESS_TIMEOUT)) : undefined },
   )
-}
-
-function addPersistent(variant: ToastVariant, title: string, { description, onClose, action }: ToastOptions) {
-  queue.add({ variant, title, description, action }, { onClose })
 }
 
 /** Close every toast. For tests; not exported from the package. */

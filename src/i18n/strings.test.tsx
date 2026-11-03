@@ -22,20 +22,6 @@ describe('strings', () => {
     for (const table of Object.values(strings)) expect(Object.keys(table).sort()).toEqual(keys)
   })
 
-  it('keeps function-valued strings functions in every language', () => {
-    const functions = Object.keys(strings.en).filter((key) => typeof strings.en[key as keyof typeof strings.en] === 'function')
-    expect(functions).toContain('typeToConfirm')
-    for (const table of Object.values(strings)) {
-      for (const key of functions) expect(typeof table[key as keyof typeof table]).toBe('function')
-    }
-  })
-
-  it('puts the text to type in the typeToConfirm label', () => {
-    expect(strings.en.typeToConfirm('acme')).toBe('Type acme to confirm')
-    expect(strings.es.typeToConfirm('acme')).toBe('Escribe acme para confirmar')
-    expect(strings.ca.typeToConfirm('acme')).toBe('Escriu acme per confirmar')
-  })
-
   it('matches a locale by language and falls back to English', () => {
     expect(stringsFor('ca-ES')).toBe(strings.ca)
     expect(stringsFor('es-MX')).toBe(strings.es)

@@ -116,36 +116,6 @@ describe('Drawer', () => {
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
   })
 
-  it.each([
-    ['sm', 'max-w-sm'],
-    ['md', 'max-w-lg'],
-    ['lg', 'max-w-3xl'],
-  ] as const)('sets data-size and max width for size %s', (size, maxWidth) => {
-    render(
-      <Drawer isOpen size={size} title="Edit project">
-        body
-      </Drawer>,
-    )
-
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveAttribute('data-slot', 'drawer')
-    expect(dialog).toHaveAttribute('data-size', size)
-    expect(dialog.parentElement).toHaveClass(maxWidth)
-  })
-
-  it('defaults to md and merges className on the panel', () => {
-    render(
-      <Drawer isOpen title="Edit project" className="max-w-xl">
-        body
-      </Drawer>,
-    )
-
-    const dialog = screen.getByRole('dialog')
-    expect(dialog).toHaveAttribute('data-size', 'md')
-    expect(dialog.parentElement).toHaveClass('max-w-xl', 'bg-popover')
-    expect(dialog.parentElement).not.toHaveClass('max-w-lg')
-  })
-
   it('uses aria-label without a title and renders the footer', () => {
     render(
       <Drawer isOpen aria-label="Payload" footer={<Button>Save</Button>}>

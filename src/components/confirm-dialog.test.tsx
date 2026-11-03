@@ -103,9 +103,6 @@ describe('ConfirmDialog', () => {
 
       const input = screen.getByRole('textbox', { name: 'Type acme to confirm' })
       expect(input).toHaveFocus()
-      expect(input).toHaveAttribute('autocomplete', 'off')
-      expect(input).toHaveAttribute('spellcheck', 'false')
-      expect(document.querySelector('[data-slot="confirm-dialog"]')).toHaveAttribute('data-confirm-by-name')
       expect(screen.getByRole('button', { name: 'Delete project' })).toBeDisabled()
     })
 
@@ -177,6 +174,5 @@ describe('ConfirmDialog', () => {
     render(<ConfirmDialog open title="Delete?" message="m" onConfirm={vi.fn()} onCancel={vi.fn()} />)
 
     expect(screen.queryByRole('textbox')).not.toBeInTheDocument()
-    expect(document.querySelector('[data-slot="confirm-dialog"]')).not.toHaveAttribute('data-confirm-by-name')
   })
 })

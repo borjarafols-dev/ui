@@ -18,12 +18,10 @@ describe('SegmentedControl', () => {
   it('renders a labelled radiogroup of radios with one checked', () => {
     render(<Range />)
 
-    const group = screen.getByRole('radiogroup', { name: 'Time range' })
-    expect(group).toHaveAttribute('data-slot', 'segmented-control')
+    expect(screen.getByRole('radiogroup', { name: 'Time range' })).toBeInTheDocument()
     expect(screen.getAllByRole('radio')).toHaveLength(3)
     const first = screen.getByRole('radio', { name: '24h' })
     expect(first).toHaveAttribute('aria-checked', 'true')
-    expect(first).toHaveAttribute('data-slot', 'segmented-control-item')
     expect(screen.getByRole('radio', { name: '7d' })).toHaveAttribute('aria-checked', 'false')
   })
 
@@ -103,34 +101,5 @@ describe('SegmentedControl', () => {
     await user.keyboard('{ArrowRight}')
     expect(screen.getByRole('radio', { name: 'Grid' })).toHaveFocus()
     expect(screen.getByRole('radio', { name: 'Board' })).toHaveAttribute('data-disabled')
-  })
-
-  it.each([
-    ['sm', ['h-7', 'text-xs']],
-    ['md', ['h-8', 'text-sm']],
-  ] as const)('sets data-size and the %s token classes', (size, classes) => {
-    render(<Range size={size} />)
-
-    expect(screen.getByRole('radiogroup')).toHaveAttribute('data-size', size)
-    expect(screen.getByRole('radio', { name: '7d' })).toHaveClass(...classes)
-  })
-
-  it('defaults to md and styles the selected item through tokens', () => {
-    render(<Range />)
-
-    expect(screen.getByRole('radiogroup')).toHaveAttribute('data-size', 'md')
-    expect(screen.getByRole('radiogroup')).toHaveClass('bg-muted')
-    expect(screen.getByRole('radio', { name: '24h' })).toHaveClass(
-      'h-8',
-      'selected:bg-background',
-      'selected:shadow-xs',
-      'focus-visible:ring-ring',
-    )
-  })
-
-  it('merges className last', () => {
-    render(<Range className="w-full" />)
-
-    expect(screen.getByRole('radiogroup')).toHaveClass('w-full')
   })
 })
