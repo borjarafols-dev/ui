@@ -15,6 +15,7 @@ export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
 export { Kbd, type KbdProps } from './components/kbd'
 export { Label, type LabelProps } from './components/label'
+export { Link, type LinkProps } from './components/link'
 export {
   Menu,
   MenuItem,
