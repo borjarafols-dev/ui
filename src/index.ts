@@ -40,6 +40,7 @@ export { Modal, type ModalProps } from './components/modal'
 export { NumberField, type NumberFieldProps } from './components/number-field'
 export { SearchField, type SearchFieldProps } from './components/search-field'
 export { Select, type SelectOption, type SelectProps } from './components/select'
+export { Skeleton, type SkeletonProps } from './components/skeleton'
 export { Spinner, type SpinnerProps } from './components/spinner'
 export {
   Tab,
