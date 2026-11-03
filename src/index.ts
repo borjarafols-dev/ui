@@ -21,6 +21,12 @@ export {
   type DataTableProps,
   type DataTableSorting,
 } from './components/data-table'
+export {
+  Disclosure,
+  DisclosureGroup,
+  type DisclosureGroupProps,
+  type DisclosureProps,
+} from './components/disclosure'
 export { Drawer, type DrawerProps } from './components/drawer'
 export { EmptyState, type EmptyStateProps } from './components/empty-state'
 export { Input, type InputProps } from './components/input'
