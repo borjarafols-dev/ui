@@ -53,7 +53,7 @@ Set the theme on `<html>`: `<html data-theme="light">` or `"dark"`. Popovers and
 
 ### Language of built-in labels
 
-The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name and empty message, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button, Link's "opens in a new tab" cue) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
+The library's built-in default labels (SearchField's clear button, Spinner's label, DataTable's name, empty message, search field, paging footer, Columns button, expand and collapse buttons and "Show n new rows" button, ConfirmDialog's cancel, confirm and pending labels, ToastRegion's name and close button, Link's "opens in a new tab" cue) are localised in English, Spanish and Catalan. They follow React Aria's locale, like React Aria's own strings:
 
 - To set the language, wrap the app's root in React Aria's `I18nProvider`. Don't add a wrapper of your own.
 - Without a provider, labels follow the browser's language.
@@ -144,6 +144,46 @@ Add it to the app's scripts and run it in CI next to the typecheck and tests:
 ```yaml
 - run: npm ci
 - run: npm run lint:tokens
+```
+
+## Migrating
+
+### DataTable: `columns`/`keyField` to TanStack column definitions
+
+`DataTable` builds its rows with TanStack Table, so `columns` are TanStack column definitions and `keyField` is replaced by `getRowId`. The library depends on `@tanstack/react-table` itself; the app doesn't install it.
+
+- Build `columns` with `createDataTableColumnHelper<Row>()`: `key` becomes the accessor's first argument, `header` stays `header`, and `render(value, row)` becomes `cell: (info) => …`, with `info.getValue()` for the value and `info.row.original` for the row.
+- Replace `keyField="id"` with `getRowId={(row) => row.id}`. It must return a string.
+- Type a column list as `DataTableColumnDef<Row>[]` (was `DataTableColumn<Row>[]`), or let `column.columns([...])` infer it.
+- Build `columns` once (module scope or `useMemo`), not inline on every render, so the rows aren't rebuilt each time.
+- `DataTable` now renders inside a wrapper `div` (`data-slot="data-table-container"`); `data-slot="data-table"` and `className` stay on the table. Style or select the table by its own `data-slot`, not as a direct child of your layout.
+- A Columns button above the table lists every hideable column. Give the identifying column `enableHiding: false`; give every column `enableHiding: false` to have no Columns button.
+
+Before:
+
+```tsx
+import { Badge, DataTable, type DataTableColumn } from '@borjarafols-dev/ui'
+
+const columns: DataTableColumn<Member>[] = [
+  { key: 'name', header: 'Name' },
+  { key: 'status', header: 'Status', render: (value) => <Badge>{String(value)}</Badge> },
+]
+
+<DataTable aria-label="Members" columns={columns} data={members} keyField="id" />
+```
+
+After:
+
+```tsx
+import { Badge, createDataTableColumnHelper, DataTable } from '@borjarafols-dev/ui'
+
+const column = createDataTableColumnHelper<Member>()
+const columns = column.columns([
+  column.accessor('name', { header: 'Name' }),
+  column.accessor('status', { header: 'Status', cell: (info) => <Badge>{info.getValue()}</Badge> }),
+])
+
+<DataTable aria-label="Members" columns={columns} data={members} getRowId={(member) => member.id} />
 ```
 
 ## Copy into your app's AGENTS.md
