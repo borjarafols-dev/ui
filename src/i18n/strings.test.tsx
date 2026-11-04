@@ -4,6 +4,7 @@ import { I18nProvider } from 'react-aria-components'
 import { describe, expect, it } from 'vitest'
 
 import breadcrumbs from '../components/breadcrumbs.tsx?raw'
+import commandPalette from '../components/command-palette.tsx?raw'
 import confirmDialog from '../components/confirm-dialog.tsx?raw'
 import dataTable from '../components/data-table.tsx?raw'
 import link from '../components/link.tsx?raw'
@@ -40,7 +41,7 @@ describe('strings', () => {
   })
 
   it('leaves no hard-coded English defaults in the components', () => {
-    const sources = { breadcrumbs, confirmDialog, dataTable, link, searchField, spinner, toast }
+    const sources = { breadcrumbs, commandPalette, confirmDialog, dataTable, link, searchField, spinner, toast }
     for (const [name, source] of Object.entries(sources)) {
       for (const english of Object.values(strings.en)) {
         expect(source.includes(`'${english}'`) || source.includes(`"${english}"`), `${name}: '${english}'`).toBe(false)

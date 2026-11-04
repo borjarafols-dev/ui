@@ -27,6 +27,9 @@ const en = {
   close: 'Close',
   opensInNewTab: '(opens in a new tab)',
   breadcrumbs: 'Breadcrumbs',
+  commandPalette: 'Command palette',
+  commandPalettePlaceholder: 'Search or run a command…',
+  noResults: 'No results.',
 }
 
 export type Strings = typeof en
@@ -56,6 +59,9 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     close: 'Cerrar',
     opensInNewTab: '(se abre en una pestaña nueva)',
     breadcrumbs: 'Migas de pan',
+    commandPalette: 'Paleta de comandos',
+    commandPalettePlaceholder: 'Busca o ejecuta un comando…',
+    noResults: 'Sin resultados.',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -80,6 +86,9 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     close: 'Tanca',
     opensInNewTab: '(s’obre en una pestanya nova)',
     breadcrumbs: 'Ruta de navegació',
+    commandPalette: 'Paleta d’ordres',
+    commandPalettePlaceholder: 'Cerca o executa una ordre…',
+    noResults: 'Cap resultat.',
   },
 }
 
