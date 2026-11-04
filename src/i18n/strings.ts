@@ -25,6 +25,9 @@ const en = {
   notifications: 'Notifications',
   close: 'Close',
   opensInNewTab: '(opens in a new tab)',
+  commandPalette: 'Command palette',
+  commandPalettePlaceholder: 'Search or run a command…',
+  noResults: 'No results.',
 }
 
 export type Strings = typeof en
@@ -52,6 +55,9 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     notifications: 'Notificaciones',
     close: 'Cerrar',
     opensInNewTab: '(se abre en una pestaña nueva)',
+    commandPalette: 'Paleta de comandos',
+    commandPalettePlaceholder: 'Busca o ejecuta un comando…',
+    noResults: 'Sin resultados.',
   },
   ca: {
     clearSearch: 'Esborra la cerca',
@@ -74,6 +80,9 @@ export const strings: Record<'en' | 'es' | 'ca', Strings> = {
     notifications: 'Notificacions',
     close: 'Tanca',
     opensInNewTab: '(s’obre en una pestanya nova)',
+    commandPalette: 'Paleta d’ordres',
+    commandPalettePlaceholder: 'Cerca o executa una ordre…',
+    noResults: 'Cap resultat.',
   },
 }
 

@@ -9,6 +9,14 @@ export {
   CardFooter,
 } from './components/card'
 export { Checkbox, type CheckboxProps } from './components/checkbox'
+export {
+  CommandPalette,
+  CommandPaletteItem,
+  CommandPaletteSection,
+  type CommandPaletteItemProps,
+  type CommandPaletteProps,
+  type CommandPaletteSectionProps,
+} from './components/command-palette'
 export { ConfirmDialog, type ConfirmDialogProps } from './components/confirm-dialog'
 export {
   createDataTableColumnHelper,

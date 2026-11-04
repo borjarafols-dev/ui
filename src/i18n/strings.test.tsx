@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react'
 import { I18nProvider } from 'react-aria-components'
 import { describe, expect, it } from 'vitest'
 
+import commandPalette from '../components/command-palette.tsx?raw'
 import confirmDialog from '../components/confirm-dialog.tsx?raw'
 import dataTable from '../components/data-table.tsx?raw'
 import link from '../components/link.tsx?raw'
@@ -38,8 +39,16 @@ describe('strings', () => {
     expect(screen.getByText('Cancelar')).toBeInTheDocument()
   })
 
+  it('localises the command palette strings', () => {
+    expect(strings.es.commandPalette).toBe('Paleta de comandos')
+    expect(strings.es.noResults).toBe('Sin resultados.')
+    expect(strings.ca.commandPalette).toBe('Paleta d’ordres')
+    expect(strings.ca.commandPalettePlaceholder).toBe('Cerca o executa una ordre…')
+    expect(strings.ca.noResults).toBe('Cap resultat.')
+  })
+
   it('leaves no hard-coded English defaults in the components', () => {
-    const sources = { confirmDialog, dataTable, link, searchField, spinner, toast }
+    const sources = { commandPalette, confirmDialog, dataTable, link, searchField, spinner, toast }
     for (const [name, source] of Object.entries(sources)) {
       for (const english of Object.values(strings.en)) {
         expect(source.includes(`'${english}'`) || source.includes(`"${english}"`), `${name}: '${english}'`).toBe(false)
