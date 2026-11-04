@@ -3,7 +3,7 @@ import type { CommandPaletteProps } from './command-palette'
 
 export default {
   component: 'CommandPalette',
-  sourceHash: 'sha256:807423cdef4ead670a072063bb1fea45cc292c406752800807613af5d9e129e9',
+  sourceHash: 'sha256:02ec36a69173de299e48563b35169c60cb15c0c04c716845875dbc45c16b69a0',
   category: 'overlay',
   summary:
     'A Mod+K dialog with a search input and sectioned results to find a page, a record or an action and run it with Enter; local sections filter in the palette, loaded sections show what the caller passes.',
@@ -26,8 +26,8 @@ export default {
     'Mounting a palette per page; mount one at the app root and feed it page-specific items from the app state.',
     'Offering a command only in the palette; every command must also be reachable through a link, a button or a menu.',
     'Passing loaded records as plain children, which the palette filters again; give the section items and isLoading instead.',
-    'Leaving the default filter on a palette whose sections are all server-filtered; pass filter={null} and control inputValue.',
-    'Searching the server on every keystroke; debounce the query in the app.',
+    'Leaving the default filter on a palette whose sections are all server-filtered; pass filter={null}, control inputValue and debounce the query.',
+    'Wrapping local CommandPaletteItems in another component, which the palette then never filters; place them directly inside CommandPaletteSection.',
   ],
   accessibility: [
     'Handles the modal dialog, focus trap, focus into the input, focus restore, Escape (clears the text, then closes) and the Mod+K shortcut.',

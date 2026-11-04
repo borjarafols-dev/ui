@@ -226,9 +226,10 @@ describe('CommandPalette', () => {
   })
 
   it('shows the spinner, not the empty message, while a loaded section loads', async () => {
-    const user = userEvent.setup()
+    // Starts with the query typed: typing it took longer than the loader under load, so the spinner
+    // could be gone before the first expectation.
     function Mixed() {
-      const [query, setQuery] = React.useState('')
+      const [query, setQuery] = React.useState('ada')
       const { items, isLoading } = useFakeLoader(query, () => [{ id: 'r1', title: 'Q3 retainer' }], 20)
       return (
         <CommandPalette isOpen inputValue={query} onInputChange={setQuery}>
@@ -244,8 +245,6 @@ describe('CommandPalette', () => {
       )
     }
     render(<Mixed />)
-
-    await user.keyboard('ada')
 
     expect(screen.queryByText('No results.')).not.toBeInTheDocument()
     expect(screen.getByRole('status')).toBeInTheDocument()
