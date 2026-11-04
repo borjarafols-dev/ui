@@ -49,6 +49,8 @@ export interface CommandPaletteProps {
 const FilterContext = React.createContext<(textValue: string) => boolean>(() => true)
 const LinkKeysContext = React.createContext<React.RefObject<Set<Key>>>({ current: new Set() })
 
+const LoadingContext = React.createContext<(id: string, isLoading: boolean) => void>(() => {})
+
 const slots = commandPalette()
 
 function isAppleLike() {
@@ -61,11 +63,6 @@ function isForeignTextField(target: EventTarget | null) {
   return editable && !target.closest('[data-slot="command-palette"]')
 }
 
-function anyLoading(children: React.ReactNode) {
-  return React.Children.toArray(children).some(
-    (child) => React.isValidElement<{ isLoading?: boolean }>(child) && child.props.isLoading === true,
-  )
-}
 
 /**
  * Keyboard-first dialog, opened with Mod+K, to find a page, a record or an action and run it with Enter.
@@ -107,6 +104,16 @@ export function CommandPalette({
     if (!next && value !== '') setInput('')
   }
   const linkKeys = React.useRef(new Set<Key>())
+  const [loadingSections, setLoadingSections] = React.useState<ReadonlySet<string>>(new Set())
+  const reportLoading = React.useCallback((id: string, isLoading: boolean) => {
+    setLoadingSections((current) => {
+      if (current.has(id) === isLoading) return current
+      const next = new Set(current)
+      if (isLoading) next.add(id)
+      else next.delete(id)
+      return next
+    })
+  }, [])
   const toggle = React.useRef<() => void>(() => {})
   toggle.current = () => setOpen(!open)
 
@@ -142,6 +149,7 @@ export function CommandPalette({
             </SearchField>
             <FilterContext.Provider value={matches}>
               <LinkKeysContext.Provider value={linkKeys}>
+              <LoadingContext.Provider value={reportLoading}>
               <Menu
                 aria-label={ariaLabel ?? t.commandPalette}
                 className={slots.list()}
@@ -152,13 +160,14 @@ export function CommandPalette({
                 // The collection size counts items, not loaders: without this guard the
                 // message shows next to the spinner until the server answers.
                 renderEmptyState={
-                  anyLoading(children)
+                  loadingSections.size > 0
                     ? undefined
                     : () => <div className={slots.empty()}>{emptyMessage ?? t.noResults}</div>
                 }
               >
                 {children}
               </Menu>
+              </LoadingContext.Provider>
               </LinkKeysContext.Provider>
             </FilterContext.Provider>
           </Autocomplete>
@@ -223,6 +232,10 @@ export interface CommandPaletteSectionProps<T> {
   className?: string
 }
 
+/**
+ * A group of results. Without `items`, its children must be `CommandPaletteItem`s placed directly
+ * inside it: the palette filters them by reading their props, so wrapped items are never filtered.
+ */
 export function CommandPaletteSection<T extends object>({
   title,
   id,
@@ -232,6 +245,12 @@ export function CommandPaletteSection<T extends object>({
   className,
 }: CommandPaletteSectionProps<T>) {
   const matches = React.useContext(FilterContext)
+  const reportLoading = React.useContext(LoadingContext)
+  const loadingId = React.useId()
+  React.useEffect(() => {
+    reportLoading(loadingId, isLoading)
+    return () => reportLoading(loadingId, false)
+  }, [reportLoading, loadingId, isLoading])
   const itemSlots = menu()
 
   let body: React.ReactNode

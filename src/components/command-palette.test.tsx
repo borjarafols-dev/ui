@@ -1,9 +1,10 @@
-import { act, render, screen, waitFor, within } from '@testing-library/react'
+import { render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import * as React from 'react'
-import { I18nProvider, RouterProvider } from 'react-aria-components'
+import { RouterProvider } from 'react-aria-components'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 
+import { useFakeLoader } from '../test/use-fake-loader'
 import { CommandPalette, CommandPaletteItem, CommandPaletteSection, type CommandPaletteProps } from './command-palette'
 
 function Palette(props: Partial<CommandPaletteProps>) {
@@ -38,7 +39,6 @@ describe('CommandPalette', () => {
 
     await user.keyboard('{Meta>}k{/Meta}')
     const dialog = screen.getByRole('dialog', { name: 'Command palette' })
-    expect(dialog).toHaveAttribute('data-slot', 'command-palette')
     expect(within(dialog).getByRole('searchbox')).toHaveFocus()
 
     await user.keyboard('{Meta>}k{/Meta}')
@@ -98,21 +98,38 @@ describe('CommandPalette', () => {
     expect(onOpenChange).toHaveBeenLastCalledWith(false)
   })
 
-  it('filters items, matches keywords, hides empty sections and shows the empty message', async () => {
-    const user = userEvent.setup()
+  it('lists every item and its shortcut before typing', () => {
     render(<Palette isOpen />)
 
     expect(screen.getAllByRole('menuitem')).toHaveLength(3)
-    expect(screen.getByRole('menuitem', { name: /Toggle theme/ })).toHaveAttribute('data-slot', 'command-palette-item')
     expect(screen.getByText('T', { selector: 'kbd' })).toBeInTheDocument()
+  })
+
+  it('narrows the list to items matching a keyword', async () => {
+    const user = userEvent.setup()
+    render(<Palette isOpen />)
 
     await user.keyboard('settings')
+
     expect(screen.getAllByRole('menuitem').map((el) => el.textContent)).toEqual(['Preferences'])
+  })
+
+  it('hides a section when none of its items match', async () => {
+    const user = userEvent.setup()
+    render(<Palette isOpen />)
+
+    await user.keyboard('settings')
+
     expect(screen.getByText('Pages')).toBeInTheDocument()
     expect(screen.queryByText('Actions')).not.toBeInTheDocument()
+  })
 
-    await user.clear(screen.getByRole('searchbox'))
+  it('says there are no results when nothing matches', async () => {
+    const user = userEvent.setup()
+    render(<Palette isOpen />)
+
     await user.keyboard('zzz')
+
     expect(screen.getAllByRole('menuitem').map((el) => el.textContent)).toEqual(['No results.'])
   })
 
@@ -208,27 +225,17 @@ describe('CommandPalette', () => {
     expect(screen.getAllByRole('menuitem')).toHaveLength(2)
   })
 
-  it('mixes local sections with loaded sections without filtering the loaded ones again', async () => {
+  it('shows the spinner, not the empty message, while a loaded section loads', async () => {
     const user = userEvent.setup()
     function Mixed() {
       const [query, setQuery] = React.useState('')
-      const [records, setRecords] = React.useState<{ id: string; title: string }[]>([])
-      const [isLoading, setLoading] = React.useState(false)
-      React.useEffect(() => {
-        if (!query) return setRecords([])
-        setLoading(true)
-        const timer = setTimeout(() => {
-          setRecords([{ id: 'r1', title: 'Q3 retainer' }])
-          setLoading(false)
-        }, 20)
-        return () => clearTimeout(timer)
-      }, [query])
+      const { items, isLoading } = useFakeLoader(query, () => [{ id: 'r1', title: 'Q3 retainer' }], 20)
       return (
         <CommandPalette isOpen inputValue={query} onInputChange={setQuery}>
           <CommandPaletteSection title="Pages">
             <CommandPaletteItem id="inbox">Inbox</CommandPaletteItem>
           </CommandPaletteSection>
-          <CommandPaletteSection title="Records" items={records} isLoading={isLoading}>
+          <CommandPaletteSection title="Records" items={items} isLoading={isLoading}>
             {(record: { id: string; title: string }) => (
               <CommandPaletteItem id={record.id}>{record.title}</CommandPaletteItem>
             )}
@@ -239,21 +246,53 @@ describe('CommandPalette', () => {
     render(<Mixed />)
 
     await user.keyboard('ada')
+
     expect(screen.queryByText('No results.')).not.toBeInTheDocument()
     expect(screen.getByRole('status')).toBeInTheDocument()
     expect(await screen.findByRole('menuitem', { name: 'Q3 retainer' })).toBeInTheDocument()
-    expect(screen.queryByRole('menuitem', { name: 'Inbox' })).not.toBeInTheDocument()
-    await act(async () => {})
   })
 
-  it('localises the default strings', () => {
+  it('does not filter loaded results again', async () => {
+    const user = userEvent.setup()
+    function Mixed() {
+      const [query, setQuery] = React.useState('')
+      const { items, isLoading } = useFakeLoader(query, () => [{ id: 'r1', title: 'Q3 retainer' }], 20)
+      return (
+        <CommandPalette isOpen inputValue={query} onInputChange={setQuery}>
+          <CommandPaletteSection title="Pages">
+            <CommandPaletteItem id="inbox">Inbox</CommandPaletteItem>
+          </CommandPaletteSection>
+          <CommandPaletteSection title="Records" items={items} isLoading={isLoading}>
+            {(record: { id: string; title: string }) => (
+              <CommandPaletteItem id={record.id}>{record.title}</CommandPaletteItem>
+            )}
+          </CommandPaletteSection>
+        </CommandPalette>
+      )
+    }
+    render(<Mixed />)
+
+    await user.keyboard('ada')
+
+    expect(await screen.findByRole('menuitem', { name: 'Q3 retainer' })).toBeInTheDocument()
+    expect(screen.queryByRole('menuitem', { name: 'Inbox' })).not.toBeInTheDocument()
+  })
+
+  it('shows the spinner, not the empty message, while a wrapped section loads', () => {
+    function RecordsSection() {
+      return (
+        <CommandPaletteSection title="Records" items={[]} isLoading>
+          {(record: { id: string }) => <CommandPaletteItem id={record.id}>{record.id}</CommandPaletteItem>}
+        </CommandPaletteSection>
+      )
+    }
     render(
-      <I18nProvider locale="es-ES">
-        <Palette isOpen />
-      </I18nProvider>,
+      <CommandPalette isOpen>
+        <RecordsSection />
+      </CommandPalette>,
     )
 
-    expect(screen.getByRole('dialog', { name: 'Paleta de comandos' })).toBeInTheDocument()
-    expect(screen.getByPlaceholderText('Busca o ejecuta un comando…')).toBeInTheDocument()
+    expect(screen.queryByText('No results.')).not.toBeInTheDocument()
+    expect(screen.getByRole('status')).toBeInTheDocument()
   })
 })

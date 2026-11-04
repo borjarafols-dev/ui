@@ -1,10 +1,11 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { RouterProvider } from 'react-aria-components'
 
 import { Button } from './button'
 import { CommandPalette, CommandPaletteItem, CommandPaletteSection } from './command-palette'
 import { Kbd } from './kbd'
+import { useFakeLoader } from '../test/use-fake-loader'
 
 const meta = {
   title: 'Components/CommandPalette',
@@ -87,20 +88,11 @@ const RECORDS: IssueRecord[] = [
 export const ServerResults: Story = {
   render: (args) => {
     const [query, setQuery] = useState('')
-    const [records, setRecords] = useState<IssueRecord[]>([])
-    const [isLoading, setLoading] = useState(false)
-    useEffect(() => {
-      if (!query) {
-        setRecords([])
-        return
-      }
-      setLoading(true)
-      const timer = setTimeout(() => {
-        setRecords(RECORDS.filter((r) => `${r.key} ${r.title}`.toLowerCase().includes(query.toLowerCase())))
-        setLoading(false)
-      }, 400)
-      return () => clearTimeout(timer)
-    }, [query])
+    const { items: records, isLoading } = useFakeLoader(
+      query,
+      (q) => RECORDS.filter((r) => `${r.key} ${r.title}`.toLowerCase().includes(q.toLowerCase())),
+      400,
+    )
     return (
       <CommandPalette {...args} isOpen inputValue={query} onInputChange={setQuery}>
         <CommandPaletteSection title="Pages">

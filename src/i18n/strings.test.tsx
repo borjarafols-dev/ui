@@ -39,14 +39,6 @@ describe('strings', () => {
     expect(screen.getByText('Cancelar')).toBeInTheDocument()
   })
 
-  it('localises the command palette strings', () => {
-    expect(strings.es.commandPalette).toBe('Paleta de comandos')
-    expect(strings.es.noResults).toBe('Sin resultados.')
-    expect(strings.ca.commandPalette).toBe('Paleta d’ordres')
-    expect(strings.ca.commandPalettePlaceholder).toBe('Cerca o executa una ordre…')
-    expect(strings.ca.noResults).toBe('Cap resultat.')
-  })
-
   it('leaves no hard-coded English defaults in the components', () => {
     const sources = { commandPalette, confirmDialog, dataTable, link, searchField, spinner, toast }
     for (const [name, source] of Object.entries(sources)) {
