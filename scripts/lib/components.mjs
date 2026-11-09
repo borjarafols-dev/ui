@@ -13,27 +13,49 @@ export const SCHEMA_FILE = join(ROOT, 'src/metadata/schema.ts')
 
 const NOT_COMPONENT = /\.(test|stories|metadata)\.tsx?$/
 
-/** Component ids (file basenames), e.g. `button`, `text-field`. */
+/**
+ * Atomic design levels, lowest first. Each component lives in
+ * `src/components/<level>/` and may only import components from a lower
+ * level (organisms may also compose other organisms). See `check-levels.mjs`.
+ */
+export const LEVELS = ['atoms', 'molecules', 'organisms']
+
+const sourcesIn = (dir) =>
+  existsSync(dir)
+    ? readdirSync(dir)
+        .filter((f) => f.endsWith('.tsx') && !NOT_COMPONENT.test(f))
+        .map((f) => f.slice(0, -'.tsx'.length))
+    : []
+
+/** Component ids (file basenames, unique across levels), e.g. `button`, `text-field`. */
 export function componentIds(dir = COMPONENTS_DIR) {
-  return readdirSync(dir)
-    .filter((f) => f.endsWith('.tsx') && !NOT_COMPONENT.test(f))
-    .map((f) => f.slice(0, -'.tsx'.length))
-    .sort()
+  return LEVELS.flatMap((level) => sourcesIn(join(dir, level))).sort()
+}
+
+/** The level folder a component lives in, or null if it isn't in one. */
+export function componentLevel(id, dir = COMPONENTS_DIR) {
+  return LEVELS.find((level) => existsSync(join(dir, level, `${id}.tsx`))) ?? null
+}
+
+/** Component sources sitting directly in `src/components/`, outside any level. */
+export function strayComponents(dir = COMPONENTS_DIR) {
+  return sourcesIn(dir)
 }
 
 export function componentFiles(id, dir = COMPONENTS_DIR) {
+  const base = join(dir, componentLevel(id, dir) ?? '')
   return {
-    source: join(dir, `${id}.tsx`),
-    stories: join(dir, `${id}.stories.tsx`),
-    test: join(dir, `${id}.test.tsx`),
-    metadata: join(dir, `${id}.metadata.ts`),
+    source: join(base, `${id}.tsx`),
+    stories: join(base, `${id}.stories.tsx`),
+    test: join(base, `${id}.test.tsx`),
+    metadata: join(base, `${id}.metadata.ts`),
   }
 }
 
-/** Recipe files a source file imports from `../recipes/*`. */
+/** Recipe files a source file imports from `src/recipes/*`. */
 export function recipeImports(source, dir = COMPONENTS_DIR) {
   const files = new Set()
-  for (const match of source.matchAll(/from ['"]\.\.\/recipes\/([\w-]+)['"]/g)) {
+  for (const match of source.matchAll(/from ['"](?:\.\.\/)+recipes\/([\w-]+)['"]/g)) {
     files.add(join(dir, '../recipes', `${match[1]}.ts`))
   }
   return [...files].sort()
@@ -87,10 +109,11 @@ export function withStamp(metadataText, hash) {
 export function statusAll(dir = COMPONENTS_DIR) {
   return componentIds(dir).map((id) => {
     const files = componentFiles(id, dir)
+    const level = componentLevel(id, dir)
     const expected = sourceHash(id, dir)
     const missing = ['stories', 'test'].filter((k) => !existsSync(files[k]))
-    if (!existsSync(files.metadata)) return { id, state: 'missing', expected, recorded: null, missing }
+    if (!existsSync(files.metadata)) return { id, level, state: 'missing', expected, recorded: null, missing }
     const recorded = recordedHash(readFileSync(files.metadata, 'utf8'))
-    return { id, state: recorded === expected ? 'ok' : 'stale', expected, recorded, missing }
+    return { id, level, state: recorded === expected ? 'ok' : 'stale', expected, recorded, missing }
   })
 }

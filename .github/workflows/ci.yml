@@ -19,6 +19,7 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run lint:tokens
+      - run: npm run lint:levels
       - run: npm run build
 
   # Its own job so it can be a required check by name. With the

@@ -4,7 +4,7 @@ This file ships inside the package at `node_modules/@borjarafols-dev/ui/dist/ai/
 
 ## Before you build any UI
 
-1. **Read `components.json`.** For each piece of UI you need, look for a component whose `metadata.whenToUse` fits. Read its `whenNotToUse` too.
+1. **Read `components.json`.** For each piece of UI you need, look for a component whose `metadata.whenToUse` fits. Read its `whenNotToUse` too. Each component has a `level` (`atoms`, `molecules`, `organisms`). Prefer the highest level that fits: use `TextField` rather than assembling `Label` and `Input`.
 2. **Choose in this order:**
    1. An existing app composite in the app's own `src/ui/`.
    2. A library component.

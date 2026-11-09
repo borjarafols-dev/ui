@@ -1,5 +1,5 @@
 /**
- * Shape of `src/components/<name>.metadata.ts`.
+ * Shape of `src/components/<level>/<name>.metadata.ts`.
  *
  * Metadata holds the judgement calls about a component (when to use it and
  * when not to, alternatives, pitfalls) for agents that build UI with the
