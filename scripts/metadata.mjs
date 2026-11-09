@@ -15,10 +15,12 @@ import {
   SCHEMA_FILE,
   componentFiles,
   componentIds,
+  componentLevel,
   hashInputs,
   recipeImports,
   sourceHash,
   statusAll,
+  strayComponents,
   withStamp,
 } from './lib/components.mjs'
 
@@ -40,7 +42,7 @@ function section(title, path) {
 switch (command) {
   case 'check': {
     const statuses = statusAll()
-    const problems = []
+    const problems = strayComponents().map((id) => `${id}: not in a level folder, so it escapes C3 and C5 (move it under src/components/<level>/)`)
     for (const s of statuses) {
       if (s.state !== 'ok') problems.push(`${s.id}: metadata ${s.state} (expected ${s.expected}, recorded ${s.recorded ?? 'none'})`)
       for (const m of s.missing) problems.push(`${s.id}: missing ${m} file`)
@@ -72,7 +74,7 @@ switch (command) {
     out += section('COMPONENT SOURCE', files.source)
     for (const recipe of recipeImports(source)) out += section('RECIPE', recipe)
     if (existsSync(files.stories)) out += section('STORIES', files.stories)
-    out += `\n===== LIBRARY COMPONENTS =====\n${componentIds().join('\n')}\n`
+    out += `\n===== LIBRARY COMPONENTS =====\n${componentIds().map((c) => `${c} (${componentLevel(c)})`).join('\n')}\n`
     out += existsSync(files.metadata)
       ? section('CURRENT METADATA', files.metadata)
       : '\n===== CURRENT METADATA =====\n(none: write a new file)\n'

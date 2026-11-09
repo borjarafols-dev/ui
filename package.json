@@ -35,7 +35,8 @@
     "metadata:stale": "node scripts/metadata.mjs stale",
     "metadata:inputs": "node scripts/metadata.mjs inputs",
     "metadata:stamp": "node scripts/metadata.mjs stamp",
-    "lint:tokens": "node scripts/check-tokens.mjs"
+    "lint:tokens": "node scripts/check-tokens.mjs",
+    "lint:levels": "node scripts/check-levels.mjs"
   },
   "peerDependencies": {
     "react": "^19.0.0",

@@ -5,16 +5,16 @@
 //   dist/ai/USAGE.md         rules for apps consuming the library
 //
 // Facts are extracted here on every build. The judgement calls come from the
-// model-owned src/components/*.metadata.ts. Run after tsup (it reads dist/recipes.js).
+// model-owned src/components/<level>/*.metadata.ts. Run after tsup (it reads dist/recipes.js).
 
 import { execFileSync } from 'node:child_process'
 import { copyFileSync, existsSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
-import { basename, join, relative } from 'node:path'
+import { join, relative } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
 import ts from 'typescript'
 
-import { ROOT, componentFiles, componentIds, recipeImports, statusAll } from './lib/components.mjs'
+import { ROOT, componentFiles, componentIds, componentLevel, recipeImports, statusAll } from './lib/components.mjs'
 import { colorBridge, tokensUsed } from './lib/tokens.mjs'
 
 const OUT = join(ROOT, 'dist/ai')
@@ -127,6 +127,7 @@ for (const id of componentIds()) {
 
   components.push({
     id,
+    level: componentLevel(id),
     exports: facts.components,
     import: `import { ${facts.components.join(', ')} } from '@borjarafols-dev/ui'`,
     description: facts.docs || undefined,
@@ -137,7 +138,7 @@ for (const id of componentIds()) {
     since: since(files.source),
     metadataFresh: status[id] === 'ok',
     metadata,
-    source: `src/components/${basename(files.source)}`,
+    source: rel(files.source),
   })
 }
 
