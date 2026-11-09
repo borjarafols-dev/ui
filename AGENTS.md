@@ -13,18 +13,36 @@ Rules for apps that *consume* the library live in `docs/USAGE.md`, which ships i
 ## Layout
 
 ```
-src/recipes/<id>.ts                  tv() recipes, no React; also exported as @borjarafols-dev/ui/recipes
-src/components/<id>.tsx              React Aria component using the recipe
-src/components/<id>.stories.tsx      stories (required)
-src/components/<id>.test.tsx         tests (required)
-src/components/<id>.metadata.ts      model-owned metadata (required; never hand-edit)
-src/metadata/schema.ts               metadata shape
-src/styles.css                       token layers + @theme inline bridge
-src/index.ts                         public API
-.ai/metadata.prompt.md               the metadata generator's prompt
-docs/USAGE.md                        consumer rules, shipped as dist/ai/USAGE.md
-scripts/                             metadata, manifest, token check, release
+src/recipes/<id>.ts                      tv() recipes, no React; also exported as @borjarafols-dev/ui/recipes
+src/components/<level>/<id>.tsx          React Aria component using the recipe
+src/components/<level>/<id>.stories.tsx  stories (required)
+src/components/<level>/<id>.test.tsx     tests (required)
+src/components/<level>/<id>.metadata.ts  model-owned metadata (required; never hand-edit)
+src/metadata/schema.ts                   metadata shape
+src/styles.css                           token layers + @theme inline bridge
+src/index.ts                             public API
+.ai/metadata.prompt.md                   the metadata generator's prompt
+docs/USAGE.md                            consumer rules, shipped as dist/ai/USAGE.md
+scripts/                                 metadata, manifest, token check, release
 ```
+
+## Atomic levels
+
+Components follow atomic design. `<level>` is one of:
+
+| Level | What it is | May import |
+|---|---|---|
+| `atoms` | One element with one job: `Button`, `Input`, `Label`, `Badge`, `Spinner` | no library components |
+| `molecules` | A few atoms doing one job together, or a single-purpose shell: `TextField`, `Select`, `Menu`, `Modal`, `Card` | atoms |
+| `organisms` | Molecules and atoms forming a distinct section of UI: `DataTable`, `CommandPalette`, `ConfirmDialog` | atoms, molecules, organisms |
+
+Templates and pages belong in the apps, not here.
+
+- Pick the lowest level the component fits. If it needs to import a component at its own level or above, it belongs a level higher.
+- Build from the library's own lower-level components rather than re-creating them from React Aria primitives.
+- Ids are unique across levels. `src/index.ts` exports everything flat, so moving a component between levels isn't a breaking change for apps.
+- Story titles start with the level: `Atoms/Button`, `Molecules/TextField`, `Organisms/DataTable`.
+- `dist/ai/components.json` reports each component's `level`, taken from its folder.
 
 ## Contracts (CI enforces them)
 
@@ -35,11 +53,12 @@ scripts/                             metadata, manifest, token check, release
 | C3 | Every component has a recipe or token classes, stories, a test and metadata | `npm run metadata:check` |
 | C4 | Metadata matches the source: `keyProps` and `alternatives` are type-checked | `npm run typecheck` |
 | C5 | Metadata is fresh: its `sourceHash` matches the current inputs | `npm run metadata:check` |
+| C6 | Every component lives in a level folder and imports components only from a lower level | `npm run lint:levels` |
 
 ## Adding or changing a component
 
 1. **Recipe.** Add `src/recipes/<id>.ts` (`tv()` with slots for multi-part components) and export it from `src/recipes/index.ts`. Use token utilities only. If an app needs to restyle one component without touching semantic tokens, add a component token in `src/styles.css` (layer 3) and map it under `@theme inline`.
-2. **Component.** Wrap the React Aria primitive in `src/components/<id>.tsx`.
+2. **Component.** Pick its level (see Atomic levels), then wrap the React Aria primitive in `src/components/<level>/<id>.tsx`.
    - Keep React Aria's API (`onPress`, `isDisabled`, value-based `onChange`).
    - Accept `className?: string` and pass it through the recipe, so it merges last.
    - Set `data-slot` (and `data-variant`/`data-size` when there are variants).
@@ -47,8 +66,8 @@ scripts/                             metadata, manifest, token check, release
 3. **Export** it from `src/index.ts`.
 4. **Stories** covering every variant and state, plus a realistic composition.
 5. **Test** behaviour through roles and accessible names. Test variants through `data-*` attributes and token classes.
-6. **Metadata.** Write `src/components/<id>.metadata.ts` per `.ai/metadata.prompt.md` (inputs: `npm run metadata:inputs -- <id>`), then `npm run metadata:stamp -- <id>`. On PRs, agentic adds this commit for you.
-7. Run `npm run typecheck && npm test && npm run lint:tokens && npm run metadata:check && npm run build`.
+6. **Metadata.** Write `src/components/<level>/<id>.metadata.ts` per `.ai/metadata.prompt.md` (inputs: `npm run metadata:inputs -- <id>`), then `npm run metadata:stamp -- <id>`. On PRs, agentic adds this commit for you.
+7. Run `npm run typecheck && npm test && npm run lint:tokens && npm run lint:levels && npm run metadata:check && npm run build`.
    In an agentic sandbox pod, run each one in the stack: `docker compose exec -T app npm run <script>` (`agentic.yaml`, `compose.yaml`).
 
 ## Metadata

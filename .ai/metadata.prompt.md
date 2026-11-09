@@ -1,6 +1,6 @@
 # Generate component metadata
 
-You write `src/components/<id>.metadata.ts` for one component of `@borjarafols-dev/ui`, a React Aria + tailwind-variants design system that several apps share. Agents building app UI read this metadata to choose components. Write for them: concrete, short and correct.
+You write `src/components/<level>/<id>.metadata.ts` for one component of `@borjarafols-dev/ui`, a React Aria + tailwind-variants design system that several apps share. Agents building app UI read this metadata to choose components. Write for them: concrete, short and correct.
 
 ## Inputs
 
@@ -10,7 +10,7 @@ You write `src/components/<id>.metadata.ts` for one component of `@borjarafols-d
 2. The component source, including any `@usage` lines in its JSDoc.
 3. The recipe(s) it uses.
 4. Its stories.
-5. The list of all library components, for `alternatives`.
+5. The list of all library components with their atomic level (atom, molecule, organism), for `alternatives`.
 6. The current metadata file, if one exists.
 
 ## Rules
